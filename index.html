@@ -1,0 +1,1751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Killadelphia's Contraband System – Demo</title>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --panel:#121421;
+    /* Warm palette from logo */
+    --accent:#ff6b3b;   /* orange-red */
+    --accent-2:#ffb03a; /* golden orange */
+    --text:#e8e8f2;
+    --muted:#94a3b8;
+    --card-common:#2b2f44;
+    --card-uncommon:#214a2f;
+    --card-rare:#133a5a;
+    --card-epic:#3a2165;
+    --card-legendary:#6b5200; /* gold tone */
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+    /* Reel sizing */
+    --slot-w:100px;
+    --slot-h:100px;
+    --reel-gap:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%; overflow-x:hidden}
+  body{
+    margin:0;background:radial-gradient(1200px 600px at 10% -10%, rgba(255,140,64,.16), transparent 60%),
+    radial-gradient(1200px 600px at 110% 10%, rgba(255,92,48,.12), transparent 60%), var(--bg);
+    color:var(--text); font:500 16px/1.4 "Rajdhani", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    letter-spacing:.2px; display:flex; align-items:flex-start; justify-content:center; padding:0px 16px 96px;
+  }
+  
+  /* Background image layer: blurred and subtle */
+  .page-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat fixed;
+    filter: blur(14px) saturate(1.05);
+    opacity:.22;
+    transform: scale(1.06); /* hide blur edges */
+  }
+  .wrap{max-width:1280px; width:100%; margin:0 auto}
+
+  /* Topbar navigation styling */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, rgba(10,10,16,0.95), rgba(10,10,16,0.7));
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px) saturate(1.2);
+  }
+
+  .top-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  .brand .accent {
+    color: var(--accent-2);
+    text-shadow: 0 0 10px rgba(255,176,58,0.40);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .nav-link {
+    color: #d8dee9;
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+  }
+
+  .nav-link:hover {
+    color: var(--accent-2);
+    text-shadow: 0 0 8px rgba(255,176,58,0.40);
+  }
+
+  .purchase-btn {
+    background: linear-gradient(180deg, rgba(255,107,59,0.28), rgba(255,176,58,0.08));
+    color: #fff;
+    border: 1px solid rgba(255,176,58,0.45);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .purchase-btn:hover {
+    box-shadow: 0 0 0 3px rgba(255,176,58,0.18);
+  }
+  .card{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01)),
+      rgba(12,14,22,.55);
+    backdrop-filter: blur(8px) saturate(1.05);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:14px; box-shadow:var(--shadow); padding:18px;
+    position: relative; /* allow anchored footer labels inside cards */
+  }
+  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+  .label{color:var(--muted); font-size:14px; margin-right:8px}
+  select, button{
+    background:#181a2a; color:var(--text); border:1px solid rgba(255,255,255,.14);
+    padding:10px 12px; border-radius:10px; outline:none;
+  }
+  button{
+    background: linear-gradient(180deg, rgba(255,176,58,.30), rgba(255,107,59,.08));
+    border:1px solid rgba(255,176,58,.40);
+    padding:10px 16px; font-weight:700; letter-spacing:.03em; cursor:pointer;
+    transition:transform .08s ease, box-shadow .2s ease;
+  }
+  button:hover{box-shadow:0 0 0 3px rgba(255,176,58,.18)}
+  button:active{transform:translateY(1px)}
+
+  /* Icon button (dice shuffle) */
+  .icon-btn{
+    width:38px; height:38px; padding:0; margin-right:8px;
+    display:inline-flex; align-items:center; justify-content:center;
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:10px; cursor:pointer;
+  }
+  .icon-btn i{ font-size:18px; opacity:.9 }
+  .icon-btn:hover{ box-shadow:0 0 0 3px rgba(255,255,255,.12) }
+
+  /* Reel */
+  .reel{
+    position:relative; overflow:hidden; border-radius:12px; border:1px solid rgba(255,255,255,.06);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)),
+      rgba(10,12,20,.45);
+    backdrop-filter: blur(6px) saturate(1.02);
+    margin-top:12px; width:100%; padding:12px;
+  }
+  .strip{display:flex; gap:var(--reel-gap); padding:0; transition:transform .25s ease; will-change:transform}
+  .slot{
+    width:var(--slot-w);
+    height:var(--slot-h);
+    /* Prevent flexbox from shrinking tiles so all tiers stay identical */
+    flex: 0 0 var(--slot-w);
+    min-width: var(--slot-w);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    border-radius:12px;
+    /* Crisp white stroke around slots */
+    border:1px solid rgba(255,255,255,.65);
+    /* keep inner shading and add a subtle outer ring for clarity */
+    box-shadow:
+      inset 0 -30px 60px rgba(0,0,0,.25),
+      0 0 0 1px rgba(255,255,255,.15);
+  }
+  /* Rarity gradient styling for spin slots: light top -> rarity bottom */
+  .slot.common{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.04) 70%, rgba(255,255,255,.08) 100%),
+    linear-gradient(180deg, rgba(43,47,68,0) 55%, rgba(161,161,161,.85) 100%), rgba(15,17,32,.60);
+  }
+  .slot.uncommon{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 14%, rgba(15,17,32,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(33,74,47,.85) 100%),
+      rgba(15,17,32,.60);
+  }
+  .slot.rare{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 14%, rgba(15,17,32,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(19,58,90,.85) 100%),
+      rgba(15,17,32,.60);
+  }
+  .slot.epic{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 14%, rgba(15,17,32,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(58,33,101,.85) 100%),
+      rgba(15,17,32,.60);
+  }
+  .slot.legendary{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 14%, rgba(15,17,32,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(107,82,0,.88) 100%),
+      rgba(15,17,32,.60);
+  }
+
+  /* weapon image fills the 100x100 tile but preserves aspect */
+  .slot img.weapon-img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  /* overlays */
+  .slot .title{
+    position:absolute; left:6px; right:36px; bottom:6px;
+    /* Keep on one line, shrink slightly on small tiles */
+    font-size: clamp(11px, calc(var(--slot-w) * 0.12), 13px);
+    line-height:1.1; color:#fff;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    text-shadow:0 2px 6px rgba(0,0,0,.6);
+  }
+  /* removed: rarity star overlay */
+
+  .cut{
+    position:absolute; top:0; bottom:0; left:50%; width:2px; transform:translateX(-1px);
+    /* Crisp white core with warm gold glow */
+    background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.96), rgba(255,255,255,0));
+    box-shadow: 0 0 12px rgba(255,176,58,.55), 0 0 20px rgba(255,107,59,.30), 0 0 2px rgba(255,255,255,.85);
+    pointer-events:none; /* allow hit-testing to pass through to slots */
+  }
+
+  .drops{display:flex; gap:16px; flex-wrap:wrap; margin-top:14px}
+  .drop-card{
+    width:180px; aspect-ratio: 16/13; border-radius:14px; padding:12px; position:relative;
+    /* Match slot stroke style */
+    border:1px solid rgba(255,255,255,.65); background:#0f1120;
+    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15);
+  }
+  /* Rarity gradient styling for drop cards */
+  /* Rarity gradient: light at top -> rarity color at bottom */
+  .drop-card.common{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.04) 70%,rgba(255,255,255,.08) 100%),
+    linear-gradient(180deg,rgba(43,47,68,0) 55%,rgba(161,161,161,.85) 100%),
+    rgba(15,17,32,.60);
+  }
+  .drop-card.uncommon{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 12%, rgba(15,17,32,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(33,74,47,.85) 100%),
+      rgba(15,17,32,.60);
+  }
+  .drop-card.rare{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 12%, rgba(15,17,32,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(19,58,90,.85) 100%),
+      rgba(15,17,32,.60);
+  }
+  .drop-card.epic{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 12%, rgba(15,17,32,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(58,33,101,.85) 100%),
+      rgba(15,17,32,.60);
+  }
+  .drop-card.legendary{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 12%, rgba(15,17,32,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(107,82,0,.88) 100%),
+      rgba(15,17,32,.60);
+  }
+  .drop-title{font-weight:700; font-size:15px; color:var(--accent-2); margin-bottom:8px}
+  .badge{
+    position:absolute; bottom:8px; right:8px; background:#0e1726; padding:2px 8px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.08); font-size:12px; color:#cbd5e1;
+  }
+
+  /* Image inside "Your drops" cards */
+  .drop-img{
+    width:100%;
+    height:120px;
+    object-fit:contain;
+    display:block;
+    margin-top:8px;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  .section-title{
+    margin:22px 0 8px; font-weight:700; letter-spacing:.04em;
+    color:var(--accent-2); text-shadow:0 0 10px rgba(255,176,58,.25)
+  }
+
+  .hint{color:var(--muted); font-size:13px; margin-top:6px}
+  /* Subtle maker tag inside cards */
+  .brand-hint{
+    position:absolute; right:16px; bottom:12px;
+    margin-top:0; padding:4px 8px; border-radius:8px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    color:#cbd5e1; font-size:12px; letter-spacing:.02em;
+    pointer-events:none; /* decorative */
+  }
+
+  /* Bottom-center watermark */
+  .watermark{
+    position:fixed; left:50%; bottom:96px; transform:translateX(-50%);
+    z-index:50; /* below drawers (z-index:60) so it never overlays modals */
+    pointer-events:none; user-select:none;
+    font-size:clamp(14px, 2vw, 18px); letter-spacing:.03em; font-weight:800;
+    color:rgba(255,176,58,.70);
+    text-shadow:
+      0 0 7px rgba(255,176,58,.45),
+      0 0 14px rgba(255,107,59,.28),
+      0 0 1px rgba(255,236,200,.30);
+    animation:breathe 9s ease-in-out infinite alternate;
+  }
+  .watermark .inner{ display:inline-block; animation:floatX 8s ease-in-out infinite alternate }
+  @keyframes floatX{ from{ transform:translateX(-16px) } to{ transform:translateX(16px) } }
+  @keyframes breathe{ from{ opacity:.62 } to{ opacity:.9 } }
+  .grid{display:grid; gap:14px; justify-content:center}
+  /* Center the spinner section and prep for view swapping */
+  .grid > .card{min-width:0; width:min(1200px, 92vw); margin:0 auto}
+  .stage{width:100%; position:relative}
+  .stage .view{position:absolute; inset:0; opacity:0; transform:translateY(10px); pointer-events:none; visibility:hidden; transition:opacity .25s ease, transform .25s ease; display:grid; justify-items:center; align-content:start; padding-top:12px}
+  .stage .view.active{opacity:1; transform:none; pointer-events:auto; visibility:visible}
+  /* Align category views with Drops position at the top */
+  .stage .view .grid{margin-top:0}
+  /* Pull category panels up to align with Drops under the hero */
+  #viewT1 .grid, #viewT2 .grid, #viewAttach .grid, #viewDrugs .grid{ margin-top:0 }
+  @media (min-width: 920px){
+    .grid{grid-template-columns: minmax(0,1fr); align-items:start}
+  }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,176,58,.10); border:1px solid rgba(255,176,58,.28);
+    color:#fff3e0; padding:6px 10px; border-radius:999px; font-size:13px
+  }
+
+  /* Side tab for Tier 1 Weaponry */
+  .side-tabs{position:fixed; left:16px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:10px; z-index:50}
+  .side-btn{
+    background:linear-gradient(180deg, rgba(255,176,58,.25), rgba(255,107,59,.08));
+    border:1px solid rgba(255,176,58,.45); color:#ffe8c7; padding:8px 12px; border-radius:10px; cursor:pointer;
+    font-weight:700; letter-spacing:.02em; box-shadow:0 6px 16px rgba(0,0,0,.35);
+  }
+  .side-btn:hover{box-shadow:0 0 0 3px rgba(255,176,58,.20)}
+
+  /* Drawer panel for Tier 1 gallery */
+  .drawer{position:fixed; inset:0; background:rgba(3,6,12,.6); backdrop-filter: blur(4px); display:none; z-index:60}
+  .drawer.open{display:block}
+  .drawer .panel{position:absolute; left:50%; top:54px; transform:translateX(-50%); width:min(1100px, 92vw);
+    background:rgba(12,14,22,.55); backdrop-filter: blur(8px) saturate(1.05);
+    border:1px solid rgba(255,255,255,.10); border-radius:14px; padding:16px; box-shadow:var(--shadow)}
+  .drawer .panel-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
+  .drawer .panel-title{font-weight:800; color:var(--accent-2); letter-spacing:.04em}
+  .drawer .close{background:#1a1d2e; border:1px solid rgba(255,255,255,.18); color:#cbd5e1; border-radius:8px; padding:6px 10px; cursor:pointer}
+  .t1-grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:14px}
+  /* Stage grids: show up to ~3 rows, then enable thin internal scrollbar */
+  #t1GridStage, #t2GridStage, #attachGridStage, #drugsGridStage{
+    max-height: clamp(420px, 52vh, 620px);
+    overflow-y:auto;
+    overscroll-behavior: contain;
+    padding-right:10px; /* add breathing room so bar sits further right */
+    scrollbar-gutter: stable; /* keep content from shifting when bar shows */
+  }
+  /* Sleek scrollbar styling (no arrows, blends with card) */
+  #t1GridStage::-webkit-scrollbar,
+  #t2GridStage::-webkit-scrollbar,
+  #attachGridStage::-webkit-scrollbar,
+  #drugsGridStage::-webkit-scrollbar{ width:7px; background: transparent }
+  /* Hide arrows/buttons completely */
+  #t1GridStage::-webkit-scrollbar-button,
+  #t2GridStage::-webkit-scrollbar-button,
+  #attachGridStage::-webkit-scrollbar-button,
+  #drugsGridStage::-webkit-scrollbar-button,
+  #t1GridStage::-webkit-scrollbar-button:start:decrement,
+  #t2GridStage::-webkit-scrollbar-button:start:decrement,
+  #attachGridStage::-webkit-scrollbar-button:start:decrement,
+  #drugsGridStage::-webkit-scrollbar-button:start:decrement,
+  #t1GridStage::-webkit-scrollbar-button:end:increment,
+  #t2GridStage::-webkit-scrollbar-button:end:increment,
+  #attachGridStage::-webkit-scrollbar-button:end:increment,
+  #drugsGridStage::-webkit-scrollbar-button:end:increment,
+  #t1GridStage::-webkit-scrollbar-button:single-button,
+  #t2GridStage::-webkit-scrollbar-button:single-button,
+  #attachGridStage::-webkit-scrollbar-button:single-button,
+  #drugsGridStage::-webkit-scrollbar-button:single-button{
+    display:none; width:0; height:0; background:transparent; border:none;
+  }
+  #t1GridStage::-webkit-scrollbar-track,
+  #t2GridStage::-webkit-scrollbar-track,
+  #attachGridStage::-webkit-scrollbar-track,
+  #drugsGridStage::-webkit-scrollbar-track,
+  #t1GridStage::-webkit-scrollbar-track-piece,
+  #t2GridStage::-webkit-scrollbar-track-piece,
+  #attachGridStage::-webkit-scrollbar-track-piece,
+  #drugsGridStage::-webkit-scrollbar-track-piece{
+    background: transparent; /* no background box behind the thumb */
+    border-radius: 8px;
+    margin: 6px 0; /* slight inset to avoid end caps */
+  }
+  #t1GridStage::-webkit-scrollbar-thumb,
+  #t2GridStage::-webkit-scrollbar-thumb,
+  #attachGridStage::-webkit-scrollbar-thumb,
+  #drugsGridStage::-webkit-scrollbar-thumb{
+    background: linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.26));
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 1px 3px rgba(0,0,0,.2);
+  }
+  #t1GridStage::-webkit-scrollbar-thumb:hover,
+  #t2GridStage::-webkit-scrollbar-thumb:hover,
+  #attachGridStage::-webkit-scrollbar-thumb:hover,
+  #drugsGridStage::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.55) }
+  /* Avoid corner artifacts */
+  #t1GridStage::-webkit-scrollbar-corner,
+  #t2GridStage::-webkit-scrollbar-corner,
+  #attachGridStage::-webkit-scrollbar-corner,
+  #drugsGridStage::-webkit-scrollbar-corner{ background: transparent }
+  /* Firefox */
+  #t1GridStage, #t2GridStage, #attachGridStage, #drugsGridStage{
+    scrollbar-width: thin;
+    scrollbar-color: rgba(220,228,240,.48) transparent; /* no track fill */
+    scrollbar-gutter: stable; /* reserve space; keeps it aligned right */
+  }
+  .gallery-card{border-radius:14px; padding:12px; position:relative; border:1px solid rgba(255,255,255,.65); box-shadow:0 0 0 1px rgba(255,255,255,.15)}
+  .gallery-card{border-radius:14px; padding:12px; position:relative; border:1px solid rgba(255,255,255,.65); box-shadow:0 0 0 1px rgba(255,255,255,.15); display:grid; grid-template-rows:38px 1fr; align-items:end}
+  /* Add frosted top highlight to common cards */
+  .gallery-card.common{
+    background:
+      /* use the exact same top frost gradient as epic */
+      linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%),
+      /* keep the common rarity tone at the bottom */
+      linear-gradient(180deg, rgba(43,47,68,0) 55%, rgba(161,161,161,.85) 100%),
+      rgba(15,17,32,.60);
+  }
+  .gallery-card.uncommon{background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%), linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(33,74,47,.85) 100%), rgba(15,17,32,.60)}
+  .gallery-card.rare{background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%), linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(19,58,90,.85) 100%), rgba(15,17,32,.60)}
+  .gallery-card.epic{background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%), linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(58,33,101,.85) 100%), rgba(15,17,32,.60)}
+  .gallery-card.legendary{background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%), linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(107,82,0,.88) 100%), rgba(15,17,32,.60)}
+  .gallery-card .name{font-weight:800; color:#cfe7ff; margin-bottom:6px}
+  .gallery-card .name{font-weight:800; color:#cfe7ff; min-height:38px; line-height:1.1; display:flex; align-items:center; overflow:hidden}
+  .gallery-card img{width:100%; height:120px; object-fit:contain; display:block; user-select:none; pointer-events:none; align-self:end}
+
+  /* Server badge (Killadelphia) */
+:root{
+  --server-badge: url('https://i.imgur.com/6EqOxmn.png');
+}
+
+/* Show the badge on drop cards and gallery tiles */
+.drop-card::after,
+.gallery-card::after{
+  content:"";
+  position:absolute;
+  right:8px;
+  bottom:8px;
+  width:clamp(30px, 12%, 40px);
+  height:clamp(30px, 12%, 40px);
+  background: var(--server-badge) center/contain no-repeat;
+  pointer-events:none;
+  opacity:.9;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
+}
+
+/* Optional: badge on reel tiles too */
+.slot::after{
+  content:"";
+  position:absolute;
+  right:4px;
+  bottom:4px;
+  width:18px;
+  height:18px;
+  background: var(--server-badge) center/contain no-repeat;
+  pointer-events:none;
+  opacity:.9;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.6));
+}
+/* ───────── Hero ───────── */
+  .hero {
+  /* Full-bleed header section */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: 0;
+  margin-bottom: 18px;
+  background: linear-gradient(
+      90deg,
+      rgba(10, 10, 16, 0.95) 0%,
+      rgba(20, 16, 12, 0.95) 50%,
+      rgba(14, 10, 8, 0.92) 100%
+    ),
+    radial-gradient(900px 420px at 8% -10%, rgba(255, 140, 64, 0.16), transparent 60%),
+    radial-gradient(900px 420px at 110% 10%, rgba(255, 92, 48, 0.12), transparent 60%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.4);
+}
+
+.hero-inner {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 36px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start; /* keep everything aligned left */
+  position: relative; /* allow absolutely-positioned logo inside */
+}
+
+.hero-title {
+  margin: 0 0 6px 0;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  font-size: clamp(28px, 4.2vw, 40px);
+  color: var(--accent-2);
+  text-shadow: 0 0 14px rgba(255, 176, 58, 0.35);
+}
+
+/* Server logo in hero (top-right) */
+.hero-logo {
+  position: absolute;
+  top: 12px;               /* pin near the top */
+  right: 32px;             /* nudge inward from the right edge */
+  transform: none;         /* no vertical centering */
+  height: clamp(68px, 12vw, 120px); /* fit better within header */
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,.45));
+  opacity: 0.98;
+  z-index: 1;
+}
+
+.hero-accent {
+  color: var(--accent-2);
+  text-shadow: 0 0 14px rgba(255,176,58,0.35);
+}
+
+.hero-sub {
+  margin: 0;
+  color: #a6b3c6;
+  font-size: clamp(14px, 1.4vw, 16px);
+}
+
+.hero-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.hero-link{
+  color:#e7e5e4; text-decoration:none; font-size:14px; padding:6px 10px; border-radius:10px;
+  transition:color .2s, background .2s, box-shadow .2s;
+}
+.hero-link:hover{ color:var(--accent-2); background:rgba(255,176,58,.10); box-shadow:0 0 0 2px rgba(255,176,58,.20) inset; }
+.hero-link.active{
+  color:#fff7e6;
+  background:linear-gradient(180deg, rgba(255,176,58,.30), rgba(255,107,59,.12));
+  box-shadow:0 0 0 2px rgba(255,176,58,.38) inset, 0 4px 16px rgba(255,107,59,.18);
+}
+  .hero-link .icon, .hero-link i.icon{ display:inline-block; width:1.2em; text-align:center; margin-right:8px; opacity:.95 }
+.hero-link:hover{ color:var(--accent-2); text-shadow:0 0 8px rgba(255,176,58,.35); background:rgba(255,176,58,.08); }
+  /* Prices dropdown */
+  .dropdown{ position:relative }
+  .dropdown-toggle{ display:inline-flex; align-items:center; gap:8px }
+  .dropdown .caret{ font-size:12px; opacity:.8; margin-left:6px; transition:transform .2s ease }
+  .dropdown.open .caret{ transform:rotate(180deg) }
+  .dropdown-menu{
+    position:absolute; top:100%; left:0; z-index:100;
+    min-width:200px; margin-top:8px; padding:8px 6px;
+    background:rgba(10,12,20,.94);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.45);
+    display:none;
+  }
+  .dropdown.open .dropdown-menu{ display:block; animation:dropfade .18s ease; }
+  .dropdown-menu a{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; color:#e5e7eb; text-decoration:none }
+  .dropdown-menu a:hover{ background:rgba(255,176,58,.10); color:#fff }
+  @keyframes dropfade{ from{ opacity:0; transform:translateY(-4px) } to{ opacity:1; transform:none } }
+  .hero-cta{
+  background: linear-gradient(180deg, rgba(255,176,58,.30), rgba(255,107,59,.08));
+  color:#fff; border:1px solid rgba(255,176,58,.42);
+  padding:8px 16px; border-radius:10px; font-weight:800; letter-spacing:.03em; cursor:pointer;
+  transition: box-shadow .2s, transform .1s;
+}
+.hero-cta:hover{ box-shadow:0 0 0 3px rgba(255,176,58,.18) }
+.hero-cta:active{ transform:translateY(1px) }
+
+/* (Removed performance-heavy hero orb effects) */
+  /* Social links (Discord, YouTube) */
+  .social-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 10px;
+    border-left: 1px solid rgba(255,255,255,.08);
+    padding-left: 14px;
+  }
+
+  .social-links a {
+    color: #a6b3c6;
+    font-size: 18px;
+    transition: color .2s ease, transform .15s ease;
+  }
+
+  .social-links a:hover {
+    color: var(--accent-2);
+    transform: scale(1.15);
+  }
+</style>
+<!-- Font Awesome for category icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="page-bg" aria-hidden="true"></div>
+        <!-- Hero section (full-width) -->
+    <section class="hero">
+      <div class="hero-inner">
+        <img class="hero-logo" src="https://i.imgur.com/6EqOxmn.png" alt="Killadelphia server logo">
+        <h1 class="hero-title">
+          <span class="hero-accent">Killadelphia’s</span> Contraband System
+        </h1>
+        <p class="hero-sub">Enter the underground market. Built exclusively for Killadelphia Roleplay.</p>
+        <div class="hero-actions">
+          <a class="hero-link" id="navT1" href="#"><i class="fa-solid fa-gun icon" aria-hidden="true"></i>Tier 1 Weaponry</a>
+          <a class="hero-link" id="navT2" href="#"><i class="fa-solid fa-person-military-rifle icon" aria-hidden="true"></i>Tier 2 Weaponry</a>
+          <a class="hero-link" id="navAttach" href="#"><i class="fa-solid fa-screwdriver-wrench icon" aria-hidden="true"></i>Attachments</a>
+          <a class="hero-link" id="navDrugs" href="#"><i class="fa-solid fa-capsules icon" aria-hidden="true"></i>Drugs</a>
+          <a class="hero-link" id="navTurfMap" href="https://strictlyzel.github.io/Killadelphia-Turf-Map/" target="_blank" rel="noopener">
+            <i class="fa-solid fa-map-location-dot icon" aria-hidden="true"></i>Turf Map
+          <a class="hero-link" id="navDrops" href="#"><i class="fa-solid fa-suitcase icon" aria-hidden="true"></i>Weapon Drops</a>
+          </a>
+          <div class="dropdown" id="pricesDropdown">
+            <a class="hero-link dropdown-toggle" id="navPrices" href="#"><i class="fa-solid fa-tags icon" aria-hidden="true"></i>Prices <i class="fa-solid fa-angle-down caret" aria-hidden="true"></i></a>
+            <div class="dropdown-menu" id="pricesMenu">
+              <a id="priceDrugs" href="#" target="_blank"><i class="fa-solid fa-capsules"></i><span>Drugs</span></a>
+              <a id="priceWeapons" href="#" target="_blank"><i class="fa-solid fa-gun"></i><span>Weapons</span></a>
+            </div>
+          </div>
+          <!-- Music toggle button -->
+          <a class="hero-link" id="musicToggle" href="#" aria-label="Toggle background music">
+            <i class="fa-solid fa-volume-high icon" aria-hidden="true"></i>
+            Music: On
+          </a>
+                    <!-- socials (separator is the left border on this wrapper) -->
+          <div class="social-links" aria-label="Social links">
+            <a href="https://discord.gg/killadelphia" target="_blank" rel="noopener">
+              <i class="fa-brands fa-discord" aria-hidden="true"></i>
+              <span class="sr-only">Discord</span>
+            </a>
+            <a href="https://killadelphia-forums.com/" target="_blank" rel="noopener">
+              <i class="fa-solid fa-globe" aria-hidden="true"></i>
+              <span class="sr-only">YouTube</span>
+            </a>
+          </div>
+        </div>
+    </section>
+    <!-- Hidden audio element for background music -->
+    <audio id="bgmAudio" src="bgm.mp3" preload="auto" loop autoplay style="display:none"></audio>
+
+
+    <div id="stage" class="stage">
+      <div id="viewDrops" class="view active">
+        <div class="grid">
+          <!-- Left: Spinner -->
+          <section class="card">
+            <div class="row" style="justify-content:space-between">
+              <div class="row">
+                <span class="label">Choose Category:</span>
+                <select id="tierSelect">
+                  <option value="t1">Tier 1</option>
+                  <option value="t2">Tier 2</option>
+                  <option value="attach">Attachments</option>
+                </select>
+              </div>
+              <div class="row">
+                <button id="shuffleBtn" class="icon-btn" title="Randomize lineup" aria-label="Randomize lineup">
+                  <i class="fa-solid fa-dice" aria-hidden="true"></i>
+                </button>
+                <button id="spinBtn">Spin!</button>
+              </div>
+            </div>
+
+            <div class="reel" id="reel" aria-live="polite">
+              <div class="strip" id="strip"></div>
+              <div class="cut" aria-hidden="true"></div>
+            </div>
+
+            <h3 class="section-title">Acquired Items</h3>
+            <div id="drops" class="drops"></div>
+            
+          </section>
+        </div>
+      </div>
+      <div id="viewT1" class="view">
+        <div class="grid">
+          <section class="card">
+            <div id="t1GridStage" class="t1-grid"></div>
+          </section>
+        </div>
+      </div>
+      <div id="viewT2" class="view">
+        <div class="grid">
+          <section class="card">
+            <div id="t2GridStage" class="t1-grid"></div>
+          </section>
+        </div>
+      </div>
+      <div id="viewAttach" class="view">
+        <div class="grid">
+          <section class="card">
+            <div id="attachGridStage" class="t1-grid"></div>
+          </section>
+        </div>
+      </div>
+      <div id="viewDrugs" class="view">
+        <div class="grid">
+          <section class="card">
+            <div id="drugsGridStage" class="t1-grid"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+  
+
+  <!-- Tier 1 gallery drawer -->
+  <div id="t1Drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="t1Title">
+    <div class="panel">
+      <div class="panel-header">
+        <div id="t1Title" class="panel-title">Tier 1 Weaponry</div>
+        <button class="close" id="closeT1">Close</button>
+      </div>
+      <div id="t1Grid" class="t1-grid"></div>
+    </div>
+  </div>
+
+  <!-- Tier 2 gallery drawer -->
+  <div id="t2Drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="t2Title">
+    <div class="panel">
+      <div class="panel-header">
+        <div id="t2Title" class="panel-title">Tier 2 Weaponry</div>
+        <button class="close" id="closeT2">Close</button>
+      </div>
+      <div id="t2Grid" class="t1-grid"></div>
+    </div>
+  </div>
+
+
+  <!-- Drugs gallery drawer -->
+  <div id="drugsDrawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drugsTitle">
+    <div class="panel">
+      <div class="panel-header">
+        <div id="drugsTitle" class="panel-title">Drugs</div>
+        <button class="close" id="closeDrugs">Close</button>
+      </div>
+      <div id="drugsGrid" class="t1-grid"></div>
+    </div>
+  </div>
+<script>
+  // ------------------------------
+  // Demo data (unchanged)
+  // ------------------------------
+  const ALL_ITEMS = [
+    // name, rarity, tier
+    [".38 Special","common","t1"],
+    ["Ghost Glock 17","common","t1"],
+    ["Canik TP9","common","t1"],
+    ["Polymer 80","common","t1"],
+    ["Taurus TX22","common","t1"],
+    ["XD-M","common","t1"],
+    ["Beretta M9","common","t1"],
+    ["Worn G19X","common","t1"],    
+    ["Taurus G2C","uncommon","t1"],
+    ["H&K USP","uncommon","t1"],
+    ["S&W SD40","uncommon","t1"],
+    ["FN 509","uncommon","t1"],
+    [".357 Magnum","uncommon","t1"],
+    ["MP9 M2.0","uncommon","t1"],
+    ["Sig Sauer M17","uncommon","t1"],
+    ["Walter P99","uncommon","t1"],
+    ["Glock 3D","uncommon","t1"],   
+    ["Glock 19","uncommon","t1"],  
+    ["19X","uncommon","t1"],
+    ["Glock 26","uncommon","t1"],
+    ["Glock 43X","uncommon","t1"],
+    ["Glock 45","uncommon","t1"],
+    ["Glock 48","uncommon","t1"],
+    ["G19X","rare","t1"],
+    ["Glock 20 Black","rare","t1"],
+    ["Glock 20 Tan","rare","t1"],
+    ["Glock 21","rare","t1"],
+    ["Glock 22","rare","t1"],
+    ["Glock 23","rare","t1"],
+    ["Glock 29","rare","t1"],
+    ["Glock 30SF","rare","t1"],
+    ["Glock 40","rare","t1"],
+    ["Glock 41","rare","t1"],
+    ["Ruger 5.7","rare","t1"],
+    ["Draco 9s","rare","t1"],
+    ["PSA AR9","rare","t1"],
+    ["FNX-45","epic","t2"],     
+    ["PSA Dagger","epic","t2"], 
+    ["Glock 17 MOS","epic","t2"], 
+    ["Glock 17 Switch","epic","t2"],
+    ["Glock 23 Switch","epic","t2"],
+    ["Glock 43X FRT","epic","t2"],
+    ["Mac-10","epic","t2"],
+    ["MPA 30SST","epic","t2"],
+    ["GFlex Glock 17","epic","t1"],
+    ["Glock 19 FRT","epic","t1"],
+    ["ZPAP","epic","t2"],
+    ["Black ARP","epic","t2"],
+    ["Red ARP FRT","epic","t2"],
+    ["Two-Tone ARP","epic","t2"],
+    ["Glock 19X","epic","t1"],
+    ["Glock 21 FRT","epic","t1"],
+    ["G29","epic","t1"],
+    ["FN 5.7","epic","t1"],
+    ["Kel-Tec PLR","epic","t2"], 
+    ["Glock 17 PBJ","legendary","t2"],
+    ["Glock 20 Switch","legendary","t2"], 
+    ["Glock 22 Incognito","legendary","t2"],
+    ["FN 5.7 MK3","legendary","t2"],
+    ["Tan Draco","legendary","t2"],
+    ["Black Draco","legendary","t2"],
+    ["Hellpup Draco","legendary","t2"],
+    ["Steyr AUG","legendary","t2"],
+    [".300 Blackout","legendary","t2"],
+    ["M16A1","legendary","t2"],
+    ["ARP Shellcatcher","legendary","t2"],
+  ];
+
+  // Rarity stars removed
+
+  // Map weapon name -> image path (unchanged)
+  const IMAGES = {
+    "Ghost Glock 17": "images/WEAPON_GHOST.png",
+    "Glock 20 Black": "images/WEAPON_G20B.png",
+    "Glock 17 MOS": "images/WEAPON_G17MOS.png",
+    "S&W SD40": "images/WEAPON_SD40.png",
+    "Canik TP9": "images/WEAPON_TP9.png",
+    "FN 5.7": "images/WEAPON_57.png",
+    "Hellpup Draco": "images/WEAPON_HELLPUP.png",
+    "ARP Shellcatcher": "images/WEAPON_SHELL.png",
+    "Red ARP FRT": "images/WEAPON_ARPR.png",
+    "Two-Tone ARP": "images/WEAPON_ARPW.png",
+    "Walter P99": "images/WEAPON_P99.png",
+    "H&K USP": "images/WEAPON_HK.png",
+    "MP9 M2.0": "images/WEAPON_MP9.png",
+    "Glock 19": "images/WEAPON_G19.png",
+    "Glock 21 FRT": "images/WEAPON_21.png",
+    "Sig Sauer M17": "images/WEAPON_SIG.png",
+    "Black Draco": "images/WEAPON_DRACOB.png",
+    "Glock 17 PBJ": "images/WEAPON_PBJ.png",
+    "M16A1": "images/WEAPON_M16.png",
+    "Glock 19 FRT": "images/WEAPON_19FRT.png",
+    "Beretta M9": "images/WEAPON_BERETTA.png",
+    "Taurus G2C": "images/WEAPON_G2C.png",  
+    "Worn G19X": "images/WEAPON_19X4.png",
+    "FN 509": "images/WEAPON_FN509.png",
+    "Glock 26": "images/WEAPON_G26.png",
+    "Glock 45": "images/WEAPON_G45.png",
+    ".357 Magnum": "images/WEAPON_357.png",
+    "Glock 3D": "images/WEAPON_3D.png",
+    ".38 Special": "images/WEAPON_SP38.png",
+    "Polymer 80": "images/WEAPON_P80.png",
+    "Mac-10": "images/WEAPON_MAC10.png",
+    "Draco 9s": "images/WEAPON_DRACO.png",
+    "PSA AR9": "images/WEAPON_AR9.png",
+    "Tan Draco": "images/WEAPON_DRACOT.png",
+    "GFlex Glock 17": "images/WEAPON_GFLEXG17.png",
+    "ZPAP": "images/WEAPON_ZPAP.png",
+    "Black ARP": "images/WEAPON_ARPB.png",
+    "XD-M": "images/WEAPON_XDM.png",
+    "Steyr AUG": "images/WEAPON_AUG.png",
+    ".300 Blackout": "images/WEAPON_300.png",
+    "Kel-Tec PLR": "images/WEAPON_KELTEC.png",    
+    "FNX-45": "images/WEAPON_FNX.png",    
+    "PSA Dagger": "images/WEAPON_PSA.png",  
+    "Taurus TX22": "images/WEAPON_TX22.png",
+    "Glock 19X": "images/WEAPON_19X.png",
+    "19X": "images/WEAPON_19X2.png",
+    "G19X": "images/WEAPON_19X3.png",
+    "Ruger 5.7": "images/WEAPON_RUGER.png",
+    "Glock 22 Incognito": "images/WEAPON_G17IN.png",
+    "Glock 17 Switch": "images/WEAPON_G17M.png",
+    "Glock 20 Switch": "images/WEAPON_G20S.png",
+    "FN 5.7 MK3": "images/WEAPON_MK3.png",
+    "Glock 21": "images/WEAPON_G21.png",
+    "Glock 22": "images/WEAPON_G22.png",
+    "Glock 23": "images/WEAPON_G23.png",
+    "Glock 23 Switch": "images/WEAPON_G23S.png",
+    "Glock 29": "images/WEAPON_G29.png",
+    "G29": "images/WEAPON_G292.png",
+    "Glock 30SF": "images/WEAPON_G30SF.png",
+    "Glock 40": "images/WEAPON_G40.png",
+    "Glock 41": "images/WEAPON_G41.png",
+    "Glock 43X FRT": "images/WEAPON_43X.png",
+    "MPA 30SST": "images/WEAPON_MPA.png",
+    "Glock 43X": "images/WEAPON_G43X.png",
+    "Glock 48": "images/WEAPON_G48.png",
+    "Glock 20 Tan": "images/WEAPON_G20T.png",
+    "Flashlight": "images/attach_LIGHT.png",
+    "Extended Magazine": "images/gmag_ext.png",
+    "Tan Extended Magazine": "images/gmag_ext2.png",
+    "Auto Sear": "images/autosear.png",    
+    "Switch": "images/switch.png",
+    "Kriss Vector Magazine": "images/kv_mag_ext.png",
+    "Tan Kriss Vector Magazine": "images/kv_mag_ext2.png",
+    "Drum Magazine": "images/drum_mag_ext.png",
+    "Tan Drum Magazine": "images/drum_mag_ext2.png",
+    "PMAG Extended Magazine": "images/pmag_ext.png",
+    "PMAG Drum Magazine": "images/pmag_ext2.png",
+    "Quagen Pint": "images/quagen_pint.png",    
+    "Tris Pint": "images/tris_pint.png",
+    "Wockhardt Pint": "images/wockhardt_pint.png",
+    "k_56": "images/k_56.png",
+    "m_523": "images/m_523.png",
+    "k8_greens": "images/k8_greens.png",
+    "k9_blues": "images/k9_blues.png",
+    "mbox_10": "images/mbox_10.png",
+    "mbox_15": "images/mbox_15.png",
+    "mbox_20": "images/mbox_20.png",
+    "mbox_30": "images/mbox_30.png",
+    "rp_10": "images/rp_10.png",
+    "rp_20": "images/rp_20.png",
+    "rp_30": "images/rp_30.png",
+    "v_48": "images/v_48.png",
+    "v_230": "images/v_230.png",
+    "line_of_wockhardt": "images/line_of_wockhardt.png",
+    "line_of_pai": "images/line_of_pai.png",
+    "line_of_quagen": "images/line_of_quagen.png",
+    "line_of_tris": "images/line_of_tris.png",
+    };
+  const FALLBACK_IMG = "images/placeholder.png";
+
+
+  // Drugs dataset (edit and expand as needed). Each item: [name, rarity, imageKey]
+  // Populate with your real list when ready.
+  const DRUGS = [
+    ["RP 10", "common", "rp_10"],
+    ["MBox 10", "common", "mbox_10"],
+    ["V 230", "common", "v_230"],
+    ["K56", "common", "k_56"],
+    ["M 523", "common", "m_523"],
+    ["K8", "uncommon", "k8_greens"],
+    ["V 48", "uncommon", "v_48"],
+    ["MBox 15", "uncommon", "mbox_15"],
+    ["RP 20", "rare", "rp_20"],
+    ["MBox 20", "rare", "mbox_20"],
+    ["Line of Wockhardt", "rare", "line_of_wockhardt"],
+    ["Line of Pai", "rare", "line_of_pai"],
+    ["Line of Quagen", "rare", "line_of_quagen"],
+    ["Line of Tris", "rare", "line_of_tris"],
+    ["MBox 30", "epic", "mbox_30"],
+    ["RP 30", "epic", "rp_30"],
+    ["K9", "epic", "k9_blues"],
+    ["Quagen Pint", "epic"],
+    ["Tris Pint", "epic"],
+    ["Wockhardt Pint", "epic"],
+    ];
+
+  // Attachments dataset (populate with real items later). Each item: [name, rarity, imageKey]
+  const ATTACHMENTS = [
+    // Example placeholders; replace or expand as needed
+    ["Flashlight", "uncommon", "attach_LIGHT"],
+    ["Auto Sear", "legendary", "autosear"],
+    ["Switch", "legendary", "switch"],
+    ["Extended Magazine", "rare", "gmag_ext"],
+    ["Tan Extended Magazine", "rare", "gmag_ext2"],
+    ["Kriss Vector Magazine", "epic", "kv_mag_ext"],
+    ["Tan Kriss Vector Magazine", "epic", "kv_mag_ext2"],
+    ["Drum Magazine", "epic", "drum_mag_ext"],
+    ["Tan Drum Magazine", "epic", "drum_mag_ext2"],
+    ["PMAG Extended Magazine", "epic", "pmag_ext"],
+    ["PMAG Drum Magazine", "epic", "pmag_ext2"],
+  ];
+
+  // ------------------------------
+  // Build initial strip (unchanged)
+  // ------------------------------
+  const strip = document.getElementById('strip');
+  const tierSelect = document.getElementById('tierSelect');
+  const drops = document.getElementById('drops');
+  const spinBtn = document.getElementById('spinBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const musicToggle = document.getElementById('musicToggle');
+  // Tier 1 gallery elements
+  const t1Drawer = document.getElementById('t1Drawer');
+  const closeT1 = document.getElementById('closeT1');
+  const t1Grid = document.getElementById('t1Grid');
+  const navT1 = document.getElementById('navT1');
+  // Tier 2 gallery elements
+  const t2Drawer = document.getElementById('t2Drawer');
+  const closeT2 = document.getElementById('closeT2');
+  const t2Grid = document.getElementById('t2Grid');
+  const navT2 = document.getElementById('navT2');
+  // Drugs drawer elements
+  const drugsDrawer = document.getElementById("drugsDrawer");
+  const closeDrugs = document.getElementById("closeDrugs");
+  const drugsGrid = document.getElementById("drugsGrid");
+  const navDrugs = document.getElementById("navDrugs");
+  const navAttach = document.getElementById('navAttach');
+  const navDrops = document.getElementById('navDrops');
+  // Stage elements
+  // Prices dropdown links (edit these to your forum URLs)
+  const PRICE_LINKS = {
+    drugs: "https://killadelphia-forums.com/threads/killadelphia-drug-prices.6/",
+    weapons: "https://killadelphia-forums.com/threads/killadelphia-weapon-prices.7/"
+  };
+  const navPrices = document.getElementById("navPrices");
+  const pricesDropdown = document.getElementById("pricesDropdown");
+  const pricesMenu = document.getElementById("pricesMenu");
+  const priceDrugs = document.getElementById("priceDrugs");
+  const priceWeapons = document.getElementById("priceWeapons");
+  if(priceDrugs) priceDrugs.href = PRICE_LINKS.drugs;
+  if(priceWeapons) priceWeapons.href = PRICE_LINKS.weapons;
+  const stage = document.getElementById('stage');
+  const viewDrops = document.getElementById('viewDrops');
+  const viewT1 = document.getElementById('viewT1');
+  const viewT2 = document.getElementById('viewT2');
+  const viewAttach = document.getElementById('viewAttach');
+  const viewDrugs = document.getElementById('viewDrugs');
+  const t1GridStage = document.getElementById('t1GridStage');
+  const t2GridStage = document.getElementById('t2GridStage');
+  const attachGridStage = document.getElementById('attachGridStage');
+  const drugsGridStage = document.getElementById('drugsGridStage');
+
+  function slotEl(item){
+    const [name, rarity] = item;
+    const el = document.createElement('div');
+    el.className = `slot ${rarity}`;
+    el.dataset.name = name;
+    el.dataset.rarity = rarity;
+    // Prefer explicit image mapping by name, otherwise allow optional key at [2]
+    const key = item && item.length > 2 ? item[2] : undefined;
+    const src = IMAGES[name] || (key && IMAGES[key] ? IMAGES[key] : FALLBACK_IMG);
+    el.innerHTML = `
+      <img class="weapon-img" src="${src}" alt="${name}">
+      <div class="title" title="${name}">${name}</div>
+    `;
+    return el;
+  }
+
+  function renderStrip(tier, ensureName){
+    strip.innerHTML = "";
+
+    // Build the pool for this tier
+    // For t2, include all tier 2 items PLUS tier 1 items excluding 'common'
+    let pool;
+    if (tier === 'attach'){
+      // Use attachments dataset; map to [name, rarity, imageKey] for slots
+      pool = (Array.isArray(ATTACHMENTS) ? ATTACHMENTS : []).map(a => [a[0], a[1] || 'common', a[2]]);
+      if (pool.length === 0){
+        // graceful fallback: show a placeholder entry to keep the wheel functional
+        pool = [["Attachment", "common"]];
+      }
+    } else {
+      pool = (tier === "test")
+        ? ALL_ITEMS
+        : (tier === "t2"
+            ? ALL_ITEMS.filter(i => i[2] === 't2' || (i[2] === 't1' && i[1] !== 'common'))
+            : ALL_ITEMS.filter(i => i[2] === tier));
+    }
+
+    // Start randomized so the lineup isn't grouped by rarity/color
+    let items = shuffle([...pool]);
+
+    // If we have a chosen name, move it to the front (guarantee presence)
+    if (ensureName){
+      const idx = items.findIndex(i => i[0] === ensureName);
+      if (idx >= 0){
+        const [ens] = items.splice(idx, 1);
+        items.unshift(ens);
+      } else {
+        // if not in pool, pull from the matching dataset or create a safe fallback
+        if (tier === 'attach'){
+          const fromAttach = (ATTACHMENTS || []).find(i => i[0] === ensureName);
+          items.unshift(fromAttach ? [fromAttach[0], fromAttach[1] || 'common'] : [ensureName, 'common']);
+        } else {
+          const fromAll = ALL_ITEMS.find(i => i[0] === ensureName);
+          items.unshift(fromAll || [ensureName, "common", tier]);
+        }
+      }
+    }
+
+    // Figure out how many tiles we should render:
+    // at least all unique items in the tier, and enough repeats to scroll smoothly
+    const reelW = document.getElementById('reel').getBoundingClientRect().width || 800;
+    const step  = Math.max(1, Math.round(stepWidth()));              // slot width incl. gap
+    const visible = Math.max(6, Math.ceil(reelW / step));            // how many are visible
+    const minTiles = Math.max(items.length, visible * 3);            // 3x viewport feels smooth
+    const cap = 64;                                                  // sanity cap
+
+    // Repeat the pool until we reach minTiles (but don’t exceed cap)
+    let out = [];
+    const need = Math.min(minTiles, cap);
+    for (let i = out.length; i < need; i++) {
+      out.push(randomChoice(items));
+    }
+
+    // Render (no slice that could drop the chosen tile!)
+    out.forEach(it => strip.appendChild(slotEl(it)));
+  }
+  renderStrip(tierSelect.value);
+  // Shuffle button: randomize the lineup without spinning
+  if (shuffleBtn){
+    shuffleBtn.addEventListener('click', () => {
+      const prev = strip.style.transition;
+      strip.style.transition = 'none';
+      strip.style.transform = 'translateX(0)';
+      void strip.offsetHeight;
+      strip.style.transition = prev || 'transform .25s ease';
+      renderStrip(tierSelect.value);
+    });
+  }
+
+  // Build Tier 1 gallery (side tab)
+  function buildT1(){
+    if(!t1Grid) return;
+    t1Grid.innerHTML = '';
+    const t1 = ALL_ITEMS.filter(i => i[2] === 't1');
+    t1.forEach(([name, rarity]) => {
+      const card = document.createElement('div');
+      card.className = `gallery-card ${rarity}`;
+      const src = IMAGES[name] || FALLBACK_IMG;
+      card.innerHTML = `<div class="name">${name}</div><img src="${src}" alt="${name}">`;
+      t1Grid.appendChild(card);
+    });
+  }
+
+  function buildT2(){
+    if(!t2Grid) return;
+    t2Grid.innerHTML = '';
+    const t2 = ALL_ITEMS.filter(i => i[2] === 't2');
+    t2.forEach(([name, rarity]) => {
+      const card = document.createElement('div');
+      card.className = `gallery-card ${rarity}`;
+      const src = IMAGES[name] || FALLBACK_IMG;
+      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">`;
+      t2Grid.appendChild(card);
+    });
+  }
+
+  // Build Drugs gallery
+  function buildDrugs(){
+    if(!drugsGrid) return;
+    drugsGrid.innerHTML = '';
+    const list = Array.isArray(DRUGS) ? DRUGS : [];
+    list.forEach(([name, rarity, key]) => {
+      const card = document.createElement('div');
+      card.className = `gallery-card ${rarity || 'common'}`;
+      const src = IMAGES[name] || IMAGES[key] || FALLBACK_IMG;
+      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">`;
+      drugsGrid.appendChild(card);
+    });
+  }
+
+  // Generic builders for stage views
+  function buildTierStage(tier, targetEl){
+    if(!targetEl) return;
+    targetEl.innerHTML = '';
+    const list = ALL_ITEMS.filter(i => i[2] === tier);
+    list.forEach(([name, rarity]) => {
+      const card = document.createElement('div');
+      card.className = `gallery-card ${rarity}`;
+      const src = IMAGES[name] || FALLBACK_IMG;
+      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">`;
+      targetEl.appendChild(card);
+    });
+  }
+
+  function buildDrugsStage(){
+    if(!drugsGridStage) return;
+    drugsGridStage.innerHTML = '';
+    const list = Array.isArray(DRUGS) ? DRUGS : [];
+    list.forEach(([name, rarity, key]) => {
+      const card = document.createElement('div');
+      card.className = `gallery-card ${rarity || 'common'}`;
+      const src = IMAGES[name] || IMAGES[key] || FALLBACK_IMG;
+      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">`;
+      drugsGridStage.appendChild(card);
+    });
+  }
+
+  // Build Attachments stage
+  function buildAttachmentsStage(){
+    if(!attachGridStage) return;
+    attachGridStage.innerHTML = '';
+    const list = Array.isArray(ATTACHMENTS) ? ATTACHMENTS : [];
+    if(list.length === 0){
+      const msg = document.createElement('div');
+      msg.className = 'hint';
+      msg.textContent = 'No attachments available yet.';
+      attachGridStage.appendChild(msg);
+      return;
+    }
+    list.forEach(([name, rarity, key]) => {
+      const card = document.createElement('div');
+      card.className = `gallery-card ${rarity || 'common'}`;
+      // Use a safe default image if not provided
+      const defaultImg = IMAGES['Ghost Glock 17'] || 'images/WEAPON_GHOST.png';
+      const src = IMAGES[name] || (key ? IMAGES[key] : null) || defaultImg;
+      card.innerHTML = `<div class=\"name\">${name}</div><img src=\"${src}\" alt=\"${name}\">`;
+      attachGridStage.appendChild(card);
+    });
+  }
+
+  function showView(which){
+    const map = { drops:viewDrops, t1:viewT1, t2:viewT2, attach:viewAttach, drugs:viewDrugs };
+    Object.values(map).forEach(v=>{ if(v) v.classList.remove('active'); });
+    const el = map[which];
+    if(!el) return;
+    el.classList.add('active');
+    // highlight active nav
+    const linkMap = { drops: navDrops, t1: navT1, t2: navT2, attach: navAttach, drugs: navDrugs };
+    document.querySelectorAll(".hero-link").forEach(a=>a.classList.remove("active"));
+    if(linkMap[which]) linkMap[which].classList.add("active");
+    // lazy build content
+    if(which==='t1') buildTierStage('t1', t1GridStage);
+    if(which==='t2') buildTierStage('t2', t2GridStage);
+    // scroll the stage into view so the panel sits below the header like Drops
+    if(stage){ const top = stage.getBoundingClientRect().top + window.pageYOffset - 12; window.scrollTo({ top, behavior: "smooth" }); }
+    if(which==='attach') buildAttachmentsStage();
+    if(which==='drugs') buildDrugsStage();
+  }
+
+  // ------------------------------
+  // Utilities (unchanged)
+  // ------------------------------
+  function randomChoice(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+  // Fisher–Yates shuffle for CS:GO-style randomized lineups
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function addDrop(name, rarity){
+    const c = document.createElement('div');
+    c.className = `drop-card ${rarity}`;
+    const src = IMAGES[name] || FALLBACK_IMG;
+    c.innerHTML = `
+      <div class="drop-title">${name}</div>
+      <img class="drop-img" src="${src}" alt="${name}">
+    `;
+    drops.prepend(c);
+  }
+
+  function stepWidth(){
+    const a = strip.children[0];
+    const b = strip.children[1];
+    if (a && b){
+      const ra = a.getBoundingClientRect();
+      const rb = b.getBoundingClientRect();
+      const step = rb.left - ra.left; // includes gap+border exactly
+      if (isFinite(step) && step > 0) return step;
+    }
+    const first = strip.firstElementChild;
+    if(!first) return 160; // fallback
+    const w = first.getBoundingClientRect().width;
+    const cs = getComputedStyle(strip);
+    let gap = 0;
+    try {
+      const g1 = parseFloat(cs.columnGap);
+      const g2 = parseFloat(cs.gap);
+      gap = (!isNaN(g1) && isFinite(g1) ? g1 : 0) || (!isNaN(g2) && isFinite(g2) ? g2 : 0) || 0;
+    } catch {}
+    return w + gap;
+  }
+
+  // ========= New helpers to make the result bullet-proof =========
+
+  // Find the tile whose left edge is at or before the cut (so gaps pick the left tile)
+  function centeredTile(){
+    const cut = document.querySelector('.cut').getBoundingClientRect();
+    // Bias more to the left so gaps resolve to the left tile (prevents choosing the next slot)
+    const cutX = (cut.left + cut.right)/2 - 3; // px bias
+    const children = Array.from(strip.children);
+    let prev = null;
+    for (const child of children) {
+      const r = child.getBoundingClientRect();
+      if (cutX < r.left) return prev || child; // if cut is before this tile, choose previous
+      prev = child; // otherwise, keep walking; this becomes the candidate
+      if (cutX <= r.right) return child; // within this tile
+    }
+    return prev || strip.firstElementChild;
+  }
+
+  // Wait until all images in the strip are complete (prevents late layout shifts)
+  function waitForImages() {
+    const imgs = Array.from(strip.querySelectorAll('img'));
+    const pending = imgs.filter(img => !img.complete);
+    if (pending.length === 0) return Promise.resolve();
+    return Promise.all(
+      pending.map(img => new Promise(res => {
+        img.addEventListener('load', res, { once:true });
+        img.addEventListener('error', res, { once:true });
+      }))
+    );
+  }
+
+  // --- Audio: low-latency "slot tick" sound (prefers roulette.mp3) ---
+  let audioCtx, tickBuffer;
+  const TICK_URL = 'roulette.mp3';
+
+  async function ensureAudio() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+      if (!tickBuffer) {
+        // Try to load the local roulette sample once
+        try {
+          const res = await fetch(TICK_URL, { cache: 'force-cache' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const arr = await res.arrayBuffer();
+          tickBuffer = await audioCtx.decodeAudioData(arr);
+        } catch (e) {
+          console.warn('Tick audio failed to load, using synthesized fallback:', e);
+        }
+      }
+    } catch (e) {
+      console.warn('Audio init failed:', e);
+    }
+  }
+
+  // Synthesized roulette-like tick fallback: short band-passed noise burst
+  let noiseBuffer;
+  function beepTick({ volume = 0.50, center = 1400, q = 15, dur = 0.035 } = {}) {
+    if (!audioCtx) return;
+    if (!noiseBuffer) {
+      const len = Math.max(1, Math.floor(audioCtx.sampleRate * 0.05));
+      noiseBuffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      const d = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * 0.8;
+    }
+    const src = audioCtx.createBufferSource();
+    src.buffer = noiseBuffer;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = center;
+    filter.Q.value = q;
+    const gain = audioCtx.createGain();
+    const now = audioCtx.currentTime;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(volume, now + 0.002);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    src.connect(filter).connect(gain).connect(audioCtx.destination);
+    src.start(now);
+    src.stop(now + dur + 0.005);
+  }
+
+  // Play a single tick; uses sample when available, otherwise the synthesized beep
+  async function playTick({ volume = 0.75, rate = 1.0 } = {}) {
+    await ensureAudio();
+    if (tickBuffer) {
+      const src = audioCtx.createBufferSource();
+      src.buffer = tickBuffer;
+      src.playbackRate.value = rate;
+      const gain = audioCtx.createGain();
+      gain.gain.value = volume;
+      src.connect(gain).connect(audioCtx.destination);
+      src.start();
+    } else {
+      beepTick({ volume });
+    }
+  }
+
+  // Snap a specific tile name under the cut line — synchronously (no easing)
+  async function snapChoiceToCut(name){
+    await waitForImages(); // be sure widths/heights are final
+
+    // Temporarily disable transition so the snap is instant
+    const prevTransition = strip.style.transition;
+    strip.style.transition = 'none';
+
+    // Rotate DOM so target is first (reduces drift)
+    const tiles = Array.from(strip.children);
+    const target = tiles.find(t => t.dataset.name === name) || tiles[0];
+    while (strip.firstElementChild !== target) {
+      strip.appendChild(strip.firstElementChild);
+    }
+
+    // Reset transform and force layout
+    strip.style.transform = 'translateX(0)';
+    void strip.offsetHeight;
+
+    // Compute delta so target center aligns with cut center
+    const cut = document.querySelector('.cut').getBoundingClientRect();
+    const cutX = (cut.left + cut.right)/2;
+    const r = target.getBoundingClientRect();
+    const cx = (r.left + r.right)/2;
+    const delta = cx - cutX;
+    strip.style.transform = `translateX(${-delta}px)`;
+
+    // Flush & restore transition for next spin
+    void strip.offsetHeight;
+    strip.style.transition = prevTransition;
+  }
+
+  // Read current translateX from computed transform (matrix(a,b,c,d,tx,ty))
+  function currentTranslateX(el){
+    const t = getComputedStyle(el).transform;
+    if (!t || t === 'none') return 0;
+    const m = t.match(/matrix\(([^)]+)\)/);
+    if (!m) return 0;
+    const parts = m[1].split(',');
+    const tx = parseFloat(parts[4]);
+    return isNaN(tx) ? 0 : tx;
+  }
+
+  // Math-based picker: compute the child index under the cut using transform and step
+  function tileAtCutStrict(){
+    const cut = document.querySelector('.cut').getBoundingClientRect();
+    const cutX = (cut.left + cut.right)/2 - 1; // small left bias
+    const children = strip.children;
+    if (children.length === 0) return null;
+    if (children.length === 1) return children[0];
+    const a = children[0].getBoundingClientRect();
+    const b = children[1].getBoundingClientRect();
+    const step = b.left - a.left;
+    const base = a.left;
+    let idx = Math.floor((cutX - base) / step);
+    if (!isFinite(idx)) idx = 0;
+    if (idx < 0) idx = 0;
+    if (idx > children.length - 1) idx = children.length - 1;
+    return children[idx];
+  }
+
+  // Deterministic picker: always choose the tile whose LEFT edge is <= cutX (left-of-cut rule)
+  function tileAtCutLeft(){
+    const cut = document.querySelector('.cut').getBoundingClientRect();
+    const cutX = (cut.left + cut.right) / 2 - 3; // stronger left bias to avoid seam
+    const children = Array.from(strip.children);
+    if (children.length === 0) return null;
+    let chosen = children[0];
+    for (const child of children){
+      const r = child.getBoundingClientRect();
+      if (r.left <= cutX) chosen = child; else break;
+    }
+    return chosen;
+  }
+
+  async function settleTileToCut(el, ms = 220){
+    if (!el) return;
+    await waitForImages();
+
+    // compute delta from tile center to cut center
+    const cut = document.querySelector('.cut').getBoundingClientRect();
+    const cutX = (cut.left + cut.right)/2;
+    const r = el.getBoundingClientRect();
+    const cx = (r.left + r.right)/2;
+    const delta = cx - cutX;
+
+    const tx = currentTranslateX(strip);
+    const prev = strip.style.transition;
+    strip.style.transition = `transform ${ms}ms cubic-bezier(.2,.8,.2,1)`;
+    strip.style.transform = `translateX(${tx - delta}px)`;
+
+    await new Promise(res => setTimeout(res, ms));
+    strip.style.transition = prev;
+  }
+  // Snap a specific tile element to the cut line without reordering DOM
+  async function snapTileToCut(el){
+    if (!el) return;
+    await waitForImages();
+    const prevTransition = strip.style.transition;
+    strip.style.transition = 'none';
+    const cut = document.querySelector('.cut').getBoundingClientRect();
+    const cutX = (cut.left + cut.right)/2 - 1; // left bias to avoid selecting the next tile
+    const r = el.getBoundingClientRect();
+    const cx = (r.left + r.right)/2;
+    const delta = cx - cutX;
+    const tx = currentTranslateX(strip);
+    strip.style.transform = `translateX(${tx - delta}px)`;
+    void strip.offsetHeight;
+    strip.style.transition = prevTransition;
+  }
+
+    /// In spin(), choose first, then build the strip with the chosen name included.
+  // Also lock the step to an integer.
+  async function spin(){
+    spinBtn.disabled = true;
+    const tier = tierSelect.value;
+    const pool = tier === "test" ? ALL_ITEMS : ALL_ITEMS.filter(i => i[2] === tier);
+
+    // Build the strip for the selected tier (no preselected winner)
+    renderStrip(tier);
+
+      // (3) Visual warm-up spin (smoother, precise stop)
+  let offset = 0;
+  const step = Math.round(stepWidth());  // exact tile width incl. gap
+
+  await new Promise((resolve) => {
+    const prevTransition = strip.style.transition;
+    strip.style.transition = 'none';
+
+    const slotsToTravel = 55 + Math.floor(Math.random() * 15);
+    const totalDistance = slotsToTravel * step;
+    const duration = 1800;                          // ms
+    const easeOutQuint = t => 1 - Math.pow(1 - t, 5);
+
+    let start = null;
+    let movedSteps = 0;                              // how many whole tiles we’ve shifted
+
+  function frame(ts){
+      if (start === null) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      const travelled = totalDistance * easeOutQuint(p);
+
+      // how many whole tiles should have passed?
+      // subtract a tiny epsilon to avoid an extra last-step snap at the end
+      const shouldSteps = Math.floor((travelled - 0.01) / step);
+
+      // append exactly the delta number of tiles (never more on the last frame)
+      while (movedSteps < shouldSteps) {
+        strip.appendChild(strip.firstElementChild);
+        movedSteps++;
+
+        // tick audio
+        const rate = 0.95 + 0.20 * p;
+        // Much louder tick across the spin, peaking mid-spin
+        const volume = 0.50 + 0.45 * (1 - Math.abs(0.5 - p) * 2);
+        playTick({ volume, rate });
+      }
+
+      // remainder distance within the current tile
+      const remainder = travelled - movedSteps * step;
+      offset = -remainder;
+      strip.style.transform = `translateX(${offset}px)`;
+
+      if (p < 1) requestAnimationFrame(frame);
+      else { strip.style.transition = prevTransition; resolve(); }
+    }
+
+    requestAnimationFrame(frame);
+  });
+
+
+    // (4) Snap + verify (your existing functions)
+    await snapChoiceToCut(choice[0]);
+    let attempts = 3;
+    while (attempts-- > 0) {
+      await waitForImages();
+    const atCut = tileAtCutLeft() || tileAtCutStrict();
+      if (atCut && atCut.dataset && atCut.dataset.name === choice[0]) break;
+      await snapChoiceToCut(choice[0]);
+    }
+
+    // (5) Log the chosen item
+    addDrop(choice[0], choice[1]);
+    setTimeout(() => { spinBtn.disabled = false; }, 120);
+  }
+
+  // ------------------------------
+  // Background music via MP3
+  // ------------------------------
+  let musicMuted = false; // default to playing
+  const bgm = document.getElementById('bgmAudio');
+
+  function updateMusicLabel(){
+    if(!musicToggle) return;
+    if(musicMuted){
+      musicToggle.innerHTML = '<i class="fa-solid fa-volume-xmark icon" aria-hidden="true"></i> Music: Off';
+    } else {
+      musicToggle.innerHTML = '<i class="fa-solid fa-volume-high icon" aria-hidden="true"></i> Music: On';
+    }
+  }
+
+  function applyMusicState(){
+    if(!bgm) return;
+    if(musicMuted){
+      try { bgm.pause(); } catch {}
+    } else {
+      try {
+        bgm.volume = 0.05;
+        bgm.loop = true;
+        bgm.play().catch(()=>{});
+      } catch {}
+    }
+  }
+
+  if(musicToggle){
+    // Force default ON on each load (ignore prior preference)
+    musicMuted = false;
+    localStorage.setItem('musicMuted', '0');
+    updateMusicLabel();
+    // try to start immediately if unmuted
+    applyMusicState();
+
+    musicToggle.addEventListener('click', (e)=>{
+      e.preventDefault();
+      musicMuted = !musicMuted;
+      localStorage.setItem('musicMuted', musicMuted ? '1' : '0');
+      updateMusicLabel();
+      applyMusicState();
+    });
+  }
+
+  // In case autoplay is blocked, keep nudging until it starts or user interacts
+  (function setupAutoResume(){
+    const isPlaying = (el) => !!el && !el.paused && !el.ended && el.currentTime > 0;
+    const nudge = () => { if(!musicMuted) applyMusicState(); };
+
+    // try a few times on startup
+    let tries = 0;
+    const maxTries = 8;
+    const timer = setInterval(() => {
+      if (isPlaying(bgm) || musicMuted) { clearInterval(timer); return; }
+      nudge();
+      if (++tries >= maxTries) clearInterval(timer);
+    }, 400);
+
+    // resume on any common interaction without requiring the music toggle
+    const resume = () => { if(!musicMuted) nudge(); cleanup(); };
+    function cleanup(){
+      ['pointerdown','keydown','click','mousemove','wheel','touchstart','scroll','focus','visibilitychange'].forEach(evt => {
+        window.removeEventListener(evt, resume, true);
+        document.removeEventListener(evt, resume, true);
+      });
+    }
+    ['pointerdown','keydown','click','mousemove','wheel','touchstart','scroll','focus','visibilitychange'].forEach(evt => {
+      window.addEventListener(evt, resume, { once:true, capture:true });
+      document.addEventListener(evt, resume, { once:true, capture:true });
+    });
+    window.addEventListener('load', resume, { once:true });
+  })();
+
+  // Smoother, faster spinner using requestAnimationFrame easing
+  async function spin2(){
+    spinBtn.disabled = true;
+    const tier = tierSelect.value;
+    const pool = tier === "test" ? ALL_ITEMS : ALL_ITEMS.filter(i => i[2] === tier);
+
+    // Build the strip for the selected tier (no preselected winner)
+    renderStrip(tier);
+
+    // (3) Visual warm-up spin (smoother, faster)
+    let offset = 0;
+    const step = Math.round(stepWidth());  // lock step to avoid subpixel drift
+
+  await new Promise((resolve) => {
+      const prevTransition = strip.style.transition;
+      strip.style.transition = 'none';
+      const slotsToTravel = 55 + Math.floor(Math.random() * 15); // tiles to pass (longer)
+      const totalDistance = slotsToTravel * step;
+      const duration = 1800; // ms (longer for anticipation)
+      const easeOutQuint = t => 1 - Math.pow(1 - t, 5); // longer tail
+
+      let start = null;
+      let prevTravel = 0;
+
+      function frame(ts){
+        if (start === null) start = ts;
+        const p = Math.min((ts - start) / duration, 1);
+        const travelled = totalDistance * easeOutQuint(p);
+        const delta = travelled - prevTravel;
+        prevTravel = travelled;
+
+        offset -= delta;
+        // apply a tiny epsilon so we don't process a final full-step on the last frame
+        while ((-offset - 0.01) >= step) {
+          strip.appendChild(strip.firstElementChild);
+          offset += step;
+          const rate = 0.95 + 0.20 * p;
+          // Much louder tick across the spin, peaking mid-spin
+          const volume = 0.50 + 0.45 * (1 - Math.abs(0.5 - p) * 2);
+          playTick({ volume, rate });
+        }
+        strip.style.transform = `translateX(${offset}px)`;
+        if (p < 1) requestAnimationFrame(frame);
+        else { strip.style.transition = prevTransition; resolve(); }
+      }
+      requestAnimationFrame(frame);
+    });
+
+      // Winner = tile at/left of the cut, then settle smoothly to it
+      await waitForImages();
+      const winnerEl = tileAtCutLeft() || tileAtCutStrict();
+      await settleTileToCut(winnerEl);
+
+      const winnerName   = winnerEl?.dataset?.name;
+      const winnerRarity = winnerEl?.dataset?.rarity || 'common';
+      if (winnerName) addDrop(winnerName, winnerRarity);
+
+      setTimeout(() => { spinBtn.disabled = false; }, 120);
+  }
+
+  spinBtn.addEventListener('click', async () => {
+    await ensureAudio();
+    if(!musicMuted) applyMusicState();
+    spin2();
+  });
+  tierSelect.addEventListener('change', ()=>renderStrip(tierSelect.value));
+
+  // Top nav interactions switch the center stage
+  if(navT1){ navT1.addEventListener('click', (e)=>{ e.preventDefault(); showView('t1'); }); }
+  if(navT2){ navT2.addEventListener('click', (e)=>{ e.preventDefault(); showView('t2'); }); }
+  if(navAttach){ navAttach.addEventListener('click', (e)=>{ e.preventDefault(); showView('attach'); }); }
+  if(navDrugs){ navDrugs.addEventListener('click', (e)=>{ e.preventDefault(); showView('drugs'); }); }
+  if(navDrops){ navDrops.addEventListener('click', (e)=>{ e.preventDefault(); showView('drops'); }); }
+  if(closeT1){
+    closeT1.addEventListener('click', ()=> t1Drawer.classList.remove('open'));
+  }
+  if(closeT2){
+    closeT2.addEventListener('click', ()=> t2Drawer.classList.remove('open'));
+  }
+  if(closeDrugs){
+    closeDrugs.addEventListener('click', ()=> drugsDrawer.classList.remove('open'));
+  }
+  // close when clicking outside panel
+  if(t1Drawer){
+    t1Drawer.addEventListener('click', (e)=>{
+      if(e.target === t1Drawer) t1Drawer.classList.remove('open');
+    });
+  }
+  if(t2Drawer){
+    t2Drawer.addEventListener('click', (e)=>{
+      if(e.target === t2Drawer) t2Drawer.classList.remove('open');
+    });
+  }
+  if(drugsDrawer){
+    drugsDrawer.addEventListener('click', (e)=>{
+      if(e.target === drugsDrawer) drugsDrawer.classList.remove('open');
+    });
+  }
+
+  // Prices dropdown open/close
+  if(navPrices){
+    navPrices.addEventListener("click", (e)=>{
+      e.preventDefault(); pricesDropdown.classList.toggle("open");
+    });
+  }
+  document.addEventListener("click", (e)=>{
+    if(pricesDropdown && !pricesDropdown.contains(e.target)) pricesDropdown.classList.remove("open");
+  });
+  // Ensure Prices dropdown is closed on load
+  document.addEventListener("DOMContentLoaded", ()=>{ if(pricesDropdown) pricesDropdown.classList.remove("open"); });
+</script>
+  <div class="watermark" aria-hidden="true"><span class="inner">Manufactured by Zel</span></div>
+</body>
+</html>
+
+
