@@ -559,7 +559,9 @@
   .stats-preview{ align-self:center; justify-self:center; }
   /* Effect badges row */
   .stats-badges{ grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 2px }
-  .badge-pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-weight:800; font-size:12px; letter-spacing:.02em; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#e6f6ff; text-shadow:0 0 6px rgba(255,255,255,.12) }
+  /* Per-item tweak: move the Line of Green badge slightly down */
+  #statBadges[data-item="Line of Green"]{ margin-top:32px }
+  .badge-pill{ display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:0 10px; height:24px; min-height:24px; line-height:1; white-space:nowrap; border-radius:999px; font-weight:800; font-size:12px; letter-spacing:.02em; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#e6f6ff; text-shadow:0 0 6px rgba(255,255,255,.12) }
   .badge-pill.hp{ background:rgba(64,200,120,.14); border-color:rgba(64,200,120,.35); color:#baffd2 }
   .badge-pill.armor{ background:rgba(80,160,255,.14); border-color:rgba(80,160,255,.35); color:#d5e9ff }
   .badge-pill.stamina{ background:rgba(255,215,120,.14); border-color:rgba(255,215,120,.35); color:#fff4c6 }
@@ -1216,18 +1218,18 @@
   'M 523': { type:'Pill', effect:'Sedative', form:'Tablet', notes:'Moderate sedation', badges:[{text:'+10 Armor', kind:'armor'}] },
 
   // Lines (powder)
-  'Line of Green': { type:'Powder', effect:'Mild stimulant', form:'Line', notes:'Brief effect' },
-  'Line of Wockhardt': { type:'Powder', effect:'Sedative', form:'Line', notes:'Relaxing' },
-  'Line of Pai': { type:'Powder', effect:'Sedative', form:'Line', notes:'Relaxing' },
-  'Line of Quagen': { type:'Powder', effect:'Sedative', form:'Line', notes:'Relaxing' },
-  'Line of Tris': { type:'Powder', effect:'Sedative', form:'Line', notes:'Relaxing' },
+  'Line of Green': { type:'Powder', effect:'Mild stimulant', form:'Line', notes:'Brief effect', badges:[{text:'+5 Armor', kind:'armor'}] },
+  'Line of Wockhardt': { type:'Powder', effect:'Sedative', form:'Line', notes:'Relaxing', badges:[{text:'+25 Armor', kind:'armor'}] },
+  'Line of Pai': { type:'Powder', effect:'Sedative', form:'Line', notes:'Relaxing', badges:[{text:'+20 Armor', kind:'armor'}] },
+  'Line of Quagen': { type:'Powder', effect:'Sedative', form:'Line', notes:'Relaxing', badges:[{text:'+15 Armor', kind:'armor'}] },
+  'Line of Tris': { type:'Powder', effect:'Sedative', form:'Line', notes:'Relaxing', badges:[{text:'+10 Armor', kind:'armor'}] },
 
   // Pints / syrups
-  'Tris Pint': { type:'Opioid Syrup', effect:'Sedative / Euphoric', form:'Liquid', notes:'Commonly mixed; impairing', badges:[{text:'+10 Health Regen', kind:'hp'}] },
+  'Tris Pint': { type:'Opioid Syrup', effect:'Sedative / Euphoric', form:'Liquid', notes:'Commonly mixed; impairing', },
   'Superman Pill': { type:'Pill', effect:'Stimulant', form:'Tablet', notes:'High intensity', badges:[{text:'Stamina Enhancement', kind:'stamina'}] },
-  'Wockhardt Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Prescription codeine/promethazine', badges:[{text:'+10 Health Regen', kind:'hp'}] },
+  'Wockhardt Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Prescription codeine/promethazine' },
   'Quagen Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Similar to Wockhardt' },
-  'Green Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Flavor variant', badges:[{text:'+30 Armor', kind:'armor'}] },
+  'Green Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Flavor variant' },
   'Pai Pint': { type:'Opioid Syrup', effect:'Sedative', form:'Liquid', notes:'Variant' }
 };
 
@@ -1482,6 +1484,7 @@
       if(a.capacity){ setStatField('statMag','Capacity', a.capacity); }
       else { setStatField('statMag','Notes', a.notes || '-'); }
       if(typeof setBadges === 'function'){ setBadges([]); }
+      (function(){ const w = document.getElementById("statBadges"); if(w){ w.dataset.item = ""; } })();
     } else if(isDrugName(name)){
       const d = DRUG_INFO[name] || { type:'Drug', effect:'-', form:'-', notes:'-' };
       setStatField('statDamage','Type', d.type);
@@ -1490,6 +1493,7 @@
       setStatField('statMag','Notes', d.notes || '-');
       if(typeof setBadges === 'function'){ setBadges(d.badges || []); }
     } else {
+      (function(){ const w = document.getElementById("statBadges"); if(w){ w.dataset.item = name; } })();
       const s = getStats(name);
       setStatField('statDamage','Damage', String(s.damage), 'gold');
       setStatField('statFire','Fire Rate', `${s.fire} RPM`, 'green');
@@ -1498,6 +1502,7 @@
       setStatField('statMag','Capacity (Reg/Ext)', `Reg: ${s.magStd} | Ext: ${s.magExt}`);
     }
 
+      (function(){ const w = document.getElementById("statBadges"); if(w){ w.dataset.item = ""; } })();
     const overlay = document.getElementById('statsOverlay');
     overlay.classList.add('open');
     overlay.removeAttribute('aria-hidden');
