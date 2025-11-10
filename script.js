@@ -1,8 +1,5 @@
-// Profile & Logo
 const editToggle=document.getElementById('edit-toggle');
 const editor=document.getElementById('editor');
-const logoInput=document.getElementById('logo-url-input');
-const logoPreview=document.getElementById('logo-preview');
 
 const inputs={
   set: document.getElementById('input-set'),
@@ -18,7 +15,8 @@ const inputs={
   turfNotable: document.getElementById('input-turf-notable'),
   turfNeighborhood: document.getElementById('input-turf-neighborhood'),
   turfMap: document.getElementById('input-turf-map'),
-  members: document.getElementById('input-members')
+  members: document.getElementById('input-members'),
+  music: document.getElementById('input-music')
 };
 
 const fields={
@@ -35,15 +33,16 @@ const fields={
   turfNotable: document.getElementById('profile-turf-notable'),
   turfNeighborhood: document.getElementById('profile-turf-neighborhood'),
   turfMap: document.getElementById('profile-turf-map'),
-  membersGrid: document.getElementById('members-grid')
+  membersGrid: document.getElementById('members-grid'),
+  musicGrid: document.getElementById('music-grid')
 };
 
-// Editor toggle
 editToggle.addEventListener('click',()=>editor.classList.contains('hidden')?openEditor():closeEditor());
 function openEditor(){
   for(let key in fields){
-    if(key==='membersGrid') continue;
-    inputs[key].value=fields[key].textContent||fields[key].src||'';
+    if(key==='membersGrid'||key==='musicGrid') continue;
+    if(key==='turfMap'){inputs[key].value=fields[key].src;} 
+    else {inputs[key].value=fields[key].textContent;}
   }
   const memberData=Array.from(fields.membersGrid.querySelectorAll('.member-card')).map(card=>{
     return {alias:card.querySelector('.member-alias').textContent,
@@ -51,21 +50,26 @@ function openEditor(){
             img:card.querySelector('img').src};
   });
   inputs.members.value=JSON.stringify(memberData,null,2);
+
+  const musicData=Array.from(fields.musicGrid.querySelectorAll('.music-card')).map(card=>{
+    return {track:card.querySelector('.track-name').textContent,
+            artist:card.querySelector('.track-artist').textContent,
+            url:card.querySelector('.track-link').href};
+  });
+  inputs.music.value=JSON.stringify(musicData,null,2);
+
   editor.classList.remove('hidden');
 }
 function closeEditor(){editor.classList.add('hidden');}
 
-// Save
 document.getElementById('save-profile').addEventListener('click',()=>{
   for(let key in fields){
-    if(key==='membersGrid') continue;
-    if(key==='turfMap'){
-      fields[key].src=inputs[key].value||'map-placeholder.png';
-    }else{
-      fields[key].textContent=inputs[key].value||'—';
-    }
+    if(key==='membersGrid'||key==='musicGrid') continue;
+    if(key==='turfMap'){fields[key].src=inputs[key].value||'map-placeholder.png';} 
+    else {fields[key].textContent=inputs[key].value||'—';}
   }
-  // Members
+
+  // Save Members
   try{
     const memberData=JSON.parse(inputs.members.value||'[]');
     fields.membersGrid.innerHTML='';
@@ -78,14 +82,22 @@ document.getElementById('save-profile').addEventListener('click',()=>{
       fields.membersGrid.appendChild(div);
     });
   }catch(e){console.error("Invalid members JSON",e);}
+
+  // Save Music
+  try{
+    const musicData=JSON.parse(inputs.music.value||'[]');
+    fields.musicGrid.innerHTML='';
+    musicData.forEach(m=>{
+      const div=document.createElement('div');
+      div.classList.add('music-card');
+      div.innerHTML=`<p><strong>Track:</strong> <span class="track-name">${m.track||'—'}</span></p>
+                     <p><strong>Artist:</strong> <span class="track-artist">${m.artist||'—'}</span></p>
+                     <p><a href="${m.url||'#'}" target="_blank" class="track-link">Listen</a></p>`;
+      fields.musicGrid.appendChild(div);
+    });
+  }catch(e){console.error("Invalid music JSON",e);}
+
   closeEditor();
 });
 
-// Logo URL update
-logoInput.addEventListener('input',evt=>{
-  const url=evt.target.value.trim();
-  if(url) logoPreview.src=url;
-});
-
-// Last updated
 document.getElementById('last-updated').textContent=`Last updated: ${new Date().toLocaleString()}`;
