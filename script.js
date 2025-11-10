@@ -1,89 +1,91 @@
-// ===== Turf & Members Editing =====
-const turfFields = {
-  main: document.getElementById('profile-turf-main'),
-  notable: document.getElementById('profile-turf-notable'),
-  neighborhood: document.getElementById('profile-turf-neighborhood'),
-  map: document.getElementById('profile-turf-map')
+// Profile Editing & Logo Preview
+const editToggle = document.getElementById('edit-toggle');
+const editor = document.getElementById('editor');
+const logoInput = document.getElementById('logo-input');
+const logoPreview = document.getElementById('logo-preview');
+
+const inputs = {
+  set: document.getElementById('input-set'),
+  main: document.getElementById('input-main'),
+  aliases: document.getElementById('input-aliases'),
+  neighborhood: document.getElementById('input-neighborhood'),
+  years: document.getElementById('input-years'),
+  concept: document.getElementById('input-concept'),
+  allies: document.getElementById('input-allies'),
+  opps: document.getElementById('input-opps'),
+  history: document.getElementById('input-history'),
+  turfMain: document.getElementById('input-turf-main'),
+  turfNotable: document.getElementById('input-turf-notable'),
+  turfNeighborhood: document.getElementById('input-turf-neighborhood'),
+  turfMap: document.getElementById('input-turf-map'),
+  members: document.getElementById('input-members')
 };
 
-const membersGrid = document.getElementById('members-grid');
+const fields = {
+  set: document.getElementById('profile-set'),
+  main: document.getElementById('profile-main'),
+  aliases: document.getElementById('profile-aliases'),
+  neighborhood: document.getElementById('profile-neighborhood'),
+  years: document.getElementById('profile-years'),
+  concept: document.getElementById('profile-concept'),
+  allies: document.getElementById('profile-allies'),
+  opps: document.getElementById('profile-opps'),
+  history: document.getElementById('profile-history'),
+  turfMain: document.getElementById('profile-turf-main'),
+  turfNotable: document.getElementById('profile-turf-notable'),
+  turfNeighborhood: document.getElementById('profile-turf-neighborhood'),
+  turfMap: document.getElementById('profile-turf-map'),
+  membersGrid: document.getElementById('members-grid')
+};
 
-function openEditor() {
-  // Existing profile fields
-  inputs.set.value = fields.set.textContent;
-  inputs.main.value = fields.main.textContent;
-  inputs.aliases.value = fields.aliases.textContent;
-  inputs.neighborhood.value = fields.neighborhood.textContent;
-  inputs.years.value = fields.years.textContent;
-  inputs.concept.value = fields.concept.textContent;
-  inputs.allies.value = fields.allies.textContent;
-  inputs.opps.value = fields.opps.textContent;
-  inputs.history.value = fields.history.textContent;
-
-  // Turf fields
-  inputs.turfMain.value = turfFields.main.textContent;
-  inputs.turfNotable.value = turfFields.notable.textContent;
-  inputs.turfNeighborhood.value = turfFields.neighborhood.textContent;
-  inputs.turfMap.value = turfFields.map.src;
-
-  // Members fields (optional: serialize to JSON string)
-  const memberData = Array.from(membersGrid.querySelectorAll('.member-card')).map(card=>{
-    return {
-      alias: card.querySelector('.member-alias').textContent,
-      role: card.querySelector('.member-role').textContent,
-      img: card.querySelector('img').src
-    };
+function openEditor(){
+  for(let key in fields){
+    if(key==='membersGrid') continue;
+    inputs[key].value = fields[key].textContent || fields[key].src || '';
+  }
+  // Serialize members
+  const memberData = Array.from(fields.membersGrid.querySelectorAll('.member-card')).map(card=>{
+    return {alias: card.querySelector('.member-alias').textContent,
+            role: card.querySelector('.member-role').textContent,
+            img: card.querySelector('img').src};
   });
-  inputs.members.value = JSON.stringify(memberData);
-
+  inputs.members.value = JSON.stringify(memberData,null,2);
   editor.classList.remove('hidden');
 }
+function closeEditor(){ editor.classList.add('hidden'); }
 
-// Add new input fields in your editor HTML:
-/*
-<input id="input-turf-main" type="text">
-<input id="input-turf-notable" type="text">
-<input id="input-turf-neighborhood" type="text">
-<input id="input-turf-map" type="text">  // URL of map image
-<textarea id="input-members"></textarea> // JSON of members
-*/
+editToggle.addEventListener('click', ()=>editor.classList.contains('hidden')?openEditor():closeEditor());
 
-// On save:
-document.getElementById('save-profile').addEventListener('click', () => {
-  // Profile fields
-  fields.set.textContent = inputs.set.value || 'Unnamed Set';
-  fields.main.textContent = inputs.main.value || '—';
-  fields.aliases.textContent = inputs.aliases.value || '—';
-  fields.neighborhood.textContent = inputs.neighborhood.value || '—';
-  fields.years.textContent = inputs.years.value || '—';
-  fields.concept.textContent = inputs.concept.value || '—';
-  fields.allies.textContent = inputs.allies.value || '—';
-  fields.opps.textContent = inputs.opps.value || '—';
-  fields.history.textContent = inputs.history.value || '—';
-
-  // Turf fields
-  turfFields.main.textContent = inputs.turfMain.value || '—';
-  turfFields.notable.textContent = inputs.turfNotable.value || '—';
-  turfFields.neighborhood.textContent = inputs.turfNeighborhood.value || '—';
-  turfFields.map.src = inputs.turfMap.value || 'map-placeholder.png';
-
-  // Members section
+document.getElementById('save-profile').addEventListener('click',()=>{
+  for(let key in fields){
+    if(key==='membersGrid') continue;
+    if(key==='turfMap'){
+      fields[key].src = inputs[key].value || 'map-placeholder.png';
+    }else{
+      fields[key].textContent = inputs[key].value || '—';
+    }
+  }
+  // Update members
   try{
     const memberData = JSON.parse(inputs.members.value || '[]');
-    membersGrid.innerHTML = '';
+    fields.membersGrid.innerHTML='';
     memberData.forEach(m=>{
-      const div = document.createElement('div');
+      const div=document.createElement('div');
       div.classList.add('member-card');
-      div.innerHTML = `
-        <img src="${m.img || 'member-placeholder.png'}" alt="${m.alias}">
-        <p><strong>Alias:</strong> <span class="member-alias">${m.alias || '—'}</span></p>
-        <p><strong>Role:</strong> <span class="member-role">${m.role || '—'}</span></p>
-      `;
-      membersGrid.appendChild(div);
+      div.innerHTML=`<img src="${m.img||'member-placeholder.png'}" alt="${m.alias||'Member'}">
+                     <p><strong>Alias:</strong> <span class="member-alias">${m.alias||'—'}</span></p>
+                     <p><strong>Role:</strong> <span class="member-role">${m.role||'—'}</span></p>`;
+      fields.membersGrid.appendChild(div);
     });
-  }catch(e){
-    console.error("Invalid members JSON", e);
-  }
-
+  }catch(e){console.error("Invalid members JSON",e);}
   closeEditor();
 });
+
+logoInput.addEventListener('change', evt=>{
+  const f=evt.target.files&&evt.target.files[0];
+  if(!f) return;
+  logoPreview.src=URL.createObjectURL(f);
+});
+
+// Last updated
+document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
