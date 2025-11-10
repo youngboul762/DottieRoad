@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RiskyRoad Dashboard</title>
+  <title>RiskyRoad</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -29,13 +29,13 @@
     <div class="thread-content">
       <p><strong>Set Name:</strong> <span id="profile-set">RiskyRoad</span></p>
       <p><strong>Main Block:</strong> <span id="profile-main">104th & Maryland</span></p>
-      <p><strong>Aliases:</strong> <span id="profile-aliases">10-4 </span></p>
+      <p><strong>Aliases:</strong> <span id="profile-aliases">10-4</span></p>
       <p><strong>Faction Concept:</strong> <span id="profile-concept">Neighborhood protection roleplay and creative activities.</span></p>
       <p><strong>Allies:</strong> <span id="profile-allies">808Mobb/ReapNem, Sneak Gang</span></p>
       <p><strong>Opponents:</strong> <span id="profile-opps">DottieRoad</span></p>
       <p><strong>History:</strong> <span id="profile-history">Inspired by community-focused projects emphasizing protection and collaboration.</span></p>
       <p><strong>Neighborhood:</strong> <span id="profile-neighborhood">Roseland, South Side </span></p>
-      <p><strong>Years Active:</strong> <span id="profile-years">2025 – Present </span></p>
+      <p><strong>Years Active:</strong> <span id="profile-years">1968 – Present </span></p>
     </div>
   </section>
 
@@ -62,15 +62,32 @@
       </div>
       <div class="member-card">
         <img src="member2.png" alt="Member 2">
-        <p><strong>Alias:</strong> <span class="member-alias">lilmexicofck12</span></p>
+        <p><strong>Alias:</strong> <span class="member-alias">Freelilmexico</span></p>
         <p><strong>Role:</strong> <span class="member-role">Member</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Music / Tracks Section -->
+  <section class="card" id="music-section">
+    <h2>Music / Tracks</h2>
+    <div class="music-grid" id="music-grid">
+      <div class="music-card">
+        <p><strong>Track:</strong> <span class="track-name">slimeyseal</span></p>
+        <p><strong>Artist:</strong> <span class="track-artist">lilkadost6</span></p>
+        <p><a href="https://youtu.be/vG8-VrEZk0s?si=gF096SDCPcsmbiE6" target="_blank" class="track-link">Listen</a></p>
+      </div>
+      <div class="music-card">
+        <p><strong>Track:</strong> <span class="track-name">Silent Hill</span></p>
+        <p><strong>Artist:</strong> <span class="track-artist">Babyy Walk</span></p>
+        <p><a href="https://youtu.be/KjDXLWD-K6k?si=hXB9KyWQHHM3DLqM" target="_blank" class="track-link">Listen</a></p>
       </div>
     </div>
   </section>
 
   <!-- Editor Panel -->
   <section class="card hidden" id="editor">
-    <h2>Edit Profile / Turf / Members</h2>
+    <h2>Edit Profile / Turf / Members / Music</h2>
     <div class="editor-grid">
       <label>Set Name<input id="input-set" type="text"></label>
       <label>Main Block<input id="input-main" type="text"></label>
@@ -86,6 +103,7 @@
       <label>Turf Neighborhood<input id="input-turf-neighborhood" type="text"></label>
       <label>Turf Map URL<input id="input-turf-map" type="text"></label>
       <label>Members (JSON)<textarea id="input-members" rows="4" placeholder='[{"alias":"Name","role":"Role","img":"url"}]'></textarea></label>
+      <label>Music Tracks (JSON)<textarea id="input-music" rows="4" placeholder='[{"track":"Name","artist":"Artist","url":"link"}]'></textarea></label>
     </div>
     <div class="editor-actions">
       <button id="save-profile">Save</button>
