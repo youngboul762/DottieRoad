@@ -1,58 +1,32 @@
-:root{
-  --bg:#07070b;
-  --card:#0f0f15;
-  --accent:#9b5cff;
-  --muted:#9aa0b2;
-  --text:#e9eef8;
+.turf-map{
+  margin-top: 10px;
+  text-align: center;
+}
+.turf-map img{
+  width:100%;
+  max-width:500px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.05);
 }
 
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  background:linear-gradient(180deg,#06060a 0%,#0b0b0f 100%);
-  color:var(--text);
+.members-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;
+  margin-top:10px;
 }
 
-.container{
-  max-width:900px;
-  margin:28px auto;
-  padding:20px;
+.member-card{
+  background:rgba(255,255,255,0.02);
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
 }
 
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  margin-bottom:18px;
+.member-card img{
+  width:100%;
+  max-width:120px;
+  border-radius:50%;
+  margin-bottom:6px;
+  border:1px solid rgba(255,255,255,0.05);
 }
-
-.title-block{display:flex;gap:12px;align-items:center}
-.title-block img{
-  width:96px;height:96px;object-fit:cover;border-radius:12px;border:2px solid rgba(255,255,255,0.06);
-}
-h1{margin:0;font-size:26px;color:var(--accent)}
-p{margin:4px 0;}
-
-.card{background:var(--card);padding:16px;border-radius:12px;margin-bottom:14px;box-shadow:0 6px 30px rgba(0,0,0,0.5)}
-.muted{color:var(--muted);font-size:13px;margin:0 0 10px 0}
-
-.spinner-controls{display:flex;gap:10px;align-items:center;margin-top:8px}
-select{padding:8px;border-radius:8px;border:none;font-size:14px}
-button{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600;}
-button:active{transform:translateY(1px)}
-
-.result{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);font-size:18px;font-weight:700;color:#ffd86b}
-
-.editor-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.editor-grid label{display:block;font-size:13px;margin-bottom:6px;}
-.editor-grid input, .editor-grid textarea{
-  width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);
-  background:rgba(255,255,255,0.02);color:var(--text);font-size:14px;
-}
-.editor-actions{display:flex;gap:10px;margin-top:12px}
-
-.hidden{display:none}
-
-.footer{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;padding-top:10px}
