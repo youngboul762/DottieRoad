@@ -1,61 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Faction Threads — Risky Road</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RiskyRoad Roleplay Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="container">
+    <!-- Header / Logo -->
     <header class="header">
       <div class="title-block">
-        <img id="logo-preview" src="placeholder.png" alt="Faction Logo" width="120" />
+        <img id="logo-preview" src="placeholder.png" alt="Faction Logo" />
         <div>
           <h1 id="faction-name">RiskyRoad</h1>
           <p id="faction-tagline">Fictional roleplay faction dashboard</p>
         </div>
       </div>
       <div class="controls">
-        <label class="file-label">
-          Upload Logo
-          <input id="logo-input" type="file" accept="image/*" />
+        <label class="file-label">Upload Logo
+          <input type="file" id="logo-input" accept="image/*">
         </label>
         <button id="edit-toggle">Edit Profile</button>
       </div>
     </header>
 
-    <!-- Faction Threads -->
-    <section id="threads">
-      <div class="card faction-card">
-        <h2>Faction Thread — RiskyRoad</h2>
-        <div class="thread-content">
-          <p><strong>Set Name:</strong> <span id="profile-set">RiskyRoad</span></p>
-          <p><strong>Main Block:</strong> <span id="profile-main">104th & Maryland</span></p>
-          <p><strong>Aliases:</strong> <span id="profile-aliases">10-4 Hawk Nem </span></p>
-          <p><strong>Faction Concept:</strong> <span id="profile-concept">Predominantly fictionalized roleplay faction focused on neighborhood protection and creative projects.</span></p>
-          <p><strong>Allies:</strong> <span id="profile-allies">808Mobb/ReapNem, Sneak Gang</span></p>
-          <p><strong>Opponents:</strong> <span id="profile-opps">DottieRoad</span></p>
-          <p><strong>History:</strong> <span id="profile-history">The faction was inspired by community-focused roleplay projects dating back decades, emphasizing protection and collaboration in its territory.</span></p>
-          <p><strong>Neighborhood:</strong> <span id="profile-neighborhood">Roseland, South Side (fictionalized)</span></p>
-          <p><strong>Years Active:</strong> <span id="profile-years">1968 – Present (fictionalized)</span></p>
+    <!-- Faction Thread -->
+    <section class="card faction-card">
+      <h2>Faction Thread — RiskyRoad</h2>
+      <div class="thread-content">
+        <p><strong>Set Name:</strong> <span id="profile-set">RiskyRoad</span></p>
+        <p><strong>Main Block:</strong> <span id="profile-main">104th & Maryland</span></p>
+        <p><strong>Aliases:</strong> <span id="profile-aliases">10-4 LickSquad, DonnyMobb, BTGang</span></p>
+        <p><strong>Faction Concept:</strong> <span id="profile-concept">Neighborhood protection roleplay and creative activities.</span></p>
+        <p><strong>Allies:</strong> <span id="profile-allies">808Mobb/ReapNem, Sneak Gang</span></p>
+        <p><strong>Opponents:</strong> <span id="profile-opps">DottieRoad</span></p>
+        <p><strong>History:</strong> <span id="profile-history">Inspired by community-focused projects emphasizing protection and collaboration.</span></p>
+        <p><strong>Neighborhood:</strong> <span id="profile-neighborhood">Roseland, South Side (fictionalized)</span></p>
+        <p><strong>Years Active:</strong> <span id="profile-years">1968 – Present (fictionalized)</span></p>
+      </div>
+    </section>
+
+    <!-- Turf Section -->
+    <section class="card" id="turf-section">
+      <h2>Our Turf</h2>
+      <p><strong>Main Area:</strong> <span id="profile-turf-main">104th & Maryland</span></p>
+      <p><strong>Notable Blocks:</strong> <span id="profile-turf-notable">105th & Indiana → 107th & Edbrooke</span></p>
+      <p><strong>Neighborhood:</strong> <span id="profile-turf-neighborhood">Roseland, South Side (fictionalized)</span></p>
+      <div class="turf-map">
+        <img id="profile-turf-map" src="map-placeholder.png" alt="Turf Map" />
+        <p class="muted">Fictionalized map for roleplay purposes</p>
+      </div>
+    </section>
+
+    <!-- Member Showcase Section -->
+    <section class="card" id="members-section">
+      <h2>Member Showcase</h2>
+      <div class="members-grid" id="members-grid">
+        <div class="member-card">
+          <img src="member1.png" alt="Member 1">
+          <p><strong>Alias:</strong> <span class="member-alias">Risky Ron</span></p>
+          <p><strong>Role:</strong> <span class="member-role">Founder</span></p>
+        </div>
+        <div class="member-card">
+          <img src="member2.png" alt="Member 2">
+          <p><strong>Alias:</strong> <span class="member-alias">Donny</span></p>
+          <p><strong>Role:</strong> <span class="member-role">Lieutenant</span></p>
         </div>
       </div>
     </section>
 
-    <!-- Edit Profile Panel -->
-    <section id="editor" class="card hidden">
-      <h2>Edit Faction Thread</h2>
+    <!-- Editor Panel -->
+    <section class="card hidden" id="editor">
+      <h2>Edit Profile / Turf / Members</h2>
       <div class="editor-grid">
-        <label>Set name<input id="input-set" type="text" /></label>
-        <label>Main block<input id="input-main" type="text" /></label>
-        <label>Aliases<input id="input-aliases" type="text" /></label>
-        <label>Neighborhood<input id="input-neighborhood" type="text" /></label>
-        <label>Years active<input id="input-years" type="text" /></label>
-        <label>Faction concept<textarea id="input-concept" rows="3"></textarea></label>
+        <label>Set Name<input id="input-set" type="text"></label>
+        <label>Main Block<input id="input-main" type="text"></label>
+        <label>Aliases<input id="input-aliases" type="text"></label>
+        <label>Neighborhood<input id="input-neighborhood" type="text"></label>
+        <label>Years Active<input id="input-years" type="text"></label>
+        <label>Faction Concept<textarea id="input-concept" rows="3"></textarea></label>
         <label>Allies<textarea id="input-allies" rows="2"></textarea></label>
         <label>Opponents<textarea id="input-opps" rows="2"></textarea></label>
         <label>History<textarea id="input-history" rows="3"></textarea></label>
+        <label>Turf Main Area<input id="input-turf-main" type="text"></label>
+        <label>Turf Notable Blocks<input id="input-turf-notable" type="text"></label>
+        <label>Turf Neighborhood<input id="input-turf-neighborhood" type="text"></label>
+        <label>Turf Map URL<input id="input-turf-map" type="text"></label>
+        <label>Members (JSON)<textarea id="input-members" rows="4"></textarea></label>
       </div>
       <div class="editor-actions">
         <button id="save-profile">Save</button>
@@ -65,37 +97,10 @@
 
     <footer class="footer">
       <div id="last-updated">Last updated: —</div>
-      <div class="credits">Template for fictional roleplay factions</div>
+      <div class="credits">Fictional roleplay dashboard for RiskyRoad</div>
     </footer>
   </main>
 
-  <!-- Editable Turf Section -->
-<section class="card" id="turf-section">
-  <h2>Our Turf</h2>
-  <p><strong>Main Area:</strong> <span id="profile-turf-main">104th & Maryland</span></p>
-  <p><strong>Notable Blocks:</strong> <span id="profile-turf-notable">105th & Indiana → 107th & Edbrooke</span></p>
-  <p><strong>Neighborhood:</strong> <span id="profile-turf-neighborhood">Roseland, South Side (fictionalized)</span></p>
-  <div class="turf-map">
-    <img id="profile-turf-map" src="map-placeholder.png" alt="Turf Map" />
-    <p class="muted">Fictionalized map for roleplay purposes</p>
-  </div>
-</section>
-
-<!-- Editable Member Showcase Section -->
-<section class="card" id="members-section">
-  <h2>Member Showcase</h2>
-  <div class="members-grid" id="members-grid">
-    <!-- Example member -->
-    <div class="member-card">
-      <img src="member1.png" alt="Member 1" />
-      <p><strong>Alias:</strong> <span class="member-alias">Risky Ron</span></p>
-      <p><strong>Role:</strong> <span class="member-role">Founder</span></p>
-    </div>
-    <div class="member-card">
-      <img src="member2.png" alt="Member 2" />
-      <p><strong>Alias:</strong> <span class="member-alias">Donny</span></p>
-      <p><strong>Role:</strong> <span class="member-role">Lieutenant</span></p>
-    </div>
-    <!-- Add more members as needed -->
-  </div>
-</section>
+  <script src="script.js"></script>
+</body>
+</html>
