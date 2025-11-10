@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Faction Thread — Risky Road</title>
+  <title>Faction Threads — Risky Road</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,27 +13,53 @@
         <img id="logo-preview" src="placeholder.png" alt="Faction Logo" width="120" />
         <div>
           <h1 id="faction-name">Risky Road</h1>
-          <p id="faction-tagline">A fictional roleplay faction for creative projects</p>
+          <p id="faction-tagline">Fictional roleplay faction dashboard</p>
         </div>
+      </div>
+      <div class="controls">
+        <label class="file-label">
+          Upload Logo
+          <input id="logo-input" type="file" accept="image/*" />
+        </label>
+        <button id="edit-toggle">Edit Profile</button>
       </div>
     </header>
 
-    <!-- Faction Thread Section -->
-    <section class="card">
-      <h2>Faction Thread — Risky Road</h2>
-      <p><strong>Set:</strong> Risky Road (104th & Maryland)</p>
-      <p><strong>Main Block:</strong> 104th & Maryland</p>
-      <p><strong>Notable Blocks:</strong> 105th & Indiana → 107th & Edbrooke</p>
-      <p><strong>Faction Composition:</strong> Predominantly young members guided by experienced leaders. They organize roleplay activities to maintain cohesion and presence.</p>
-      <p><strong>Former Control:</strong> Area previously managed by smaller neighborhood crews before unification under the faction name.</p>
-      <p><strong>Neighborhood:</strong> Roseland, South Side, Chicago (fictionalized)</p>
-      <p><strong>Memorials & Legacy:</strong> Past members honored through murals, social media tributes, and community events; inspires current members.</p>
-      <p><strong>Music & Media:</strong> Members release fictional drill/trap-inspired songs as part of creative projects.</p>
-      <p><strong>Allies:</strong> Aligned with other fictional factions; some neutral or respectful ties exist with select groups.</p>
-      <p><strong>Years Active:</strong> Early 2010s – Present</p>
+    <!-- Faction Threads -->
+    <section id="threads">
+      <div class="card faction-card">
+        <h2>Faction Thread — Risky Road</h2>
+        <div class="thread-content">
+          <p><strong>Set:</strong> <span id="profile-set">Risky Road (104th & Maryland)</span></p>
+          <p><strong>Main Block:</strong> <span id="profile-main">104th & Maryland</span></p>
+          <p><strong>Notable Blocks:</strong> <span id="profile-notable">105th & Indiana → 107th & Edbrooke</span></p>
+          <p><strong>Faction Composition:</strong> <span id="profile-composition">Predominantly young members guided by experienced leaders. They organize roleplay activities to maintain cohesion and presence.</span></p>
+          <p><strong>Neighborhood:</strong> <span id="profile-neighborhood">Roseland, South Side, Chicago (fictionalized)</span></p>
+          <p><strong>Years Active:</strong> <span id="profile-years">Early 2010s – Present</span></p>
+          <p><strong>Notes:</strong> <span id="profile-notes">Past members honored through murals and creative projects; inspires current members.</span></p>
+        </div>
+      </div>
     </section>
 
-    <!-- Contraband / Supplies Spinner -->
+    <!-- Edit Profile Panel -->
+    <section id="editor" class="card hidden">
+      <h2>Edit Faction Thread</h2>
+      <div class="editor-grid">
+        <label>Set name<input id="input-set" type="text" /></label>
+        <label>Main block<input id="input-main" type="text" /></label>
+        <label>Notable blocks<input id="input-notable" type="text" /></label>
+        <label>Neighborhood<input id="input-neighborhood" type="text" /></label>
+        <label>Years active<input id="input-years" type="text" /></label>
+        <label>Composition<textarea id="input-composition" rows="3"></textarea></label>
+        <label>Notes<textarea id="input-notes" rows="3"></textarea></label>
+      </div>
+      <div class="editor-actions">
+        <button id="save-profile">Save</button>
+        <button id="cancel-edit">Cancel</button>
+      </div>
+    </section>
+
+    <!-- Faction Supplies Spinner -->
     <section class="card">
       <h2>Faction Supplies Spinner</h2>
       <p class="muted">This spinner is fictional and for roleplay purposes only.</p>
@@ -57,106 +83,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-:root{
-  --bg:#07070b;
-  --card:#0f0f15;
-  --accent:#9b5cff;
-  --muted:#9aa0b2;
-  --text:#e9eef8;
-}
-
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  background:linear-gradient(180deg,#06060a 0%,#0b0b0f 100%);
-  color:var(--text);
-}
-
-.container{
-  max-width:900px;
-  margin:28px auto;
-  padding:20px;
-}
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  margin-bottom:18px;
-}
-
-.title-block{display:flex;gap:12px;align-items:center}
-.title-block img{
-  width:96px;height:96px;object-fit:cover;border-radius:12px;border:2px solid rgba(255,255,255,0.06);
-}
-h1{margin:0;font-size:26px;color:var(--accent)}
-p{margin:4px 0;}
-.card{background:var(--card);padding:16px;border-radius:12px;margin-bottom:14px;box-shadow:0 6px 30px rgba(0,0,0,0.5)}
-.muted{color:var(--muted);font-size:13px;margin:0 0 10px 0}
-
-.spinner-controls{display:flex;gap:10px;align-items:center;margin-top:8px}
-select{padding:8px;border-radius:8px;border:none;font-size:14px}
-button{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600;}
-button:active{transform:translateY(1px)}
-
-.result{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);font-size:18px;font-weight:700;color:#ffd86b}
-
-.footer{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;padding-top:10px}
-// Spinner items (fictional)
-const items = {
-  contraband: [
-    "Replica Ledger",
-    "Encrypted Thumbdrive",
-    "Fake Passes",
-    "Counterfeit Tokens",
-    "Vintage Watch (prop)"
-  ],
-  supplies: [
-    "Toolkit (roleplay)",
-    "First-aid Kit (prop)",
-    "Disposable Radio",
-    "Protective Vest (stunt prop)"
-  ],
-  gear: [
-    "Hooded Jacket (faction)",
-    "Embroidered Patch",
-    "Custom Bandana",
-    "Faction Lanyard"
-  ]
-};
-
-const spinBtn = document.getElementById('spin');
-const categorySelect = document.getElementById('category');
-const result = document.getElementById('result');
-
-spinBtn.addEventListener('click', () => {
-  const cat = categorySelect.value;
-  const list = items[cat] || [];
-  if (!list.length) {
-    result.textContent = "No items in this category.";
-    return;
-  }
-
-  // spin animation
-  result.textContent = "Spinning...";
-  spinBtn.disabled = true;
-  let rounds = 24;
-  let i = 0;
-  const interval = setInterval(() => {
-    result.textContent = list[i % list.length];
-    i++;
-    if (i > rounds) {
-      clearInterval(interval);
-      const chosen = list[Math.floor(Math.random() * list.length)];
-      result.textContent = `🎯 You received: ${chosen}`;
-      spinBtn.disabled = false;
-    }
-  }, 60);
-});
-
-// Last updated timestamp
-const lastUpdatedEl = document.getElementById('last-updated');
-const now = new Date();
-lastUpdatedEl.textContent = `Last updated: ${now.toLocaleString()}`;
