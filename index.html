@@ -3,94 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RiskyRoad Roleplay Dashboard</title>
+  <title>RiskyRoad Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="container">
-    <!-- Header / Logo -->
-    <header class="header">
-      <div class="title-block">
-        <img id="logo-preview" src="https://i.ibb.co/C3gpNWgG/RISKY-BANDS-x-LIL-QUISSY-HOT-CARS-OFFICIAL-VIDEO-EA-4-K-FILMS.gif" alt="Faction Logo" />
-        <div>
-          <h1 id="faction-name">RiskyRoad</h1>
-          <p id="faction-tagline">Forevea Hawk Nem 🦅</p>
-        </div>
-      </div>
-      <div class="controls">
-        <label class="file-label">Upload Logo
-          <input type="file" id="logo-input" accept="image/*">
-        </label>
-        <button id="edit-toggle">Edit Profile</button>
-      </div>
-    </header>
+<main class="container">
 
-    <!-- Faction Thread -->
-    <section class="card faction-card">
-      <h2>Faction Thread — RiskyRoad</h2>
-      <div class="thread-content">
-        <p><strong>Set Name:</strong> <span id="profile-set">RiskyRoad</span></p>
-        <p><strong>Main Block:</strong> <span id="profile-main">104th & Maryland</span></p>
-        <p><strong>Aliases:</strong> <span id="profile-aliases">10-4 LickSquad</span></p>
-        <p><strong>Faction Concept:</strong> <span id="profile-concept">Neighborhood protection roleplay and creative activities.</span></p>
-        <p><strong>Allies:</strong> <span id="profile-allies">808Mobb/ReapNem, Sneak Gang</span></p>
-        <p><strong>Opponents:</strong> <span id="profile-opps">DottieRoad</span></p>
-        <p><strong>History:</strong> <span id="profile-history">Inspired by community-focused projects emphasizing protection and collaboration.</span></p>
-        <p><strong>Neighborhood:</strong> <span id="profile-neighborhood">Roseland, South Side </span></p>
-        <p><strong>Years Active:</strong> <span id="profile-years">2025 – Present </span></p>
+  <!-- Header / Logo -->
+  <header class="header">
+    <div class="title-block">
+      <img id="logo-preview" src="placeholder.png" alt="Faction Logo">
+      <div>
+        <h1 id="faction-name">RiskyRoad</h1>
+        <p id="faction-tagline">Foreva Hawk Nem</p>
       </div>
-    </section>
+    </div>
+    <div class="controls">
+      <label>Logo URL<input id="logo-url-input" type="text" placeholder="Paste image URL"></label>
+      <button id="edit-toggle">Edit Profile</button>
+    </div>
+  </header>
 
-    <!-- Member Showcase Section -->
-    <section class="card" id="members-section">
-      <h2>Member Showcase</h2>
-      <div class="members-grid" id="members-grid">
-        <div class="member-card">
-          <img src="member1.png" alt="Member 1">
-          <p><strong>Alias:</strong> <span class="member-alias">MookMoneyyfck12</span></p>
-          <p><strong>Role:</strong> <span class="member-role">Member</span></p>
-        </div>
-        <div class="member-card">
-          <img src="member2.png" alt="Member 2">
-          <p><strong>Alias:</strong> <span class="member-alias">LilMexico</span></p>
-          <p><strong>Role:</strong> <span class="member-role">Shorty</span></p>
-        </div>
+  <!-- Faction Thread -->
+  <section class="card faction-card">
+    <h2>Faction Thread — RiskyRoad</h2>
+    <div class="thread-content">
+      <p><strong>Set Name:</strong> <span id="profile-set">RiskyRoad</span></p>
+      <p><strong>Main Block:</strong> <span id="profile-main">104th & Maryland</span></p>
+      <p><strong>Aliases:</strong> <span id="profile-aliases">10-4</span></p>
+      <p><strong>Faction Concept:</strong> <span id="profile-concept">Neighborhood protection roleplay and creative activities.</span></p>
+      <p><strong>Allies:</strong> <span id="profile-allies">808Mobb/ReapNem, Sneak Gang</span></p>
+      <p><strong>Opponents:</strong> <span id="profile-opps">DottieRoad</span></p>
+      <p><strong>History:</strong> <span id="profile-history">Inspired by community-focused projects emphasizing protection and collaboration.</span></p>
+      <p><strong>Neighborhood:</strong> <span id="profile-neighborhood">Roseland, South Side )</span></p>
+      <p><strong>Years Active:</strong> <span id="profile-years">1968 – Present </span></p>
+    </div>
+  </section>
+
+  <!-- Turf Section -->
+  <section class="card" id="turf-section">
+    <h2>Our Turf</h2>
+    <p><strong>Main Area:</strong> <span id="profile-turf-main">104th & Maryland</span></p>
+    <p><strong>Notable Blocks:</strong> <span id="profile-turf-notable">105th & Indiana → 107th & Edbrooke</span></p>
+    <p><strong>Neighborhood:</strong> <span id="profile-turf-neighborhood">Roseland, South Side (fictionalized)</span></p>
+    <div class="turf-map">
+      <img id="profile-turf-map" src="map-placeholder.png" alt="Turf Map">
+      <p class="muted">Fictionalized map for roleplay purposes</p>
+    </div>
+  </section>
+
+  <!-- Member Showcase Section -->
+  <section class="card" id="members-section">
+    <h2>Member Showcase</h2>
+    <div class="members-grid" id="members-grid">
+      <div class="member-card">
+        <img src="member1.png" alt="Member 1">
+        <p><strong>Alias:</strong> <span class="member-alias">MookMoneyy</span></p>
+        <p><strong>Role:</strong> <span class="member-role">Shorty</span></p>
       </div>
-    </section>
-
-    <!-- Editor Panel -->
-    <section class="card hidden" id="editor">
-      <h2>Edit Profile / Turf / Members</h2>
-      <div class="editor-grid">
-        <label>Set Name<input id="input-set" type="text"></label>
-        <label>Main Block<input id="input-main" type="text"></label>
-        <label>Aliases<input id="input-aliases" type="text"></label>
-        <label>Neighborhood<input id="input-neighborhood" type="text"></label>
-        <label>Years Active<input id="input-years" type="text"></label>
-        <label>Faction Concept<textarea id="input-concept" rows="3"></textarea></label>
-        <label>Allies<textarea id="input-allies" rows="2"></textarea></label>
-        <label>Opponents<textarea id="input-opps" rows="2"></textarea></label>
-        <label>History<textarea id="input-history" rows="3"></textarea></label>
-        <label>Turf Main Area<input id="input-turf-main" type="text"></label>
-        <label>Turf Notable Blocks<input id="input-turf-notable" type="text"></label>
-        <label>Turf Neighborhood<input id="input-turf-neighborhood" type="text"></label>
-        <label>Turf Map URL<input id="input-turf-map" type="text"></label>
-        <label>Members (JSON)<textarea id="input-members" rows="4"></textarea></label>
+      <div class="member-card">
+        <img src="member2.png" alt="Member 2">
+        <p><strong>Alias:</strong> <span class="member-alias">Lilmexicofck12</span></p>
+        <p><strong>Role:</strong> <span class="member-role">Shorty</span></p>
       </div>
-      <div class="editor-actions">
-        <button id="save-profile">Save</button>
-        <button id="cancel-edit">Cancel</button>
-      </div>
-    </section>
+    </div>
+  </section>
 
-    <footer class="footer">
-      <div id="last-updated">Last updated: —</div>
-      <div class="credits">The Chi : Cinematic Roleplay</div>
-    </footer>
-  </main>
+  <!-- Editor Panel -->
+  <section class="card hidden" id="editor">
+    <h2>Edit Profile / Turf / Members</h2>
+    <div class="editor-grid">
+      <label>Set Name<input id="input-set" type="text"></label>
+      <label>Main Block<input id="input-main" type="text"></label>
+      <label>Aliases<input id="input-aliases" type="text"></label>
+      <label>Neighborhood<input id="input-neighborhood" type="text"></label>
+      <label>Years Active<input id="input-years" type="text"></label>
+      <label>Faction Concept<textarea id="input-concept" rows="3"></textarea></label>
+      <label>Allies<textarea id="input-allies" rows="2"></textarea></label>
+      <label>Opponents<textarea id="input-opps" rows="2"></textarea></label>
+      <label>History<textarea id="input-history" rows="3"></textarea></label>
+      <label>Turf Main Area<input id="input-turf-main" type="text"></label>
+      <label>Turf Notable Blocks<input id="input-turf-notable" type="text"></label>
+      <label>Turf Neighborhood<input id="input-turf-neighborhood" type="text"></label>
+      <label>Turf Map URL<input id="input-turf-map" type="text"></label>
+      <label>Members (JSON)<textarea id="input-members" rows="4" placeholder='[{"alias":"Name","role":"Role","img":"url"}]'></textarea></label>
+    </div>
+    <div class="editor-actions">
+      <button id="save-profile">Save</button>
+      <button id="cancel-edit">Cancel</button>
+    </div>
+  </section>
 
-  <script src="script.js"></script>
+  <footer class="footer">
+    <div id="last-updated">Last updated: —</div>
+    <div class="credits">The Chi : Cinematic Roleplay</div>
+  </footer>
+
+</main>
+<script src="script.js"></script>
 </body>
 </html>
-
-
