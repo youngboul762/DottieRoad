@@ -6,7 +6,7 @@
 <title>The Chi : Cinematic Roleplay</title>
 <style>
   :root{
-    --bg:#0b0b12;
+    --bg:#000000;           /* black background */
     --panel:#121421;
     --accent:#ff6b3b;
     --accent-2:#ffb03a;
@@ -14,18 +14,22 @@
     --muted:#94a3b8;
     --card-common:#2b2f44;
     --shadow:0 10px 30px rgba(0,0,0,.45);
-    --player-height:62px; /* used by the player UI */
+    --player-height:62px;
   }
+
   *{box-sizing:border-box}
   html,body{height:100%; overflow-x:hidden}
   body{
-    margin:0;background:radial-gradient(1200px 600px at 10% -10%, rgba(255,140,64,.16), transparent 60%),
-    radial-gradient(1200px 600px at 110% 10%, rgba(255,92,48,.12), transparent 60%), var(--bg);
-    color:var(--text); font:500 16px/1.4 "Rajdhani", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    letter-spacing:.2px; display:flex; align-items:flex-start; justify-content:center; padding:0px 16px calc(var(--player-height) + 48px);
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font:500 16px/1.4 "Rajdhani", system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+    letter-spacing:.2px;
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:0px 16px calc(var(--player-height) + 48px);
   }
 
-  /* background GIF (your original) */
+  /* animated GIF background (full-bleed) */
   .page-bg{
     position:fixed;
     inset:0;
@@ -36,213 +40,134 @@
       url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat fixed;
     filter: blur(12px) saturate(1.08);
     opacity:.65;
-    transform: scale(1.04);
+    transform: scale(1.02);
   }
 
   .wrap{max-width:1280px; width:100%; margin:0 auto}
   .topbar {
     position: sticky; top: 0; z-index: 100;
-    background: linear-gradient(180deg, rgba(10,10,16,0.95), rgba(10,10,16,0.7));
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(8px) saturate(1.2);
-  }
-  .top-inner { max-width: 1280px; margin: 0 auto; padding: 14px 22px; display: flex; align-items: center; justify-content: space-between;}
-  .brand { font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: #fff; letter-spacing: 0.02em; margin: 0; }
-  .brand .accent { color: var(--accent-2); text-shadow: 0 0 10px rgba(255,176,58,0.40);}
-  .nav { display: flex; align-items: center; gap: 18px; }
-  .nav-link { color: #d8dee9; font-size: 14px; text-decoration: none; transition: color 0.2s ease, text-shadow 0.2s ease; }
-  .nav-link:hover { color: var(--accent-2); text-shadow: 0 0 8px rgba(255,176,58,0.40);}
-  .nav-section { display: none;}
-  .nav-section.active { display: block;}
-  .section-card { background: var(--panel); border-radius:14px; box-shadow:var(--shadow); padding: 30px 18px; margin-top: 40px;}
-  .section-title { font-weight:700; font-size: 24px; color: var(--accent-2); letter-spacing:.04em; margin-bottom: 12px;}
-  .watermark{position:fixed; left:50%; bottom:17px; transform:translateX(-50%); z-index:50; pointer-events:auto; user-select:none; font-size:clamp(14px, 2vw, 18px); letter-spacing:.03em; font-weight:800;
-    color:rgba(255,176,58,.90); text-shadow:0 0 7px rgba(255,176,58,.45),0 0 14px rgba(255,107,59,.28),0 0 1px rgba(255,236,200,.30);}
-  .watermark a{ color:inherit; text-decoration:none; display:inline-block; padding:6px 10px; border-radius:8px;}
-  .rr-list { margin:0 0 24px 0; padding:0; list-style: none; }
-  .rr-list-item { margin-bottom: 12px;}
-  .rr-list-title { font-weight: 700; color: var(--accent-2);}
-  .rr-blocks { margin-bottom: 10px;}
-  .rr-block-main {font-weight:700;}
-
-  /* Welcome subtitle style */
-  .hero-sub{ color:#c6d0df; margin:6px 0 0 0; font-size:14px; }
-
-  /* -------- Music player styles (bottom left persistent) -------- */
-  .player {
-    position: fixed;
-    left: 18px;
-    bottom: 12px;
-    height: var(--player-height);
-    min-width: 340px;
-    max-width: calc(100% - 36px);
-    background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,16,0.96));
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    border: 1px solid rgba(255,255,255,0.04);
-    display:flex;
-    gap:12px;
-    align-items:center;
-    padding: 8px 12px;
-    z-index:10000;
-    color:var(--text);
+    background: linear-gradient(180deg, rgba(6,6,6,0.98), rgba(10,10,12,0.85));
+    border-bottom: 1px solid rgba(255,255,255,0.04);
     backdrop-filter: blur(6px);
-    overflow: hidden;
-    font-family: inherit;
   }
-  .player .left { display:flex; align-items:center; gap:10px; min-width:0; }
-  .play-btn {
-    width:46px; height:46px; border-radius:10px; display:inline-grid; place-items:center;
-    background: linear-gradient(90deg, var(--accent-2), var(--accent));
-    color:#08101a; font-weight:800; cursor:pointer; border:none; box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-  }
-  .play-btn.paused { background: transparent; border:1px solid rgba(255,255,255,0.06); color:var(--accent-2); }
-  .track-meta { min-width:0; overflow:hidden; display:flex; flex-direction:column; gap:2px; }
-  .track-title { font-weight:700; font-size:14px; color: #fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
-  .track-sub { font-size:12px; color:var(--muted); white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+  .top-inner { max-width: 1280px; margin: 0 auto; padding: 12px 22px; display:flex; align-items:center; justify-content:space-between;}
+  .brand { font-size: clamp(20px, 3vw, 28px); font-weight:800; color:var(--text); margin:0; }
+  .brand .accent { color:var(--accent-2); }
 
-  .player .center { flex:1; display:flex; flex-direction:column; gap:6px; padding:0 8px; min-width:0; }
-  .progress {
-    height:6px; background: rgba(255,255,255,0.04); border-radius:6px; position:relative; cursor:pointer;
-    overflow:hidden;
+  .hero { width:100%; margin-top:14px; }
+  .hero-inner { padding:28px 20px; position:relative; z-index:2; }
+  .hero-logo { position:absolute; top:12px; right:20px; height:88px; border-radius:6px; filter: drop-shadow(0 6px 18px rgba(0,0,0,.6)); }
+  .hero-title { margin:0 0 6px 0; font-weight:900; letter-spacing:0.02em; font-size: clamp(28px, 4.4vw, 40px); color: var(--accent-2); }
+  .hero-sub { margin:0; color:#cfe6ff; font-size:14px; }
+
+  .nav { display:flex; gap:16px; margin-top:14px; z-index:2; }
+  .nav-link { color:var(--text); text-decoration:none; font-size:14px; padding:6px 10px; border-radius:8px; transition:all .15s ease; }
+  .nav-link:hover { color:var(--accent-2); transform: translateY(-2px); }
+
+  .nav-section { display:none; margin-top:18px; z-index:2; }
+  .nav-section.active { display:block; }
+
+  .section-card { background: linear-gradient(180deg, rgba(18,18,22,0.95), rgba(12,12,16,0.95)); border-radius:12px; padding:22px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); }
+  .section-title { font-weight:800; font-size:20px; color:var(--accent); margin-bottom:12px; }
+
+  .rr-list { margin:0; padding:0; list-style:none; color:#eaf5ff; }
+  .rr-list-item { margin-bottom:10px; }
+  .rr-list-title { font-weight:700; color:var(--accent-2); margin-right:8px; }
+
+  /* watermark bottom center with link */
+  .watermark{ position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:50; pointer-events:auto; font-weight:800; color:var(--accent-2); }
+  .watermark a { color:inherit; text-decoration:none; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.02); }
+
+  /* bottom-left music player */
+  .player {
+    position:fixed; left:18px; bottom:12px; height:var(--player-height); min-width:340px; max-width:calc(100% - 36px);
+    display:flex; gap:12px; align-items:center; padding:8px 12px; border-radius:12px;
+    background: linear-gradient(180deg, rgba(18,18,22,0.98), rgba(12,12,16,0.96));
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03); z-index:10000;
   }
-  .progress .filled { position:absolute; left:0; top:0; bottom:0; width:0%; background: linear-gradient(90deg,var(--accent-2),var(--accent)); border-radius:6px; transition: width .12s linear; }
+  .play-btn { width:46px; height:46px; border-radius:10px; display:grid; place-items:center; background: linear-gradient(90deg,var(--accent-2),var(--accent)); color:#08101a; border:none; cursor:pointer; font-weight:800; }
+  .play-btn.paused { background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--accent-2); }
+
+  .track-meta { display:flex; flex-direction:column; min-width:0; overflow:hidden; gap:2px; }
+  .track-title { font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .track-sub { font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  .center { flex:1; display:flex; flex-direction:column; gap:6px; }
+  .progress { height:6px; background:rgba(255,255,255,0.04); border-radius:6px; position:relative; cursor:pointer; overflow:hidden; }
+  .progress .filled { position:absolute; left:0; top:0; bottom:0; width:0%; background: linear-gradient(90deg,var(--accent-2),var(--accent)); border-radius:6px; transition:width .12s linear; }
   .time-row { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); }
 
-  .player .right { display:flex; align-items:center; gap:8px; margin-left:8px; }
-  .vol {
-    display:flex; align-items:center; gap:8px;
-  }
-  .vol input[type=range] { width:96px; accent-color: var(--accent-2); }
+  .right { display:flex; align-items:center; gap:8px; margin-left:8px; }
+  .vol input[type=range] { width:96px; accent-color:var(--accent-2); }
 
-  .player .small-btn {
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.03);
-    color:var(--text);
-    padding:8px;
-    border-radius:10px;
-    cursor:pointer;
-  }
+  .small-btn { background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); color:var(--text); padding:8px; border-radius:10px; cursor:pointer; }
 
-  @media (max-width:420px){
-    .player { left: 12px; right: 12px; min-width: auto; height:56px; padding:8px; }
-    .vol input[type=range] { display:none; }
-    .track-sub { display:none; }
-  }
-  /* -------------------------------------------------------------- */
+  /* unmute/play fallback */
+  .unmute { position:fixed; right:18px; bottom:18px; z-index:10001; display:none; background: linear-gradient(90deg,var(--accent-2),var(--accent)); color:#08101a; padding:10px 14px; border-radius:12px; border:none; font-weight:800; cursor:pointer; }
+  .unmute.show { display:flex; align-items:center; gap:8px; }
 
-  /* Unmute fallback button (appears only if autoplay blocked) */
-  .unmute {
-    position: fixed;
-    right: 18px;
-    bottom: 18px;
-    z-index:10001;
-    background: linear-gradient(90deg, var(--accent-2), var(--accent));
-    color:#08101a;
-    padding:10px 14px;
-    border-radius:12px;
-    font-weight:800;
-    border: none;
-    display:none;
-    align-items:center;
-    gap:10px;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.45);
-    cursor:pointer;
-  }
-  .unmute.show { display:flex; }
-
-  /* Right vertical discord tab */
+  /* discord vertical tab on right */
   .discord-tab {
-    position: fixed;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index:10002;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    background:linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,16,0.96));
-    padding: 8px 10px;
-    border-top-left-radius:12px;
-    border-bottom-left-radius:12px;
-    box-shadow: -6px 8px 24px rgba(0,0,0,0.5);
-    border-left: 1px solid rgba(255,255,255,0.02);
+    position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:10002; display:flex; align-items:center; gap:6px;
+    background: linear-gradient(180deg, rgba(18,18,22,0.98), rgba(12,12,16,0.96)); padding:8px 10px; border-top-left-radius:12px; border-bottom-left-radius:12px; border-left:1px solid rgba(255,255,255,0.02);
+    box-shadow:-6px 8px 24px rgba(0,0,0,0.5);
   }
-  .discord-tab a { color:var(--text); text-decoration:none; display:flex; align-items:center; gap:8px; }
-  .discord-divider { font-weight:800; color:var(--muted); padding:0 6px; }
+  .discord-tab a { color:var(--text); text-decoration:none; display:flex; align-items:center; gap:8px; padding: 6px; }
 
-  /* Active members grid */
-  #membersGrid {
-    display:grid;
-    grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
-    gap:12px;
-    margin-top:8px;
-  }
-  .member-card {
-    background: linear-gradient(180deg, rgba(18,18,28,0.9), rgba(14,14,18,0.9));
-    padding:12px;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,0.03);
-    cursor:pointer;
-    transition: transform .12s ease, box-shadow .12s ease;
-  }
-  .member-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.5); }
-  .member-name { font-weight:800; color:var(--accent-2); margin-bottom:6px; }
+  /* Active members grid and modal */
+  #membersGrid { display:grid; gap:12px; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); margin-top:10px; z-index:2; }
+  .member-card { background: linear-gradient(180deg, rgba(18,18,22,0.9), rgba(14,14,18,0.9)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); cursor:pointer; display:flex; gap:10px; align-items:center; }
+  .member-avatar { width:56px; height:56px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.04); }
+  .member-name { font-weight:800; color:var(--accent-2); font-size:14px; }
   .member-role { color:var(--muted); font-size:13px; }
 
-  /* Modal for profile */
-  .modal-backdrop {
-    position: fixed; inset:0; background: rgba(0,0,0,0.6); display:none; place-items:center; z-index:10003;
-  }
+  .modal-backdrop { position:fixed; inset:0; display:none; place-items:center; background: rgba(0,0,0,0.6); z-index:10003; }
   .modal-backdrop.show { display:grid; }
-  .modal {
-    width: min(720px, calc(100% - 40px));
-    background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,16,0.96));
-    border-radius:10px; padding:20px; border:1px solid rgba(255,255,255,0.04);
+  .modal { width:min(720px,calc(100% - 40px)); background: linear-gradient(180deg, rgba(18,18,22,0.98), rgba(12,12,16,0.96)); padding:20px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); }
+  .modal h3{ margin:0 0 8px 0; color:var(--accent-2); }
+  .modal p{ margin:6px 0; color:#eaf5ff; }
+  .modal .status.alive { color:#7be37b; font-weight:700; }
+  .modal .status.deceased { color:#ff6b6b; font-weight:700; }
+  .modal .close-btn { float:right; background:transparent; border:0; color:var(--muted); font-size:20px; cursor:pointer; }
+
+  @media (max-width:420px){
+    .player{ left:12px; right:12px; min-width:auto; height:56px; }
+    .vol input[type=range]{ display:none; }
+    .member-avatar{ width:48px; height:48px; }
   }
-  .modal h3 { margin:0 0 8px 0; color:var(--accent-2); }
-  .modal p { margin:6px 0; color:#dfe9f8; }
-  .modal .status.alive { color: #7be37b; font-weight:700; }
-  .modal .status.deceased { color: #ff6b6b; font-weight:700; }
-  .modal .close-btn { float:right; background:transparent; border:0; color:var(--muted); font-size:18px; cursor:pointer; }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+  <!-- reverted to the animated GIF background -->
   <div class="page-bg" aria-hidden="true"></div>
 
   <div class="wrap">
-    <section class="hero">
+    <section class="hero" aria-labelledby="hero-title">
       <div class="hero-inner">
         <img class="hero-logo" src="https://i.ibb.co/C3gpNWgG/RISKY-BANDS-x-LIL-QUISSY-HOT-CARS-OFFICIAL-VIDEO-EA-4-K-FILMS.gif" alt="Risky Road server logo">
-        <h1 class="hero-title">
-          <span class="hero-accent">Risky Road</span> Faction Showcase
-        </h1>
+        <h1 id="hero-title" class="hero-title"><span class="hero-accent">Risky Road</span> Faction Showcase</h1>
         <p class="hero-sub">Welcome — enjoy the showcase.</p>
 
-        <!-- Main tab navigation -->
-        <nav class="nav">
-          <a class="nav-link" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i>Risky Road</a>
-          <a class="nav-link" data-tab="faction" href="#"><i class="fa-solid fa-users"></i>Faction Showcase</a>
-          <a class="nav-link" data-tab="activemembers" href="#"><i class="fa-solid fa-id-card"></i>Active Members</a>
+        <nav class="nav" aria-label="Main navigation">
+          <!-- changed label to "Set Profile" as requested; data-tab still points to the same section id -->
+          <a class="nav-link active" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i> Set Profile</a>
+          <a class="nav-link" data-tab="faction" href="#"><i class="fa-solid fa-users"></i> Faction Showcase</a>
+          <a class="nav-link" data-tab="activemembers" href="#"><i class="fa-solid fa-id-card"></i> Active Members</a>
         </nav>
       </div>
     </section>
 
     <div id="riskyroad" class="nav-section active">
       <div class="section-card">
-        <div class="section-title">Risky Road</div>
+        <!-- changed section title to "Risky Road (4CH)" -->
+        <div class="section-title">Risky Road (4CH)</div>
         <ul class="rr-list">
-          <li class="rr-list-item"><span class="rr-list-title">Set:</span> Risky Road (104th &amp; Maryland)</li>
-          <li class="rr-list-item rr-blocks">
-            <span class="rr-list-title">Main Block:</span> <span class="rr-block-main">104th &amp; Maryland</span>
-          </li>
-          <li class="rr-list-item rr-blocks">
-            <span class="rr-list-title">Notable Blocks:</span> 105th &amp; Indiana &rarr; 107th &amp; Edbrooke
-          </li>
-          <li class="rr-list-item">
-            <span class="rr-list-title">Neighborhood:</span> Roseland, South Side, Chicago, Illinois
-          </li>
+          <!-- changed Set line to reference Risky Road (4CH) -->
+          <li class="rr-list-item"><span class="rr-list-title">Set:</span> Risky Road (4CH)</li>
+          <li class="rr-list-item"><span class="rr-list-title">Main Block:</span> <strong>104th &amp; Maryland</strong></li>
+          <li class="rr-list-item"><span class="rr-list-title">Notable Blocks:</span> 105th &amp; Indiana → 107th &amp; Edbrooke</li>
+          <li class="rr-list-item"><span class="rr-list-title">Neighborhood:</span> Roseland, South Side, Chicago, Illinois</li>
         </ul>
       </div>
     </div>
@@ -250,25 +175,24 @@
     <div id="faction" class="nav-section">
       <div class="section-card">
         <div class="section-title">Faction Showcase</div>
-        <p>This section highlights the Faction Showcase for exclusive items or info. (Customize this content as needed.)</p>
+        <p>This section highlights special faction items and showcase content. Customize as needed.</p>
       </div>
     </div>
 
     <div id="activemembers" class="nav-section">
       <div class="section-card">
         <div class="section-title">Active Members</div>
-
-        <!-- Members grid rendered by JS -->
         <div id="membersGrid" aria-live="polite"></div>
       </div>
     </div>
 
     <div class="watermark">
-      <a id="watermarkLink" href="https://youtu.be/_C9WqqXDQoE?si=VLnfOZDwR0FOL637" target="_blank" rel="noopener noreferrer">made my slimestslime</a>
+      <!-- changed watermark text to "made by slimestslime" (keeps link to your chosen URL) -->
+      <a id="watermarkLink" href="https://youtu.be/_C9WqqXDQoE?si=VLnfOZDwR0FOL637" target="_blank" rel="noopener noreferrer">made by slimestslime</a>
     </div>
   </div>
 
-  <!-- Right vertical discord tab -->
+  <!-- Right discord tab -->
   <div class="discord-tab" aria-hidden="false">
     <a id="discordLink" href="https://discord.gg/wcKtenyh" target="_blank" rel="noopener noreferrer" aria-label="Join our Discord">
       <span class="discord-divider">|</span>
@@ -276,18 +200,18 @@
     </a>
   </div>
 
-  <!-- Hidden YouTube iframe player (used as audio source) -->
+  <!-- Hidden YouTube iframe player (audio source) -->
   <div id="yt-player-wrap" style="width:0;height:0;overflow:hidden;position:fixed;left:-9999px;top:-9999px;">
     <div id="yt-player"></div>
   </div>
 
-  <!-- Persistent music player (bottom-left) -->
+  <!-- Player UI (unchanged functionality) -->
   <div class="player" role="region" aria-label="Music player" id="player">
     <div class="left">
       <button id="playBtn" class="play-btn paused" aria-pressed="false" aria-label="Play">
         <i id="playIcon" class="fa-solid fa-play"></i>
       </button>
-      <div class="track-meta" aria-hidden="true">
+      <div class="track-meta">
         <div class="track-title" id="trackTitle">Loading playlist…</div>
         <div class="track-sub" id="trackArtist">YouTube playlist</div>
       </div>
@@ -304,26 +228,25 @@
     </div>
 
     <div class="right">
-      <div class="vol" title="Volume">
+      <div class="vol">
         <button id="muteBtn" class="small-btn" aria-label="Mute/unmute"><i id="muteIcon" class="fa-solid fa-volume-high"></i></button>
         <input id="volRange" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume slider">
       </div>
       <button id="toggleLoop" class="small-btn" title="Toggle loop" aria-pressed="false"><i class="fa-solid fa-repeat"></i></button>
-      <button id="nextBtn" class="small-btn" title="Next track"><i class="fa-solid fa-forward"></i></button>
       <button id="prevBtn" class="small-btn" title="Previous track"><i class="fa-solid fa-backward"></i></button>
+      <button id="nextBtn" class="small-btn" title="Next track"><i class="fa-solid fa-forward"></i></button>
     </div>
   </div>
 
-  <!-- Unmute / Start fallback (shows only if autoplay blocked) -->
-  <button id="unmuteBtn" class="unmute" aria-hidden="true" title="Enable music">
-    <i class="fa-solid fa-volume-high"></i><span style="min-width:6ch">Play</span>
-  </button>
+  <!-- Unmute / Play fallback -->
+  <button id="unmuteBtn" class="unmute" aria-hidden="true" title="Enable music"><i class="fa-solid fa-volume-high"></i><span style="min-width:6ch">Play</span></button>
 
-  <!-- Member profile modal -->
+  <!-- Member modal -->
   <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
     <div class="modal" role="document">
       <button class="close-btn" id="modalClose" aria-label="Close profile">&times;</button>
       <h3 id="modalName">Member</h3>
+      <img id="modalAvatar" src="" alt="" style="width:120px;height:120px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.04);display:block;margin:8px 0;">
       <p><strong>Character Name:</strong> <span id="modalChar">—</span></p>
       <p><strong>Age:</strong> <span id="modalAge">—</span></p>
       <p><strong>Status:</strong> <span id="modalStatus" class="status">—</span></p>
@@ -331,20 +254,35 @@
   </div>
 
 <script>
-/* -----------------------------------------------------------
-  This script integrates:
-   - YouTube Iframe API playlist (autoplay attempt)
-   - persistent player UI controlling the hidden YT player
-   - watermark link, discord tab
-   - Active Members grid with clickable cards and modal
-------------------------------------------------------------*/
-
-/* ------------------- Members data + grid ------------------- */
+/* Members data (MookMoneyy updated previously) and members grid/modal logic */
 const members = [
-  { id: 'm1', display: 'John "Lil Hawk" Smith', role: 'YG, Block Runner', charName: 'Lil Hawk', age: 21, alive: true },
-  { id: 'm2', display: 'Marcus "Solo" Hayes', role: 'Shooter, Main Block', charName: 'Marcus Hayes', age: 24, alive: true },
-  { id: 'm3', display: 'Tony "OG Tone" Jackson', role: 'OG, Faction Leader', charName: 'Tony Jackson', age: 42, alive: false }
-  // add more members as needed
+  {
+    id: 'm1',
+    display: 'MookMoneyy',
+    role: 'shorties, 104th & Princeton',
+    charName: 'MookMoneyy',
+    age: 16,
+    alive: true,
+    avatar: 'https://i.ibb.co/tP33Sj8Z/GTA5-2025-07-18-05-07-43-503.webp'
+  },
+  {
+    id: 'm2',
+    display: 'Marcus "Solo" Hayes',
+    role: 'Shooter, Main Block',
+    charName: 'Marcus Hayes',
+    age: 24,
+    alive: true,
+    avatar: 'https://i.pravatar.cc/150?img=12'
+  },
+  {
+    id: 'm3',
+    display: 'Tony "OG Tone" Jackson',
+    role: 'OG, Faction Leader',
+    charName: 'Tony Jackson',
+    age: 42,
+    alive: false,
+    avatar: 'https://i.pravatar.cc/150?img=8'
+  }
 ];
 
 function renderMembersGrid() {
@@ -356,8 +294,11 @@ function renderMembersGrid() {
     card.tabIndex = 0;
     card.dataset.id = m.id;
     card.innerHTML = `
-      <div class="member-name">${m.display}</div>
-      <div class="member-role">${m.role}</div>
+      <img class="member-avatar" src="${m.avatar}" alt="${m.display} avatar">
+      <div style="min-width:0">
+        <div class="member-name">${m.display}</div>
+        <div class="member-role">${m.role}</div>
+      </div>
     `;
     card.addEventListener('click', () => openMemberModal(m.id));
     card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMemberModal(m.id); } });
@@ -365,10 +306,12 @@ function renderMembersGrid() {
   });
 }
 
-function openMemberModal(id) {
+function openMemberModal(id){
   const m = members.find(x => x.id === id);
-  if (!m) return;
+  if(!m) return;
   document.getElementById('modalName').textContent = m.display;
+  document.getElementById('modalAvatar').src = m.avatar;
+  document.getElementById('modalAvatar').alt = m.display + ' avatar';
   document.getElementById('modalChar').textContent = m.charName;
   document.getElementById('modalAge').textContent = m.age;
   const statusEl = document.getElementById('modalStatus');
@@ -377,29 +320,24 @@ function openMemberModal(id) {
   const backdrop = document.getElementById('modalBackdrop');
   backdrop.classList.add('show');
   backdrop.setAttribute('aria-hidden','false');
-  // focus close for accessibility
   document.getElementById('modalClose').focus();
 }
-
-document.getElementById('modalClose').addEventListener('click', closeModal);
-document.getElementById('modalBackdrop').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) closeModal();
-});
 function closeModal() {
   const backdrop = document.getElementById('modalBackdrop');
   backdrop.classList.remove('show');
   backdrop.setAttribute('aria-hidden','true');
 }
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalBackdrop').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
 
-/* render members on load */
 renderMembersGrid();
 
-/* ------------------- Tabs behavior ------------------- */
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', e => {
+/* Tabs behavior */
+document.querySelectorAll('.nav-link').forEach(link=>{
+  link.addEventListener('click', e=>{
     e.preventDefault();
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    document.querySelectorAll('.nav-section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+    document.querySelectorAll('.nav-section').forEach(s=>s.classList.remove('active'));
     link.classList.add('active');
     const tab = link.getAttribute('data-tab');
     const el = document.getElementById(tab);
@@ -407,8 +345,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
   });
 });
 
-/* ------------------- YouTube playlist + player UI ------------------- */
-/* Playlist IDs and titles */
+/* YouTube playlist + player UI kept as before (autoplay attempts included) */
 const ytPlaylist = [
   { id: 'A2h-dN8fWFQ', title: 'Track 1' },
   { id: '5EgOq543xH0', title: 'Track 2' }
@@ -419,25 +356,22 @@ let currentIndex = 0;
 let ytReady = false;
 let progressTimer = null;
 let loopCurrent = false;
+let autoplayAttempts = 0;
+const MAX_AUTOPLAY_ATTEMPTS = 12;
 
-/* load YT Iframe API */
 (function loadYT(){
-  if (window.YT && window.YT.Player) {
-    onYouTubeIframeAPIReady();
-    return;
-  }
+  if (window.YT && window.YT.Player) { onYouTubeIframeAPIReady(); return; }
   const tag = document.createElement('script');
   tag.src = "https://www.youtube.com/iframe_api";
   document.head.appendChild(tag);
 })();
 
-/* global callback required by the API */
-function onYouTubeIframeAPIReady() {
+function onYouTubeIframeAPIReady(){
   ytPlayer = new YT.Player('yt-player', {
     height: '0', width: '0',
     videoId: ytPlaylist[currentIndex].id,
     playerVars: {
-      autoplay: 0,
+      autoplay: 1,
       controls: 0,
       modestbranding: 1,
       rel: 0,
@@ -454,19 +388,14 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady() {
   ytReady = true;
-  // set initial volume (range 0..100)
   const vol = Math.round((parseFloat(document.getElementById('volRange').value) || 0.8) * 100);
-  ytPlayer.setVolume(vol);
+  try { ytPlayer.setVolume(vol); } catch(e){}
   updateTrackMeta();
-  // attempt autoplay immediately
-  tryAutoPlay();
+  attemptAutoplay();
 }
 
-function onPlayerError(e) {
-  // ignore for now; could log if needed
-}
-
-function onPlayerStateChange(event) {
+function onPlayerError(e){}
+function onPlayerStateChange(event){
   const YTSTATE = YT.PlayerState;
   if (event.data === YTSTATE.PLAYING) {
     setPlayingUI(true);
@@ -486,16 +415,25 @@ function onPlayerStateChange(event) {
   }
 }
 
-function updateTrackMeta() {
-  const meta = ytPlaylist[currentIndex] || {};
-  document.getElementById('trackTitle').textContent = meta.title || meta.id || 'YouTube track';
-  document.getElementById('trackArtist').textContent = `Track ${currentIndex+1} of ${ytPlaylist.length}`;
+function setPlayingUI(playing){
+  if (playing) {
+    document.getElementById('playBtn').classList.remove('paused');
+    document.getElementById('playIcon').className = 'fa-solid fa-pause';
+    document.getElementById('playBtn').setAttribute('aria-pressed','true');
+    document.getElementById('playBtn').setAttribute('aria-label','Pause');
+  } else {
+    document.getElementById('playBtn').classList.add('paused');
+    document.getElementById('playIcon').className = 'fa-solid fa-play';
+    document.getElementById('playBtn').setAttribute('aria-pressed','false');
+    document.getElementById('playBtn').setAttribute('aria-label','Play');
+  }
 }
 
-/* progress handling */
-function startProgressTimer() {
+function formatTime(s){ if (!isFinite(s)) return '0:00'; s = Math.floor(s); const m = Math.floor(s/60); const sec = s % 60; return m + ':' + (sec < 10 ? '0'+sec : sec); }
+
+function startProgressTimer(){
   stopProgressTimer();
-  progressTimer = setInterval(() => {
+  progressTimer = setInterval(()=> {
     if (!ytReady || !ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
     const cur = ytPlayer.getCurrentTime() || 0;
     const dur = ytPlayer.getDuration() || 0;
@@ -506,126 +444,72 @@ function startProgressTimer() {
     document.getElementById('timeTotal').textContent = formatTime(dur);
   }, 400);
 }
-function stopProgressTimer() {
-  if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+function stopProgressTimer(){ if (progressTimer) { clearInterval(progressTimer); progressTimer = null; } }
+
+function updateTrackMeta(){
+  const meta = ytPlaylist[currentIndex] || {};
+  document.getElementById('trackTitle').textContent = meta.title || meta.id || 'YouTube track';
+  document.getElementById('trackArtist').textContent = `Track ${currentIndex+1} of ${ytPlaylist.length}`;
 }
 
-function formatTime(s){
-  if (!isFinite(s)) return '0:00';
-  s = Math.floor(s);
-  const m = Math.floor(s/60);
-  const sec = s % 60;
-  return m + ':' + (sec < 10 ? '0'+sec : sec);
-}
-
-/* autoplay attempt */
-function tryAutoPlay() {
+function attemptAutoplay(){
   if (!ytReady) return;
-  try {
-    // cue and attempt to play
-    ytPlayer.cueVideoById(ytPlaylist[currentIndex].id);
-    // ask to play (may be blocked by browser)
-    ytPlayer.playVideo();
-    // update UI after brief delay
-    setTimeout(()=> {
-      const state = ytPlayer.getPlayerState();
-      setPlayingUI(state === YT.PlayerState.PLAYING);
-      if (state === YT.PlayerState.PLAYING) hideUnmute();
-    }, 600);
-  } catch (e) {
-    showUnmute();
-  }
-}
-
-/* control helpers */
-function playPauseToggle() {
-  if (!ytReady) { showUnmute(); return; }
-  const state = ytPlayer.getPlayerState();
-  if (state === YT.PlayerState.PLAYING) {
-    ytPlayer.pauseVideo();
-  } else {
-    ytPlayer.playVideo();
-  }
-}
-function loadAndPlayIndex(index) {
-  if (!ytReady) return;
-  currentIndex = index % ytPlaylist.length;
-  updateTrackMeta();
+  autoplayAttempts++;
   try {
     ytPlayer.loadVideoById(ytPlaylist[currentIndex].id);
-  } catch (e) {
-    ytPlayer.cueVideoById(ytPlaylist[currentIndex].id);
-    setTimeout(()=> ytPlayer.playVideo(), 300);
-  }
-}
-function playNext() {
-  currentIndex = (currentIndex + 1) % ytPlaylist.length;
-  loadAndPlayIndex(currentIndex);
-}
-function playPrev() {
-  currentIndex = (currentIndex - 1 + ytPlaylist.length) % ytPlaylist.length;
-  loadAndPlayIndex(currentIndex);
-}
-
-/* seeking */
-function seekFromEvent(ev) {
-  if (!ytReady || !ytPlayer) return;
-  const rect = document.getElementById('progress').getBoundingClientRect();
-  const x = ('touches' in ev && ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX;
-  const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
-  const dur = ytPlayer.getDuration() || 0;
-  if (dur) ytPlayer.seekTo(pct * dur, true);
-}
-
-/* volume and mute */
-function setVolumeFromRange(value) {
-  const vol = Math.round(parseFloat(value || 0.8) * 100);
-  if (ytReady && ytPlayer && ytPlayer.setVolume) {
-    ytPlayer.setVolume(vol);
-    if (vol === 0) {
-      document.getElementById('muteIcon').className = 'fa-solid fa-volume-xmark';
+    ytPlayer.playVideo && ytPlayer.playVideo();
+  } catch(e){}
+  setTimeout(()=> {
+    const state = ytPlayer && ytPlayer.getPlayerState ? ytPlayer.getPlayerState() : -1;
+    if (state === YT.PlayerState.PLAYING) {
+      setPlayingUI(true);
+      hideUnmute();
     } else {
-      document.getElementById('muteIcon').className = 'fa-solid fa-volume-high';
+      setPlayingUI(false);
+      if (autoplayAttempts < MAX_AUTOPLAY_ATTEMPTS) {
+        setTimeout(attemptAutoplay, 1000);
+      } else {
+        showUnmute();
+      }
     }
-  }
-}
-function toggleMute() {
-  if (!ytReady || !ytPlayer) return;
-  if (ytPlayer.isMuted && ytPlayer.isMuted()) {
-    ytPlayer.unMute();
-    document.getElementById('muteIcon').className = 'fa-solid fa-volume-high';
-  } else {
-    ytPlayer.mute();
-    document.getElementById('muteIcon').className = 'fa-solid fa-volume-xmark';
-  }
+  }, 700);
 }
 
-/* UI wiring */
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && ytReady) attemptAutoplay(); });
+window.addEventListener('focus', () => { if (ytReady) attemptAutoplay(); });
+
+function playPauseToggle(){ if (!ytReady) { showUnmute(); return; } const state = ytPlayer.getPlayerState(); if (state === YT.PlayerState.PLAYING) ytPlayer.pauseVideo(); else ytPlayer.playVideo(); }
+function loadAndPlayIndex(index){ if (!ytReady) return; currentIndex = (index + ytPlaylist.length) % ytPlaylist.length; updateTrackMeta(); try { ytPlayer.loadVideoById(ytPlaylist[currentIndex].id); } catch(e){ ytPlayer.cueVideoById(ytPlaylist[currentIndex].id); setTimeout(()=> ytPlayer.playVideo(), 300); } }
+function playNext(){ currentIndex = (currentIndex + 1) % ytPlaylist.length; loadAndPlayIndex(currentIndex); }
+function playPrev(){ currentIndex = (currentIndex - 1 + ytPlaylist.length) % ytPlaylist.length; loadAndPlayIndex(currentIndex); }
+
+function seekFromEvent(ev){ if (!ytReady || !ytPlayer) return; const rect = document.getElementById('progress').getBoundingClientRect(); const x = ('touches' in ev && ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX; const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width)); const dur = ytPlayer.getDuration() || 0; if (dur) ytPlayer.seekTo(pct * dur, true); }
+
+function setVolumeFromRange(value){ const vol = Math.round(parseFloat(value || 0.8) * 100); if (ytReady && ytPlayer && ytPlayer.setVolume) { ytPlayer.setVolume(vol); if (vol === 0) document.getElementById('muteIcon').className = 'fa-solid fa-volume-xmark'; else document.getElementById('muteIcon').className = 'fa-solid fa-volume-high'; } }
+function toggleMute(){ if (!ytReady || !ytPlayer) return; if (ytPlayer.isMuted && ytPlayer.isMuted()) { ytPlayer.unMute(); document.getElementById('muteIcon').className = 'fa-solid fa-volume-high'; } else { ytPlayer.mute(); document.getElementById('muteIcon').className = 'fa-solid fa-volume-xmark'; } }
+
+function showUnmute(){ const el = document.getElementById('unmuteBtn'); el.classList.add('show'); el.setAttribute('aria-hidden','false'); }
+function hideUnmute(){ const el = document.getElementById('unmuteBtn'); el.classList.remove('show'); el.setAttribute('aria-hidden','true'); }
+
 document.getElementById('playBtn').addEventListener('click', (e)=> { e.preventDefault(); playPauseToggle(); });
 document.getElementById('nextBtn').addEventListener('click', (e)=> { e.preventDefault(); playNext(); });
 document.getElementById('prevBtn').addEventListener('click', (e)=> { e.preventDefault(); playPrev(); });
 document.getElementById('volRange').addEventListener('input', (e)=> setVolumeFromRange(e.target.value));
 document.getElementById('muteBtn').addEventListener('click', (e)=> { e.preventDefault(); toggleMute(); });
-
 document.getElementById('progress').addEventListener('click', seekFromEvent);
-document.getElementById('progress').addEventListener('keydown', (e)=> {
-  if (!ytReady || !ytPlayer) return;
-  const dur = ytPlayer.getDuration() || 0;
-  if (!dur) return;
-  const step = Math.max(5, Math.floor(dur * 0.05));
-  if (e.key === 'ArrowLeft') ytPlayer.seekTo(Math.max(0, ytPlayer.getCurrentTime() - step), true);
-  else if (e.key === 'ArrowRight') ytPlayer.seekTo(Math.min(dur, ytPlayer.getCurrentTime() + step), true);
+document.getElementById('toggleLoop').addEventListener('click', (e)=> { loopCurrent = !loopCurrent; e.currentTarget.setAttribute('aria-pressed', String(loopCurrent)); e.currentTarget.style.opacity = loopCurrent ? '1' : '0.6'; });
+
+document.getElementById('unmuteBtn').addEventListener('click', async (e)=> {
+  e.preventDefault();
+  hideUnmute();
+  if (!ytReady) return;
+  try {
+    ytPlayer.loadVideoById(ytPlaylist[currentIndex].id);
+    ytPlayer.playVideo();
+  } catch(e){ try { ytPlayer.playVideo(); } catch(e){} }
 });
 
-/* loop toggle */
-document.getElementById('toggleLoop').addEventListener('click', (e) => {
-  loopCurrent = !loopCurrent;
-  e.currentTarget.setAttribute('aria-pressed', String(loopCurrent));
-  e.currentTarget.style.opacity = loopCurrent ? '1' : '0.6';
-});
-
-/* keyboard space toggle */
-window.addEventListener('keydown', (e) => {
+window.addEventListener('keydown', (e)=> {
   const tag = (document.activeElement && document.activeElement.tagName) || '';
   if (e.code === 'Space' && !['INPUT','TEXTAREA','SELECT','BUTTON'].includes(tag)) {
     e.preventDefault();
@@ -633,39 +517,11 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-/* autoplay fallback: show unmute if autoplay blocked */
-function showUnmute() {
-  const el = document.getElementById('unmuteBtn');
-  el.classList.add('show');
-  el.setAttribute('aria-hidden','false');
-}
-function hideUnmute() {
-  const el = document.getElementById('unmuteBtn');
-  el.classList.remove('show');
-  el.setAttribute('aria-hidden','true');
-}
-document.getElementById('unmuteBtn').addEventListener('click', async (e) => {
-  e.preventDefault();
-  hideUnmute();
-  if (!ytReady) return;
-  try {
-    ytPlayer.loadVideoById(ytPlaylist[currentIndex].id);
-    ytPlayer.playVideo();
-  } catch (err) {
-    try { ytPlayer.playVideo(); } catch(e){}
-  }
-});
-
-/* initialize UI text */
+/* Update track meta initially */
 updateTrackMeta();
 
-/* ensure we clear timers on unload */
-window.addEventListener('beforeunload', () => {
-  if (progressTimer) clearInterval(progressTimer);
-});
-
-/* watermark is a link already in DOM; discord tab link present */
-/* nothing else required for those */
+/* cleanup */
+window.addEventListener('beforeunload', ()=> { if (progressTimer) clearInterval(progressTimer); });
 
 </script>
 </body>
