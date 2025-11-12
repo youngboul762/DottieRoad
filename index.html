@@ -6,7 +6,7 @@
 <title>The Chi : Cinematic Roleplay</title>
 <style>
   :root{
-    --bg:#000000;           /* black background */
+    --bg:#000000;
     --panel:#121421;
     --accent:#ff6b3b;
     --accent-2:#ffb03a;
@@ -29,7 +29,7 @@
     padding:0px 16px calc(var(--player-height) + 48px);
   }
 
-  /* animated GIF background (full-bleed) */
+  /* full bleed animated GIF background */
   .page-bg{
     position:fixed;
     inset:0;
@@ -54,7 +54,7 @@
   .brand { font-size: clamp(20px, 3vw, 28px); font-weight:800; color:var(--text); margin:0; }
   .brand .accent { color:var(--accent-2); }
 
-  .hero { width:100%; margin-top:14px; }
+  .hero { width:100%; margin-top:14px; z-index:2; position:relative; }
   .hero-inner { padding:28px 20px; position:relative; z-index:2; }
   .hero-logo { position:absolute; top:12px; right:20px; height:88px; border-radius:6px; filter: drop-shadow(0 6px 18px rgba(0,0,0,.6)); }
   .hero-title { margin:0 0 6px 0; font-weight:900; letter-spacing:0.02em; font-size: clamp(28px, 4.4vw, 40px); color: var(--accent-2); }
@@ -63,6 +63,7 @@
   .nav { display:flex; gap:16px; margin-top:14px; z-index:2; }
   .nav-link { color:var(--text); text-decoration:none; font-size:14px; padding:6px 10px; border-radius:8px; transition:all .15s ease; }
   .nav-link:hover { color:var(--accent-2); transform: translateY(-2px); }
+  .nav-link.active { background: rgba(255,255,255,0.02); }
 
   .nav-section { display:none; margin-top:18px; z-index:2; }
   .nav-section.active { display:block; }
@@ -74,7 +75,10 @@
   .rr-list-item { margin-bottom:10px; }
   .rr-list-title { font-weight:700; color:var(--accent-2); margin-right:8px; }
 
-  /* watermark bottom center with link */
+  /* set-image styling */
+  .set-image { width:100%; max-width:420px; border-radius:10px; display:block; margin:12px 0; border:1px solid rgba(255,255,255,0.04); }
+
+  /* watermark bottom center */
   .watermark{ position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:50; pointer-events:auto; font-weight:800; color:var(--accent-2); }
   .watermark a { color:inherit; text-decoration:none; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.02); }
 
@@ -134,12 +138,13 @@
     .player{ left:12px; right:12px; min-width:auto; height:56px; }
     .vol input[type=range]{ display:none; }
     .member-avatar{ width:48px; height:48px; }
+    .set-image { max-width:100%; }
   }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- reverted to the animated GIF background -->
+  <!-- animated GIF background -->
   <div class="page-bg" aria-hidden="true"></div>
 
   <div class="wrap">
@@ -150,24 +155,45 @@
         <p class="hero-sub">Welcome — enjoy the showcase.</p>
 
         <nav class="nav" aria-label="Main navigation">
-          <!-- changed label to "Set Profile" as requested; data-tab still points to the same section id -->
+          <!-- label changed to Set Profile -->
           <a class="nav-link active" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i> Set Profile</a>
           <a class="nav-link" data-tab="faction" href="#"><i class="fa-solid fa-users"></i> Faction Showcase</a>
           <a class="nav-link" data-tab="activemembers" href="#"><i class="fa-solid fa-id-card"></i> Active Members</a>
+          <a class="nav-link" data-tab="opps" href="#"><i class="fa-solid fa-skull-crossbones"></i> Opps</a>
         </nav>
       </div>
     </section>
 
+    <!-- Set Profile (replaced content as requested) -->
     <div id="riskyroad" class="nav-section active">
       <div class="section-card">
-        <!-- changed section title to "Risky Road (4CH)" -->
         <div class="section-title">Risky Road (4CH)</div>
+
+        <!-- Replaced content exactly as requested -->
         <ul class="rr-list">
-          <!-- changed Set line to reference Risky Road (4CH) -->
-          <li class="rr-list-item"><span class="rr-list-title">Set:</span> Risky Road (4CH)</li>
-          <li class="rr-list-item"><span class="rr-list-title">Main Block:</span> <strong>104th &amp; Maryland</strong></li>
+          <li class="rr-list-item"><span class="rr-list-title">Set:</span> Risky Road (104th &amp; Maryland)</li>
+
+          <!-- Uploaded image shown here (uses the hero logo GIF as the uploaded image placeholder) -->
+          <li class="rr-list-item">
+            <img class="set-image" src="https://i.ibb.co/C3gpNWgG/RISKY-BANDS-x-LIL-QUISSY-HOT-CARS-OFFICIAL-VIDEO-EA-4-K-FILMS.gif" alt="Uploaded image">
+          </li>
+
+          <li class="rr-list-item"><span class="rr-list-title">Main Block:</span> 104th &amp; Maryland</li>
           <li class="rr-list-item"><span class="rr-list-title">Notable Blocks:</span> 105th &amp; Indiana → 107th &amp; Edbrooke</li>
+
+          <li class="rr-list-item"><span class="rr-list-title">Gang Composition:</span> Predominantly composed of younger members tied to the Four Corner Hustlers (4CH) structure, guided by older OGs who’ve maintained presence in Roseland since the early 2010s. The younger generation keeps the block active through both street and social activity, while the older heads provide structure, discipline, and leadership to keep the Road organized and respected.</li>
+
+          <li class="rr-list-item"><span class="rr-list-title">Area Formerly Controlled By:</span> Smaller 4CH-affiliated crews and independent neighborhood figures before Risky Road unified the area under the same name.</li>
+
           <li class="rr-list-item"><span class="rr-list-title">Neighborhood:</span> Roseland, South Side, Chicago, Illinois</li>
+
+          <li class="rr-list-item"><span class="rr-list-title">Deceased Members:</span> Several fallen members have left their mark on the neighborhood, honored through murals, candles, and social media tributes. Their memory serves as motivation for the younger generation to keep the Road’s name alive.</li>
+
+          <li class="rr-list-item"><span class="rr-list-title">Rappers:</span> A handful of active members have stepped into Chicago’s local drill and trap music scene, releasing songs inspired by the Road’s daily life, struggles, and neighborhood pride. Their music has built local buzz, with tracks circulating through platforms like YouTube and SoundCloud, further solidifying the set’s identity and presence online.</li>
+
+          <li class="rr-list-item"><span class="rr-list-title">Allies:</span> Primarily aligned with other Four Corner Hustler sets across the South and West Sides. Some neutral or respectful ties with select BD and unaffiliated neighborhood crews.</li>
+
+          <li class="rr-list-item"><span class="rr-list-title">Years Active:</span> Early 2010s – Present.</li>
         </ul>
       </div>
     </div>
@@ -179,6 +205,7 @@
       </div>
     </div>
 
+    <!-- Active Members (unchanged from previous but cards are present) -->
     <div id="activemembers" class="nav-section">
       <div class="section-card">
         <div class="section-title">Active Members</div>
@@ -186,8 +213,16 @@
       </div>
     </div>
 
+    <!-- Opps tab and content added -->
+    <div id="opps" class="nav-section">
+      <div class="section-card">
+        <div class="section-title">Opps</div>
+        <p><strong>Currently above:</strong> BloodHound/79, DottieRoad, NLMB, ShortyMobb.</p>
+        <p>Use this space to add further notes about oppositions, rival sets, or situational intel.</p>
+      </div>
+    </div>
+
     <div class="watermark">
-      <!-- changed watermark text to "made by slimestslime" (keeps link to your chosen URL) -->
       <a id="watermarkLink" href="https://youtu.be/_C9WqqXDQoE?si=VLnfOZDwR0FOL637" target="_blank" rel="noopener noreferrer">made by slimestslime</a>
     </div>
   </div>
@@ -205,7 +240,7 @@
     <div id="yt-player"></div>
   </div>
 
-  <!-- Player UI (unchanged functionality) -->
+  <!-- Player UI -->
   <div class="player" role="region" aria-label="Music player" id="player">
     <div class="left">
       <button id="playBtn" class="play-btn paused" aria-pressed="false" aria-label="Play">
@@ -254,7 +289,7 @@
   </div>
 
 <script>
-/* Members data (MookMoneyy updated previously) and members grid/modal logic */
+/* Members data */
 const members = [
   {
     id: 'm1',
@@ -345,10 +380,18 @@ document.querySelectorAll('.nav-link').forEach(link=>{
   });
 });
 
-/* YouTube playlist + player UI kept as before (autoplay attempts included) */
+/* YouTube playlist + player UI
+   Playlist tracks:
+   - A2h-dN8fWFQ
+   - 5EgOq543xH0
+   - ZcDObWYToXY (added as requested)
+   - ZcDObWYToXY (duplicate added per provided links)
+*/
 const ytPlaylist = [
   { id: 'A2h-dN8fWFQ', title: 'Track 1' },
-  { id: '5EgOq543xH0', title: 'Track 2' }
+  { id: '5EgOq543xH0', title: 'Track 2' },
+  { id: 'ZcDObWYToXY', title: 'Track 3' },
+  { id: 'ZcDObWYToXY', title: 'Track 4' }
 ];
 
 let ytPlayer = null;
@@ -359,6 +402,7 @@ let loopCurrent = false;
 let autoplayAttempts = 0;
 const MAX_AUTOPLAY_ATTEMPTS = 12;
 
+/* load YouTube Iframe API */
 (function loadYT(){
   if (window.YT && window.YT.Player) { onYouTubeIframeAPIReady(); return; }
   const tag = document.createElement('script');
@@ -393,7 +437,6 @@ function onPlayerReady() {
   updateTrackMeta();
   attemptAutoplay();
 }
-
 function onPlayerError(e){}
 function onPlayerStateChange(event){
   const YTSTATE = YT.PlayerState;
@@ -452,6 +495,7 @@ function updateTrackMeta(){
   document.getElementById('trackArtist').textContent = `Track ${currentIndex+1} of ${ytPlaylist.length}`;
 }
 
+/* Repeated autoplay attempts to maximize chance it starts automatically */
 function attemptAutoplay(){
   if (!ytReady) return;
   autoplayAttempts++;
@@ -474,10 +518,10 @@ function attemptAutoplay(){
     }
   }, 700);
 }
-
 window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && ytReady) attemptAutoplay(); });
 window.addEventListener('focus', () => { if (ytReady) attemptAutoplay(); });
 
+/* playback controls */
 function playPauseToggle(){ if (!ytReady) { showUnmute(); return; } const state = ytPlayer.getPlayerState(); if (state === YT.PlayerState.PLAYING) ytPlayer.pauseVideo(); else ytPlayer.playVideo(); }
 function loadAndPlayIndex(index){ if (!ytReady) return; currentIndex = (index + ytPlaylist.length) % ytPlaylist.length; updateTrackMeta(); try { ytPlayer.loadVideoById(ytPlaylist[currentIndex].id); } catch(e){ ytPlayer.cueVideoById(ytPlaylist[currentIndex].id); setTimeout(()=> ytPlayer.playVideo(), 300); } }
 function playNext(){ currentIndex = (currentIndex + 1) % ytPlaylist.length; loadAndPlayIndex(currentIndex); }
@@ -491,6 +535,7 @@ function toggleMute(){ if (!ytReady || !ytPlayer) return; if (ytPlayer.isMuted &
 function showUnmute(){ const el = document.getElementById('unmuteBtn'); el.classList.add('show'); el.setAttribute('aria-hidden','false'); }
 function hideUnmute(){ const el = document.getElementById('unmuteBtn'); el.classList.remove('show'); el.setAttribute('aria-hidden','true'); }
 
+/* wire UI events */
 document.getElementById('playBtn').addEventListener('click', (e)=> { e.preventDefault(); playPauseToggle(); });
 document.getElementById('nextBtn').addEventListener('click', (e)=> { e.preventDefault(); playNext(); });
 document.getElementById('prevBtn').addEventListener('click', (e)=> { e.preventDefault(); playPrev(); });
@@ -503,10 +548,7 @@ document.getElementById('unmuteBtn').addEventListener('click', async (e)=> {
   e.preventDefault();
   hideUnmute();
   if (!ytReady) return;
-  try {
-    ytPlayer.loadVideoById(ytPlaylist[currentIndex].id);
-    ytPlayer.playVideo();
-  } catch(e){ try { ytPlayer.playVideo(); } catch(e){} }
+  try { ytPlayer.loadVideoById(ytPlaylist[currentIndex].id); ytPlayer.playVideo(); } catch(e){ try { ytPlayer.playVideo(); } catch(e){} }
 });
 
 window.addEventListener('keydown', (e)=> {
@@ -517,7 +559,7 @@ window.addEventListener('keydown', (e)=> {
   }
 });
 
-/* Update track meta initially */
+/* initialize UI text */
 updateTrackMeta();
 
 /* cleanup */
