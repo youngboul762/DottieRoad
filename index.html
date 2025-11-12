@@ -14,6 +14,7 @@
     --muted:#94a3b8;
     --card-common:#2b2f44;
     --shadow:0 10px 30px rgba(0,0,0,.45);
+    --player-height:62px;
   }
   *{box-sizing:border-box}
   html,body{height:100%; overflow-x:hidden}
@@ -21,37 +22,19 @@
     margin:0;background:radial-gradient(1200px 600px at 10% -10%, rgba(255,140,64,.16), transparent 60%),
     radial-gradient(1200px 600px at 110% 10%, rgba(255,92,48,.12), transparent 60%), var(--bg);
     color:var(--text); font:500 16px/1.4 "Rajdhani", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    letter-spacing:.2px; display:flex; align-items:flex-start; justify-content:center; padding:0px 16px 96px;
+    letter-spacing:.2px; display:flex; align-items:flex-start; justify-content:center; padding:0px 16px calc(var(--player-height) + 48px);
   }
 
-  /* background image (kept as fallback) */
+  /* background GIF */
   .page-bg{ 
-    position:fixed; 
-    inset:0; 
-    z-index:0; 
-    pointer-events:none;
+    position:fixed; inset:0; z-index:0; pointer-events:none;
     background:
       url('https://i.ibb.co/qMm7TKMz/The-Deadly-War-Between-Bloodhound-And-Risky-Road.gif') center/cover no-repeat fixed,
       url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat fixed;
     filter: blur(12px) saturate(1.08);
-    opacity:.23;
-    transform: scale(1.06);
+    opacity:.65;
+    transform: scale(1.04);
   }
-
-  /* Video background (hidden until started) */
-  #bg-video {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity .8s ease;
-    pointer-events: none;
-    filter: saturate(1.08) contrast(.98) brightness(.95);
-  }
-  #bg-video.playing { opacity: 0.72; } /* adjust how visible the video is */
 
   .wrap{max-width:1280px; width:100%; margin:0 auto}
   .topbar {
@@ -79,161 +62,211 @@
   .rr-blocks { margin-bottom: 10px;}
   .rr-block-main {font-weight:700;}
 
-  /* Fullscreen start overlay */
-  .start-overlay {
+  /* -------- Music player styles (bottom left persistent) -------- */
+  .player {
     position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(180deg, rgba(4,4,6,0.85), rgba(6,6,8,0.6));
-    backdrop-filter: blur(8px);
-    color: var(--text);
-    text-align: center;
-    padding: 24px;
-  }
-  .start-card {
-    max-width: 780px;
-    width: calc(100% - 48px);
-    background: rgba(18,18,28,0.45);
-    border: 1px solid rgba(255,255,255,0.04);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    left: 18px;
+    bottom: 12px;
+    height: var(--player-height);
+    min-width: 340px;
+    max-width: calc(100% - 36px);
+    background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,16,0.96));
     border-radius: 12px;
-    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.04);
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding: 8px 12px;
+    z-index:10000;
+    color:var(--text);
+    backdrop-filter: blur(6px);
+    overflow: hidden;
+    font-family: inherit;
   }
-  .start-title { font-size: clamp(22px, 3vw, 28px); margin: 0 0 8px; color: var(--accent-2); font-weight: 800; }
-  .start-sub { color: #c6d0df; margin: 0 0 18px; }
-  .start-hint { font-size: 14px; color: var(--muted); margin-top: 6px; }
-  .start-action {
-    display:inline-flex;
+  .player .left { display:flex; align-items:center; gap:10px; min-width:0; }
+  .play-btn {
+    width:46px; height:46px; border-radius:10px; display:inline-grid; place-items:center;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    color:#08101a; font-weight:800; cursor:pointer; border:none; box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  }
+  .play-btn.paused { background: transparent; border:1px solid rgba(255,255,255,0.06); color:var(--accent-2); }
+  .track-meta { min-width:0; overflow:hidden; display:flex; flex-direction:column; gap:2px; }
+  .track-title { font-weight:700; font-size:14px; color: #fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+  .track-sub { font-size:12px; color:var(--muted); white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+
+  .player .center { flex:1; display:flex; flex-direction:column; gap:6px; padding:0 8px; min-width:0; }
+  .progress {
+    height:6px; background: rgba(255,255,255,0.04); border-radius:6px; position:relative; cursor:pointer;
+    overflow:hidden;
+  }
+  .progress .filled { position:absolute; left:0; top:0; bottom:0; width:0%; background: linear-gradient(90deg,var(--accent-2),var(--accent)); border-radius:6px; transition: width .12s linear; }
+  .time-row { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); }
+
+  .player .right { display:flex; align-items:center; gap:8px; margin-left:8px; }
+  .vol {
+    display:flex; align-items:center; gap:8px;
+  }
+  .vol input[type=range] { width:96px; accent-color: var(--accent-2); }
+
+  .player .small-btn {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.03);
+    color:var(--text);
+    padding:8px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+  @media (max-width:420px){
+    .player { left: 12px; right: 12px; min-width: auto; height:56px; padding:8px; }
+    .vol input[type=range] { display:none; }
+    .track-sub { display:none; }
+  }
+  /* -------------------------------------------------------------- */
+
+  /* Unmute fallback button (appears only if autoplay blocked) */
+  .unmute {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index:10001;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    color:#08101a;
+    padding:10px 14px;
+    border-radius:12px;
+    font-weight:800;
+    border: none;
+    display:none;
     align-items:center;
     gap:10px;
-    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
-    color: #08101a;
-    font-weight: 800;
-    padding: 10px 16px;
-    border-radius: 8px;
-    margin-top: 8px;
-    cursor: pointer;
-    user-select: none;
-    box-shadow: 0 6px 20px rgba(255,140,64,0.12), inset 0 -2px 6px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    cursor:pointer;
   }
-
-  /* small helper when overlay changes after click */
-  .muted-note { color: var(--muted); font-size:13px; margin-top:8px; display:block; }
-
-  @media (max-width:640px){
-    .start-card{ padding:18px }
-    .start-title{ font-size:20px }
-  }
+  .unmute.show { display:flex; }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-<!-- Background video (replace src with your showcase video) -->
-<video id="bg-video" playsinline loop webkit-playsinline preload="auto" crossorigin="anonymous">
-  <!-- Placeholder demo video (Big Buck Bunny). Replace with your showcase video URL. -->
-  <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-  <!-- Provide WebM or other formats as needed for broader support -->
-  Your browser doesn't support the background video.
-</video>
-
-<div class="wrap">
   <div class="page-bg" aria-hidden="true"></div>
-  <section class="hero">
-    <div class="hero-inner">
-      <img class="hero-logo" src="https://i.ibb.co/C3gpNWgG/RISKY-BANDS-x-LIL-QUISSY-HOT-CARS-OFFICIAL-VIDEO-EA-4-K-FILMS.gif" alt="Risky Road server logo">
-      <h1 class="hero-title">
-        <span class="hero-accent">Risky Road</span> Faction Showcase
-      </h1>
-      <p class="hero-sub">Foreva Hawk Nem.</p>
-      <!-- Main tab navigation -->
-      <nav class="nav">
-        <a class="nav-link" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i>Risky Road</a>
-        <a class="nav-link" data-tab="faction" href="#"><i class="fa-solid fa-users"></i>Faction Showcase</a>
-        <a class="nav-link" data-tab="activemembers" href="#"><i class="fa-solid fa-id-card"></i>Active Members</a>
-      </nav>
-    </div>
-  </section>
 
-  <div id="riskyroad" class="nav-section active">
-    <div class="section-card">
-      <div class="section-title">Risky Road</div>
-      <ul class="rr-list">
-        <li class="rr-list-item"><span class="rr-list-title">Set:</span> Risky Road (104th &amp; Maryland)</li>
-        <li class="rr-list-item rr-blocks">
-          <span class="rr-list-title">Main Block:</span> <span class="rr-block-main">104th &amp; Maryland</span>
-        </li>
-        <li class="rr-list-item rr-blocks">
-          <span class="rr-list-title">Notable Blocks:</span> 105th &amp; Indiana &rarr; 107th &amp; Edbrooke
-        </li>
-        <li class="rr-list-item">
-          <span class="rr-list-title">Gang Composition:</span> Predominantly composed of younger members tied to the Four Corner Hustlers (4CH) structure, guided by older OGs who’ve maintained presence in Roseland since the early 2010s. The younger generation keeps the block active through both street and social activity, while the older heads provide structure, discipline, and leadership to keep the Road organized and respected.
-        </li>
-        <li class="rr-list-item">
-          <span class="rr-list-title">Area Formerly Controlled By:</span> Smaller 4CH-affiliated crews and independent neighborhood figures before Risky Road unified the area under the same name.
-        </li>
-        <li class="rr-list-item">
-          <span class="rr-list-title">Neighborhood:</span> Roseland, South Side, Chicago, Illinois
-        </li>
-        <li class="rr-list-item">
-          <span class="rr-list-title">Deceased Members:</span> Several fallen members have left their mark on the neighborhood, honored through murals, candles, and social media tributes. Their memory serves as motivation for the younger generation to keep the Road’s name alive.
-        </li>
-        <li class="rr-list-item">
-          <span class="rr-list-title">Rappers:</span> A handful of active members have stepped into Chicago’s local drill and trap music scene, releasing songs inspired by the Road’s daily life, struggles, and neighborhood pride. Their music has built local buzz, with tracks circulating through platforms like YouTube and SoundCloud, further solidifying the set’s identity and presence online.
-        </li>
-        <li class="rr-list-item">
-          <span class="rr-list-title">Allies:</span> Primarily aligned with other Four Corner Hustler sets across the South and West Sides. Some neutral or respectful ties with select BD and unaffiliated neighborhood crews.
-        </li>
-        <li class="rr-list-item">
-          <span class="rr-list-title">Years Active:</span> Early 2010s – Present
-        </li>
-      </ul>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-inner">
+        <img class="hero-logo" src="https://i.ibb.co/C3gpNWgG/RISKY-BANDS-x-LIL-QUISSY-HOT-CARS-OFFICIAL-VIDEO-EA-4-K-FILMS.gif" alt="Risky Road server logo">
+        <h1 class="hero-title">
+          <span class="hero-accent">Risky Road</span> Faction Showcase
+        </h1>
+        <!-- changed to a welcome subtitle (no click required) -->
+        <p class="hero-sub">Welcome — enjoy the showcase.</p>
+
+        <!-- Main tab navigation -->
+        <nav class="nav">
+          <a class="nav-link" data-tab="riskyroad" href="#"><i class="fa-solid fa-road"></i>Risky Road</a>
+          <a class="nav-link" data-tab="faction" href="#"><i class="fa-solid fa-users"></i>Faction Showcase</a>
+          <a class="nav-link" data-tab="activemembers" href="#"><i class="fa-solid fa-id-card"></i>Active Members</a>
+        </nav>
+      </div>
+    </section>
+
+    <div id="riskyroad" class="nav-section active">
+      <div class="section-card">
+        <div class="section-title">Risky Road</div>
+        <ul class="rr-list">
+          <li class="rr-list-item"><span class="rr-list-title">Set:</span> Risky Road (104th &amp; Maryland)</li>
+          <li class="rr-list-item rr-blocks">
+            <span class="rr-list-title">Main Block:</span> <span class="rr-block-main">104th &amp; Maryland</span>
+          </li>
+          <li class="rr-list-item rr-blocks">
+            <span class="rr-list-title">Notable Blocks:</span> 105th &amp; Indiana &rarr; 107th &amp; Edbrooke
+          </li>
+          <li class="rr-list-item">
+            <span class="rr-list-title">Gang Composition:</span> Predominantly composed of younger members tied to the Four Corner Hustlers (4CH) structure, guided by older OGs who’ve maintained presence in Roseland since the early 2010s. The younger generation keeps the block active through both street and social activity, while the older heads provide structure, discipline, and leadership to keep the Road organized and respected.
+          </li>
+          <li class="rr-list-item">
+            <span class="rr-list-title">Area Formerly Controlled By:</span> Smaller 4CH-affiliated crews and independent neighborhood figures before Risky Road unified the area under the same name.
+          </li>
+          <li class="rr-list-item">
+            <span class="rr-list-title">Neighborhood:</span> Roseland, South Side, Chicago, Illinois
+          </li>
+          <li class="rr-list-item">
+            <span class="rr-list-title">Deceased Members:</span> Several fallen members have left their mark on the neighborhood, honored through murals, candles, and social media tributes. Their memory serves as motivation for the younger generation to keep the Road’s name alive.
+          </li>
+          <li class="rr-list-item">
+            <span class="rr-list-title">Rappers:</span> A handful of active members have stepped into Chicago’s local drill and trap music scene, releasing songs inspired by the Road’s daily life, struggles, and neighborhood pride. Their music has built local buzz, with tracks circulating through platforms like YouTube and SoundCloud, further solidifying the set’s identity and presence online.
+          </li>
+          <li class="rr-list-item">
+            <span class="rr-list-title">Allies:</span> Primarily aligned with other Four Corner Hustler sets across the South and West Sides. Some neutral or respectful ties with select BD and unaffiliated neighborhood crews.
+          </li>
+          <li class="rr-list-item">
+            <span class="rr-list-title">Years Active:</span> Early 2010s – Present
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="faction" class="nav-section">
+      <div class="section-card">
+        <div class="section-title">Faction Showcase</div>
+        <p>This section highlights the Faction Showcase for exclusive items or info. (Customize this content as needed.)</p>
+      </div>
+    </div>
+
+    <div id="activemembers" class="nav-section">
+      <div class="section-card">
+        <div class="section-title">Active Members</div>
+        <ul class="rr-list">
+          <li class="rr-list-item"><span class="rr-list-title">John "Lil Hawk" Smith</span> — YG, Block Runner</li>
+          <li class="rr-list-item"><span class="rr-list-title">Marcus "Solo" Hayes</span> — Shooter, Main Block</li>
+          <li class="rr-list-item"><span class="rr-list-title">Tony "OG Tone" Jackson</span> — OG, Faction Leader</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="watermark"><span class="inner">Risky Road</span></div>
+
+    <!-- Background music element (player will control this) -->
+    <audio id="bg-audio" src="https://files.codedefault.com/riskyroad/music.mp3" loop preload="auto"></audio>
+  </div>
+
+  <!-- Persistent music player (bottom-left) -->
+  <div class="player" role="region" aria-label="Music player" id="player">
+    <div class="left">
+      <button id="playBtn" class="play-btn paused" aria-pressed="false" aria-label="Play">
+        <i id="playIcon" class="fa-solid fa-play"></i>
+      </button>
+      <div class="track-meta" aria-hidden="true">
+        <div class="track-title" id="trackTitle">Risky Road Showcase</div>
+        <div class="track-sub" id="trackArtist">Background music</div>
+      </div>
+    </div>
+
+    <div class="center">
+      <div class="progress" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0" aria-label="Track progress">
+        <div class="filled" id="progressFilled"></div>
+      </div>
+      <div class="time-row">
+        <div id="timeElapsed">0:00</div>
+        <div id="timeTotal">0:00</div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="vol" title="Volume">
+        <button id="muteBtn" class="small-btn" aria-label="Mute/unmute"><i id="muteIcon" class="fa-solid fa-volume-high"></i></button>
+        <input id="volRange" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume slider">
+      </div>
+      <button id="toggleLoop" class="small-btn" title="Toggle loop" aria-pressed="true"><i class="fa-solid fa-repeat"></i></button>
     </div>
   </div>
 
-  <div id="faction" class="nav-section">
-    <div class="section-card">
-      <div class="section-title">Faction Showcase</div>
-      <p>This section highlights the Faction Showcase for exclusive items or info. (Customize this content as needed.)</p>
-    </div>
-  </div>
-
-  <div id="activemembers" class="nav-section">
-    <div class="section-card">
-      <div class="section-title">Active Members</div>
-      <!-- Example list. Replace/add your members as needed! -->
-      <ul class="rr-list">
-        <li class="rr-list-item"><span class="rr-list-title">John "Lil Hawk" Smith</span> — YG, Block Runner</li>
-        <li class="rr-list-item"><span class="rr-list-title">Marcus "Solo" Hayes</span> — Shooter, Main Block</li>
-        <li class="rr-list-item"><span class="rr-list-title">Tony "OG Tone" Jackson</span> — OG, Faction Leader</li>
-        <!-- Add other members below as needed -->
-      </ul>
-    </div>
-  </div>
-
-  <div class="watermark"><span class="inner">Risky Road</span></div>
-
-  <!-- Background music (do NOT autoplay; we'll start it on Enter after the click) -->
-  <audio id="bg-audio" src="https://files.codedefault.com/riskyroad/music.mp3" loop preload="auto"></audio>
-</div>
-
-<!-- Start overlay that enforces: click then press Enter -->
-<div id="start-overlay" class="start-overlay" aria-hidden="false" role="dialog" aria-label="Start showcase">
-  <div class="start-card" id="start-card">
-    <h2 class="start-title">Welcome to the Risky Road Showcase</h2>
-    <p class="start-sub">Click anywhere on this overlay to focus, then press Enter to start the music and the showcase video.</p>
-
-    <div style="display:flex;justify-content:center">
-      <div id="start-btn" class="start-action"><i class="fa-solid fa-play"></i><span id="start-action-text">Click to focus</span></div>
-    </div>
-    <span id="start-hint" class="start-hint muted-note">If you're on mobile or a touch device, just tap to start.</span>
-  </div>
-</div>
+  <!-- Unmute fallback (appears only if autoplay blocked) -->
+  <button id="unmuteBtn" class="unmute" aria-hidden="true" title="Enable music">
+    <i class="fa-solid fa-volume-high"></i><span style="min-width:6ch">Unmute</span>
+  </button>
 
 <script>
-  // Tab handler
+  // Tab handler (unchanged)
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
@@ -246,108 +279,199 @@
     });
   });
 
-  // Start overlay logic: require a click then Enter (with mobile fallback to tap)
+  // --------- Music player logic (controls the same #bg-audio element) ----------
   (function(){
-    const overlay = document.getElementById('start-overlay');
-    const startBtn = document.getElementById('start-btn');
-    const startActionText = document.getElementById('start-action-text');
-    const hint = document.getElementById('start-hint');
     const audio = document.getElementById('bg-audio');
-    const video = document.getElementById('bg-video');
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const muteBtn = document.getElementById('muteBtn');
+    const muteIcon = document.getElementById('muteIcon');
+    const volRange = document.getElementById('volRange');
+    const progress = document.getElementById('progress');
+    const progressFilled = document.getElementById('progressFilled');
+    const timeElapsed = document.getElementById('timeElapsed');
+    const timeTotal = document.getElementById('timeTotal');
+    const toggleLoop = document.getElementById('toggleLoop');
+    const unmuteBtn = document.getElementById('unmuteBtn');
 
-    let clickedToFocus = false;
-    let started = false;
+    // session storage keys
+    const session = window.sessionStorage || null;
+    let wasPlaying = false;
+    try {
+      if (session) {
+        wasPlaying = session.getItem('rr_playing') === '1';
+        const vol = parseFloat(session.getItem('rr_volume'));
+        if (!isNaN(vol)) volRange.value = vol;
+      }
+    } catch (e) { /* ignore */ }
 
-    // Helper to detect touch device
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    audio.volume = parseFloat(volRange.value || 0.8);
 
-    if (isTouch) {
-      // For touch devices, simplify: tap to start immediately (no Enter)
-      startActionText.textContent = 'Tap to Start';
-      hint.style.display = 'none';
-      overlay.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (!started) startMedia();
-      }, { once: true });
-    } else {
-      // Desktop: require click then Enter
-      startActionText.textContent = 'Click to focus';
-      overlay.addEventListener('click', onOverlayClick, { once: true });
-      // Also allow clicking the visible button specifically
-      startBtn.addEventListener('click', onOverlayClick, { once: true });
+    function setPlayingUI(playing) {
+      if (playing) {
+        playBtn.classList.remove('paused');
+        playIcon.className = 'fa-solid fa-pause';
+        playBtn.setAttribute('aria-pressed','true');
+        playBtn.setAttribute('aria-label','Pause');
+      } else {
+        playBtn.classList.add('paused');
+        playIcon.className = 'fa-solid fa-play';
+        playBtn.setAttribute('aria-pressed','false');
+        playBtn.setAttribute('aria-label','Play');
+      }
     }
 
-    function onOverlayClick(e){
-      e.preventDefault();
-      clickedToFocus = true;
-      startActionText.textContent = 'Press Enter to Start';
-      // Focus the document so keydown will register
-      window.focus();
-      // Listen for Enter
-      const onKey = (ev) => {
-        if (ev.key === 'Enter' || ev.keyCode === 13) {
-          ev.preventDefault();
-          if (!started) startMedia();
-        }
-      };
-      window.addEventListener('keydown', onKey, { once: true });
-      // optional: give small visual hint if they never press enter
-      setTimeout(()=> {
-        if (!started) {
-          startActionText.textContent = 'Press Enter or click here to start';
-          // allow clicking to also start (in case they prefer click)
-          startBtn.addEventListener('click', () => { if(!started) startMedia(); }, { once: true });
-        }
-      }, 3000);
+    function formatTime(s){
+      if (!isFinite(s)) return '0:00';
+      s = Math.floor(s);
+      const m = Math.floor(s/60);
+      const sec = s % 60;
+      return m + ':' + (sec < 10 ? '0'+sec : sec);
     }
 
-    function startMedia(){
-      started = true;
-      // Attempt to play audio and video. These should succeed because we have a user gesture (click + Enter).
-      // Some browsers require video to be muted to autoplay; we only start video playback after user interaction so audio is allowed.
-      // If the video is muted, it will still play visually; audio is provided by the bg-audio element.
-      Promise.allSettled([
-        audio.play().catch(err => err),
-        video.play().catch(err => err)
-      ]).then((results) => {
-        // If video play succeeded, add visual class
-        // (we don't attempt to analyze result rejection types here)
-        try { video.classList.add('playing'); } catch(e){}
-        // Hide overlay smoothly
-        overlay.style.transition = 'opacity .5s ease, visibility .5s';
-        overlay.style.opacity = '0';
-        setTimeout(()=> {
-          overlay.style.display = 'none';
-          overlay.setAttribute('aria-hidden','true');
-        }, 600);
+    function showUnmute() {
+      unmuteBtn.classList.add('show');
+      unmuteBtn.setAttribute('aria-hidden', 'false');
+    }
+    function hideUnmute() {
+      unmuteBtn.classList.remove('show');
+      unmuteBtn.setAttribute('aria-hidden', 'true');
+    }
+
+    // Try to autoplay on load (no overlay). If blocked, show the unmute fallback.
+    window.addEventListener('load', () => {
+      // Attempt autoplay
+      audio.play().then(() => {
+        setPlayingUI(true);
+        hideUnmute();
+      }).catch((err) => {
+        // Autoplay blocked: leave player paused, show unobtrusive unmute button
+        setPlayingUI(false);
+        showUnmute();
       });
+    });
 
-      // Make sure audio is unmuted (in case)
-      try { audio.muted = false; } catch(e){}
-      // Make the page-bg less visible when video is active
-      const pageBg = document.querySelector('.page-bg');
-      if (pageBg) pageBg.style.opacity = '0.08';
-    }
-
-    // Accessibility: allow ESC to cancel overlay (optional)
-    window.addEventListener('keydown', (ev) => {
-      if (!started && ev.key === 'Escape') {
-        // remove overlay and do not start media
-        overlay.style.display = 'none';
-        overlay.setAttribute('aria-hidden','true');
+    // Play / Pause button
+    playBtn.addEventListener('click', async () => {
+      if (audio.paused) {
+        try {
+          await audio.play();
+          setPlayingUI(true);
+          if (session) session.setItem('rr_playing','1');
+          hideUnmute();
+        } catch (err) {
+          setPlayingUI(false);
+          showUnmute();
+        }
+      } else {
+        audio.pause();
+        setPlayingUI(false);
+        if (session) session.setItem('rr_playing','0');
       }
     });
-  })();
 
-  // For browsers that block autoplay earlier, we still attempt resume on click anywhere (fallback)
-  window.addEventListener('DOMContentLoaded',()=>{
-    var audio = document.getElementById('bg-audio');
-    document.body.addEventListener('click', () => {
-      if (audio && audio.paused) {
-        audio.play().catch(()=>{});
+    // Volume control
+    volRange.addEventListener('input', (e) => {
+      audio.volume = parseFloat(e.target.value);
+      if (audio.volume === 0) {
+        muteIcon.className = 'fa-solid fa-volume-xmark';
+      } else {
+        muteIcon.className = 'fa-solid fa-volume-high';
       }
-    }, {once:true});
-  });
+      if (session) session.setItem('rr_volume', audio.volume.toString());
+    });
+
+    // Mute/unmute toggle
+    muteBtn.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      if (audio.muted) {
+        muteIcon.className = 'fa-solid fa-volume-xmark';
+      } else {
+        muteIcon.className = 'fa-solid fa-volume-high';
+      }
+      // If muted and autoplay was previously blocked, keep the unmute visible (user choice)
+    });
+
+    // Unmute fallback button
+    unmuteBtn.addEventListener('click', async () => {
+      try {
+        audio.muted = false;
+        await audio.play();
+        setPlayingUI(true);
+        hideUnmute();
+      } catch (err) {
+        // nothing more we can do programmatically
+        hideUnmute();
+      }
+    });
+
+    // Loop toggle (audio.loop property)
+    toggleLoop.addEventListener('click', () => {
+      audio.loop = !audio.loop;
+      toggleLoop.setAttribute('aria-pressed', String(audio.loop));
+      toggleLoop.style.opacity = audio.loop ? '1' : '0.6';
+    });
+    // initialize loop UI
+    toggleLoop.style.opacity = audio.loop ? '1' : '0.6';
+
+    // Progress updates
+    audio.addEventListener('timeupdate', () => {
+      const pct = (audio.currentTime / (audio.duration || 1)) * 100;
+      progressFilled.style.width = pct + '%';
+      progress.setAttribute('aria-valuenow', Math.round(pct));
+      timeElapsed.textContent = formatTime(audio.currentTime);
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      timeTotal.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+      setPlayingUI(false);
+      if (session) session.setItem('rr_playing','0');
+    });
+
+    // Seek by clicking the progress bar
+    function seekFromEvent(ev) {
+      const rect = progress.getBoundingClientRect();
+      const x = ('touches' in ev && ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX;
+      const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+      if (audio.duration) {
+        audio.currentTime = pct * audio.duration;
+      }
+    }
+    progress.addEventListener('click', (e) => seekFromEvent(e));
+    // support keyboard seeking (left/right)
+    progress.addEventListener('keydown', (e) => {
+      if (!audio.duration) return;
+      const step = Math.max(5, Math.floor(audio.duration * 0.05));
+      if (e.key === 'ArrowLeft') {
+        audio.currentTime = Math.max(0, audio.currentTime - step);
+      } else if (e.key === 'ArrowRight') {
+        audio.currentTime = Math.min(audio.duration, audio.currentTime + step);
+      }
+    });
+
+    // Spacebar to toggle play/pause when focus isn't on an input
+    window.addEventListener('keydown', (e) => {
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (e.code === 'Space' && !['INPUT','TEXTAREA','SELECT','BUTTON'].includes(tag)) {
+        e.preventDefault();
+        playBtn.click();
+      }
+    });
+
+    // If autoplay was blocked, keep play button showing paused
+    setTimeout(()=> {
+      if (audio.paused) setPlayingUI(false);
+    }, 500);
+
+    // Announce play/pause to assistive tech
+    audio.addEventListener('play', () => { playBtn.setAttribute('aria-label','Pause'); });
+    audio.addEventListener('pause', () => { playBtn.setAttribute('aria-label','Play'); });
+
+  })();
+  // --------------------------------------------------------------------------
 </script>
 </body>
 </html>
