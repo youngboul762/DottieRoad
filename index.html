@@ -7,7 +7,7 @@
 <style>
   :root{
     --bg:#000000;
-    --panel:#0f1114;
+    --panel:#121421;
     --accent:#ff6b3b;
     --accent-2:#ffb03a;
     --text:#e8e8f2;
@@ -17,7 +17,6 @@
     --shadow:0 10px 30px rgba(0,0,0,.45);
     --player-height:62px;
   }
-
   *{box-sizing:border-box}
   html,body{height:100%; overflow-x:hidden}
   body{
@@ -30,6 +29,21 @@
     padding:0px 16px calc(var(--player-height) + 48px);
   }
 
+  /* background */
+  .page-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      url('https://i.ibb.co/qMm7TKMz/The-Deadly-War-Between-Bloodhound-And-Risky-Road.gif') center/cover no-repeat fixed,
+      url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat fixed;
+    filter: blur(12px) saturate(1.08);
+    opacity:.65; transform: scale(1.02);
+  }
+
+  /* snow */
+  #snow { position: fixed; inset:0; pointer-events:none; z-index:1; }
+  .flake { position:absolute; top:-10vh; color:white; user-select:none; pointer-events:none; opacity:.85; filter: drop-shadow(0 4px 8px rgba(0,0,0,.45)); animation-name: fall, sway; animation-timing-function: linear, ease-in-out; animation-iteration-count: infinite, infinite; }
+  @keyframes fall { to { transform: translateY(115vh); } }
+  @keyframes sway { 0% { transform: translateX(0);} 50% { transform: translateX(24px);} 100% { transform: translateX(0);} }
+
   .wrap{max-width:1280px; width:100%; margin:0 auto; position:relative; z-index:2}
   .hero { width:100%; margin-top:14px; }
   .hero-inner { padding:28px 20px; position:relative; z-index:2; }
@@ -37,8 +51,8 @@
   .hero-title { margin:0 0 6px 0; font-weight:900; letter-spacing:0.02em; font-size: clamp(28px, 4.4vw, 40px); color: var(--accent-2); }
   .hero-sub { margin:0; color:#cfe6ff; font-size:14px; }
 
-  /* Nav */
-  .nav { display:flex; gap:16px; margin-top:14px; z-index:2; }
+  /* nav */
+  .nav { display:flex; gap:16px; margin-top:14px; z-index:2; flex-wrap:wrap; }
   .nav-link { color:var(--text); text-decoration:none; font-size:14px; padding:6px 10px; border-radius:8px; transition:all .15s ease; }
   .nav-link:hover { color:var(--accent-2); transform: translateY(-2px); }
   .nav-link.active { background: rgba(255,255,255,0.02); }
@@ -49,112 +63,75 @@
   .section-card { background: linear-gradient(180deg, rgba(18,18,22,0.95), rgba(12,12,16,0.95)); border-radius:12px; padding:22px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); }
   .section-title { font-weight:800; font-size:20px; color:var(--accent); margin-bottom:12px; }
 
-  /* Active members: Call of Duty style cards */
+  .rr-list { margin:0; padding:0; list-style:none; color:#eaf5ff; }
+  .rr-list-item { margin-bottom:10px; }
+  .rr-list-title { font-weight:700; color:var(--accent-2); margin-right:8px; }
+
+  .watermark{ position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:50; pointer-events:auto; font-weight:800; color:var(--accent-2); }
+  .watermark a{ color:inherit; text-decoration:none; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.02); }
+
+  /* Active members: CoD style cards */
   #membersGrid {
     display:grid;
     grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
     gap:16px;
     margin-top:12px;
   }
-
   .member-card {
-    --card-bg: linear-gradient(180deg, rgba(20,20,22,0.9), rgba(12,12,16,0.9));
-    background: var(--card-bg);
-    border-radius:12px;
-    padding:14px;
-    display:flex;
-    gap:12px;
-    align-items:center;
-    border:1px solid rgba(255,255,255,0.04);
-    position:relative;
-    overflow:visible;
-    transition: transform .12s ease, box-shadow .12s ease;
-    cursor:pointer;
-    min-height:82px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    background: linear-gradient(180deg, rgba(20,20,22,0.9), rgba(12,12,16,0.9));
+    border-radius:12px; padding:14px; display:flex; gap:12px; align-items:center;
+    border:1px solid rgba(255,255,255,0.04); position:relative; overflow:visible; transition: transform .12s ease;
+    cursor:pointer; min-height:82px; box-shadow: 0 6px 18px rgba(0,0,0,0.6);
   }
+  .member-card:hover{ transform: translateY(-6px); }
+  .member-avatar{ width:72px; height:72px; border-radius:8px; object-fit:cover; border:2px solid rgba(255,255,255,0.04); background:linear-gradient(180deg,#0b0b0b,#161616); flex-shrink:0; }
+  .member-body{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .member-name{ font-weight:900; font-size:15px; color:var(--text); letter-spacing:0.2px; display:flex; align-items:center; gap:8px; }
+  .member-role{ font-size:12px; color:var(--muted); }
+  .clan-tag{ padding:4px 8px; border-radius:6px; background: rgba(255,255,255,0.02); color:var(--muted); font-size:11px; font-weight:800; border:1px solid rgba(255,255,255,0.03); }
 
-  .member-card:hover { transform: translateY(-6px); }
+  .status-badge{ display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:800; color:var(--green); }
+  .status-dot{ width:12px; height:12px; border-radius:50%; background: linear-gradient(180deg, var(--green-strong), var(--green)); box-shadow: 0 0 18px rgba(46,230,140,0.95); border:1px solid rgba(255,255,255,0.06); }
 
-  /* Call of Duty visual styling: dark plate, ID / clan tag */
-  .member-avatar {
-    width:72px;
-    height:72px;
-    border-radius:8px;
-    object-fit:cover;
-    border:2px solid rgba(255,255,255,0.04);
-    background:linear-gradient(180deg, #0b0b0b, #161616);
-    flex-shrink:0;
-  }
-
-  .member-body { display:flex; flex-direction:column; gap:6px; min-width:0; }
-  .member-name { font-weight:900; font-size:15px; color:var(--text); letter-spacing:0.2px; display:flex; align-items:center; gap:8px; }
-  .member-role { font-size:12px; color:var(--muted); }
-
-  /* Green alive badge */
-  .status-badge {
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    font-size:12px;
-    font-weight:800;
-    color:var(--green);
-  }
-  .status-dot {
-    width:12px;height:12px;border-radius:50%;
-    background: linear-gradient(180deg,var(--green-strong),var(--green));
-    box-shadow: 0 0 18px rgba(46, 230, 140, 0.95);
-    border:1px solid rgba(255,255,255,0.06);
-  }
-
-  /* Outer glowing effect for alive cards */
-  .member-card.alive::after {
-    content: "";
-    position: absolute;
-    inset: -8px;
-    border-radius: 14px;
-    z-index: -1;
-    background: radial-gradient(ellipse at center, rgba(46,230,140,0.28) 0%, rgba(46,230,140,0.08) 30%, transparent 60%);
-    filter: blur(12px);
-    opacity: 1;
-    transition: opacity .18s ease, transform .18s ease;
+  .member-card.alive::after{
+    content: ""; position:absolute; inset:-8px; border-radius:14px; z-index:-1;
+    background: radial-gradient(ellipse at center, rgba(46,230,140,0.28) 0%, rgba(46,230,140,0.08) 30%, transparent 60%); filter: blur(12px); opacity:1;
     animation: pulseGreen 1.6s infinite;
   }
-  @keyframes pulseGreen {
-    0% { opacity: 0.9; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.03); }
-    100% { opacity: 0.9; transform: scale(1); }
-  }
+  @keyframes pulseGreen{ 0%{ opacity:0.9; transform:scale(1);} 50%{ opacity:0.5; transform:scale(1.03);} 100%{ opacity:0.9; transform:scale(1);} }
 
-  /* small clan tag / cod-like label */
-  .clan-tag {
-    padding:4px 8px;
-    border-radius:6px;
-    background: rgba(255,255,255,0.02);
-    color:var(--muted);
-    font-size:11px;
-    font-weight:800;
-    border:1px solid rgba(255,255,255,0.03);
-  }
+  /* Opp & other grids (kept) */
+  #oppsGrid { display:grid; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-top:10px; }
+  .opponent-card { background: linear-gradient(180deg, rgba(18,18,22,0.9), rgba(14,14,18,0.9)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); cursor:pointer; display:flex; gap:10px; align-items:center; position:relative; overflow:visible; }
+  .opponent-avatar{ width:56px; height:56px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.04); }
+  .opponent-card.glow::after{ content:""; position:absolute; inset:-6px; border-radius:14px; z-index:-1; background: radial-gradient(ellipse at center, rgba(255,80,80,0.35) 0%, rgba(255,40,40,0.08) 30%, transparent 60%); filter: blur(10px); opacity:1; animation: pulseGlow 1.6s infinite; }
+  @keyframes pulseGlow{ 0%{opacity:.85;transform:scale(1)}50%{opacity:.5;transform:scale(1.04)}100%{opacity:.85;transform:scale(1)} }
 
-  /* modal reused */
-  .modal-backdrop { position:fixed; inset:0; display:none; place-items:center; background: rgba(0,0,0,0.6); z-index:10003; }
-  .modal-backdrop.show { display:grid; }
-  .modal { width:min(540px,calc(100% - 40px)); background: linear-gradient(180deg, rgba(18,18,22,0.98), rgba(12,12,16,0.96)); padding:20px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); }
-  .modal h3{ margin:0 0 8px 0; color:var(--accent-2); }
-  .modal p{ margin:6px 0; color:#eaf5ff; }
-  .modal .status.alive { color:var(--green); font-weight:800; text-shadow: 0 0 8px rgba(46,230,140,0.9); }
+  /* Modals & player */
+  .modal-backdrop{ position:fixed; inset:0; display:none; place-items:center; background: rgba(0,0,0,0.6); z-index:10003 }
+  .modal-backdrop.show{ display:grid }
+  .modal{ width:min(720px,calc(100% - 40px)); background: linear-gradient(180deg, rgba(18,18,22,0.98), rgba(12,12,16,0.96)); padding:20px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); }
+  .modal h3{ margin:0 0 8px 0; color:var(--accent-2) }
+  .modal p{ margin:6px 0; color:#eaf5ff }
+  .modal .status.alive{ color:var(--green); font-weight:800; text-shadow: 0 0 8px rgba(46,230,140,0.9); }
 
-  /* keep rest of layout tidy */
-  .section-list { display:block; }
+  /* player and misc (abbreviated style) */
+  .player{ position:fixed; left:18px; bottom:12px; height:var(--player-height); min-width:340px; max-width:calc(100% - 36px); display:flex; gap:12px; align-items:center; padding:8px 12px; border-radius:12px; background: linear-gradient(180deg, rgba(18,18,22,0.98), rgba(12,12,16,0.96)); box-shadow: 0 10px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03); z-index:10000; }
+  .play-btn{ width:46px; height:46px; border-radius:10px; display:grid; place-items:center; background: linear-gradient(90deg,var(--accent-2),var(--accent)); color:#08101a; border:none; cursor:pointer; font-weight:800; }
+
+  #clock{ position:fixed; right:12px; bottom:12px; z-index:10005; font-weight:700; color:#dfe9ff; background: rgba(0,0,0,0.45); padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); font-family:"Rajdhani", system-ui, sans-serif; }
+
   @media (max-width:520px){
     #membersGrid { grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); }
-    .member-avatar { width:56px; height:56px; }
+    .member-avatar{ width:56px; height:56px; }
   }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+  <div class="page-bg" aria-hidden="true"></div>
+  <div id="snow" aria-hidden="true"></div>
+
   <div class="wrap">
     <section class="hero">
       <div class="hero-inner">
@@ -171,15 +148,89 @@
       </div>
     </section>
 
+    <!-- SET PROFILE (kept content) -->
+    <div id="riskyroad" class="nav-section">
+      <div class="section-card">
+        <div class="section-title">DottieRoad / M60 Set Profile</div>
+        <ul class="rr-list">
+          <li class="rr-list-item"><span class="rr-list-title">Sets:</span> DottieRoad / M60 (075)</li>
+          <li class="rr-list-item"><span class="rr-list-title">Main Blocks:</span> 75th &amp; Kingston</li>
+          <li class="rr-list-item"><span class="rr-list-title">Notable Blocks:</span> 74th &amp; Phillips, 75th &amp; Coles, 75th &amp; Exchange (Dottie Road)</li>
+          <li class="rr-list-item"><span class="rr-list-title">Gang Composition:</span> Black P. Stones, Maniac Four Corner Hustlers, Gangster Disciples, Black Disciples</li>
+          <li class="rr-list-item"><span class="rr-list-title">Area Formerly Controlled By:</span> Black P. Stones, Maniac Four Corner Hustlers, Vice Lords</li>
+          <li class="rr-list-item"><span class="rr-list-title">Location:</span> South Shore, Chicago</li>
+          <li class="rr-list-item"><span class="rr-list-title">Other Names:</span> CoreyBlock, MikeyWay, MikeyDrive, Kill4K, Kill4Kill, K4K</li>
+          <li class="rr-list-item"><span class="rr-list-title">Fallen Members:</span> G Dottie, 60, Mikey, Corey, Lil K</li>
+          <li class="rr-list-item"><span class="rr-list-title">Rappers:</span> Luh Ek, EBK Badazz, Sonny Bailout, fastbuckzcamo</li>
+          <li class="rr-list-item"><span class="rr-list-title">Allies &amp; Associates:</span> BeltSumGang, DrillCity, MTV, 400East, NLMB, ShortyMobb, BurleyBoyz, TTD, 166 Stateline, GoolyGang, Zone3, TossGang</li>
+          <li class="rr-list-item"><span class="rr-list-title">Rivals:</span> ColesMobb, BlackMobb, TrapCity, PocketTown, 8TreMobb, OTV, Rawtown, YoungMoney, 95Mobb, 808 Mobb, EvansMobb, 757, TyquanWorld, BKN, ESD, RiskyRoad, SaneGang, DeathRow, Lakeside, SMV, EBC, SnoBlock, BOG, DaroGang, HootyGang, THF446 (IC)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FACTION SHOWCASE tab -->
+    <div id="faction" class="nav-section">
+      <div class="section-card">
+        <div class="section-title">Faction Showcase</div>
+        <p>This section highlights special faction items and showcase content. Customize as needed.</p>
+      </div>
+    </div>
+
+    <!-- ACTIVE MEMBERS tab (your Call of Duty style cards) -->
     <div id="activemembers" class="nav-section active">
       <div class="section-card">
         <div class="section-title">Active Members</div>
-        <div id="membersGrid" aria-live="polite" class="section-list"></div>
+        <div id="membersGrid" aria-live="polite"></div>
       </div>
+    </div>
+
+    <!-- OPPS tab -->
+    <div id="opps" class="nav-section">
+      <div class="section-card">
+        <div class="section-title">Opps</div>
+        <p><strong>Currently above:</strong> BloodHound/79, DottieRoad, NLMB, ShortyMobb.</p>
+        <div id="oppsGrid" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="watermark">
+      <a id="watermarkLink" href="https://youtu.be/_C9WqqXDQoE?si=VLnfOZDwR0FOL637" target="_blank" rel="noopener noreferrer">made by slimestslime</a>
     </div>
   </div>
 
-  <!-- Member modal -->
+  <!-- Discord tab -->
+  <div style="position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:10002;">
+    <a href="https://discord.gg/wcKtenyh" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,rgba(18,18,22,.98),rgba(12,12,16,.96));padding:8px 10px;border-top-left-radius:12px;border-bottom-left-radius:12px;border-left:1px solid rgba(255,255,255,.02);box-shadow:-6px 8px 24px rgba(0,0,0,.5);text-decoration:none;color:inherit">
+      <span style="color:#94a3b8;font-weight:800">|</span>
+      <i class="fa-brands fa-discord" style="font-size:20px;color:var(--accent-2)"></i>
+    </a>
+  </div>
+
+  <!-- Hidden YT player -->
+  <div id="yt-player-wrap" style="width:0;height:0;overflow:hidden;position:fixed;left:-9999px;top:-9999px;"><div id="yt-player"></div></div>
+
+  <!-- Music player -->
+  <div class="player" role="region" aria-label="Music player" id="player">
+    <div class="left">
+      <button id="playBtn" class="play-btn paused" aria-pressed="false" aria-label="Play"><i id="playIcon" class="fa-solid fa-play"></i></button>
+      <div class="track-meta" aria-hidden="true">
+        <div class="track-title" id="trackTitle">Dottie Road Showcase</div>
+        <div class="track-sub" id="trackArtist">YouTube playlist</div>
+      </div>
+    </div>
+    <div class="center">
+      <div class="progress" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0" aria-label="Track progress"><div class="filled" id="progressFilled"></div></div>
+      <div class="time-row"><div id="timeElapsed">0:00</div><div id="timeTotal">0:00</div></div>
+    </div>
+    <div class="right">
+      <div class="vol" title="Volume"><button id="muteBtn" class="small-btn" aria-label="Mute/unmute"><i id="muteIcon" class="fa-solid fa-volume-high"></i></button><input id="volRange" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume slider"></div>
+      <button id="toggleLoop" class="small-btn" title="Toggle loop" aria-pressed="false"><i class="fa-solid fa-repeat"></i></button>
+      <button id="prevBtn" class="small-btn" title="Previous track"><i class="fa-solid fa-backward"></i></button>
+      <button id="nextBtn" class="small-btn" title="Next track"><i class="fa-solid fa-forward"></i></button>
+    </div>
+  </div>
+
+  <!-- Modals -->
   <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
     <div class="modal" role="document">
       <button class="close-btn" id="modalClose" aria-label="Close profile" style="float:right;background:transparent;border:0;color:var(--muted);font-size:20px;cursor:pointer;">&times;</button>
@@ -190,24 +241,37 @@
     </div>
   </div>
 
-<script>
-/*
-  Replace active members with user-provided handles.
-  All statuses are alive, green, and glowing.
-  Clicking a box opens a modal with details.
-*/
+  <!-- Opp modal -->
+  <div id="oppModalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <button class="close-btn" id="oppModalClose" aria-label="Close" style="float:right;background:transparent;border:0;color:var(--muted);font-size:20px;cursor:pointer">&times;</button>
+      <h3 id="oppModalName">Opp</h3>
+      <p><strong>Street:</strong> <span id="oppModalStreet">—</span></p>
+      <p style="color:var(--muted);font-size:13px;margin-top:8px;">Click outside or press Esc to close.</p>
+    </div>
+  </div>
 
+  <div id="clock" aria-hidden="false">00:00:00 CT</div>
+
+<script>
+/* snow */
+(function makeSnow(){ const container = document.getElementById('snow'); const flakes = 60; const glyphs = ['❅','❆','•']; for (let i=0;i<flakes;i++){ const fl = document.createElement('div'); fl.className='flake'; fl.textContent = glyphs[Math.floor(Math.random()*glyphs.length)]; const size = Math.random()*14 + 6; fl.style.fontSize = `${size}px`; fl.style.left = (Math.random()*100) + 'vw'; const dur = Math.random()*15 + 8; const delay = Math.random()*-20; fl.style.animationDuration = `${dur}s, ${4 + Math.random()*4}s`; fl.style.animationDelay = `${delay}s, ${delay}s`; fl.style.opacity = (Math.random()*0.6 + 0.4).toFixed(2); container.appendChild(fl);} })();
+
+/* clock CT */
+function updateClock(){ const el=document.getElementById('clock'); if(!el) return; try{ const nowStr = new Date().toLocaleTimeString('en-US',{ timeZone:'America/Chicago', hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit' }); el.textContent = nowStr + ' CT'; }catch(e){ const now=new Date(); const hh=String(now.getHours()).padStart(2,'0'); const mm=String(now.getMinutes()).padStart(2,'0'); const ss=String(now.getSeconds()).padStart(2,'0'); el.textContent = `${hh}:${mm}:${ss} CT`; }} updateClock(); setInterval(updateClock,1000);
+
+/* Active members data (your list) */
 const members = [
-  { id: 'u1', display: '@zowick7579', handle: 'zowick7579', avatar: 'https://i.pravatar.cc/180?img=32', status: 'Alive' },
-  { id: 'u2', display: '@weapplybelt', handle: 'weapplybelt', avatar: 'https://i.pravatar.cc/180?img=33', status: 'Alive' },
-  { id: 'u3', display: '@cantduckthese_ftoo75', handle: 'cantduckthese_ftoo75', avatar: 'https://i.pravatar.cc/180?img=34', status: 'Alive' },
-  { id: 'u4', display: '@lilboonebloody.075', handle: 'lilboonebloody.075', avatar: 'https://i.pravatar.cc/180?img=35', status: 'Alive' },
-  { id: 'u5', display: '@bailoutblick', handle: 'bailoutblick', avatar: 'https://i.pravatar.cc/180?img=36', status: 'Alive' },
-  { id: 'u6', display: '@diddyslime.7430', handle: 'diddyslime.7430', avatar: 'https://i.pravatar.cc/180?img=37', status: 'Alive' },
-  { id: 'u7', display: '@rrecklessN/A74fto', handle: 'rrecklessN/A74fto', avatar: 'https://i.pravatar.cc/180?img=38', status: 'Alive' },
-  { id: 'u8', display: '@075duke', handle: '075duke', avatar: 'https://i.pravatar.cc/180?img=39', status: 'Alive' },
-  { id: 'u9', display: '@immafoulyu555', handle: 'immafoulyu555', avatar: 'https://i.pravatar.cc/180?img=40', status: 'Alive' },
-  { id: 'u10', display: '@freeallmines', handle: 'freeallmines', avatar: 'https://i.pravatar.cc/180?img=41', status: 'Alive' }
+  { id:'u1', display:'@zowick7579', handle:'zowick7579', avatar:'https://i.pravatar.cc/180?img=32', status:'Alive' },
+  { id:'u2', display:'@weapplybelt', handle:'weapplybelt', avatar:'https://i.pravatar.cc/180?img=33', status:'Alive' },
+  { id:'u3', display:'@cantduckthese_ftoo75', handle:'cantduckthese_ftoo75', avatar:'https://i.pravatar.cc/180?img=34', status:'Alive' },
+  { id:'u4', display:'@lilboonebloody.075', handle:'lilboonebloody.075', avatar:'https://i.pravatar.cc/180?img=35', status:'Alive' },
+  { id:'u5', display:'@bailoutblick', handle:'bailoutblick', avatar:'https://i.pravatar.cc/180?img=36', status:'Alive' },
+  { id:'u6', display:'@diddyslime.7430', handle:'diddyslime.7430', avatar:'https://i.pravatar.cc/180?img=37', status:'Alive' },
+  { id:'u7', display:'@rrecklessN/A74fto', handle:'rrecklessN/A74fto', avatar:'https://i.pravatar.cc/180?img=38', status:'Alive' },
+  { id:'u8', display:'@075duke', handle:'075duke', avatar:'https://i.pravatar.cc/180?img=39', status:'Alive' },
+  { id:'u9', display:'@immafoulyu555', handle:'immafoulyu555', avatar:'https://i.pravatar.cc/180?img=40', status:'Alive' },
+  { id:'u10', display:'@freeallmines', handle:'freeallmines', avatar:'https://i.pravatar.cc/180?img=41', status:'Alive' }
 ];
 
 function renderMembersGrid(){
@@ -218,7 +282,6 @@ function renderMembersGrid(){
     card.className = 'member-card alive';
     card.tabIndex = 0;
     card.dataset.id = m.id;
-
     card.innerHTML = `
       <img class="member-avatar" src="${m.avatar}" alt="${m.display} avatar">
       <div class="member-body">
@@ -232,10 +295,8 @@ function renderMembersGrid(){
         </div>
       </div>
     `;
-
-    card.addEventListener('click', () => openMemberModal(m));
-    card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMemberModal(m); } });
-
+    card.addEventListener('click', ()=> openMemberModal(m));
+    card.addEventListener('keydown', (e) => { if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openMemberModal(m); }});
     grid.appendChild(card);
   });
 }
@@ -244,25 +305,49 @@ function openMemberModal(member){
   document.getElementById('modalName').textContent = member.display;
   document.getElementById('modalAvatar').src = member.avatar;
   document.getElementById('modalHandle').textContent = member.handle;
-  const statusEl = document.getElementById('modalStatus');
-  statusEl.textContent = member.status;
-  statusEl.className = 'status alive';
-  // show green glow on status
-  statusEl.style.color = getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
-  statusEl.style.textShadow = '0 0 10px rgba(46,230,140,0.95)';
-  const b = document.getElementById('modalBackdrop');
-  b.classList.add('show');
-  b.setAttribute('aria-hidden','false');
+  const st = document.getElementById('modalStatus');
+  st.textContent = member.status;
+  st.className = 'status alive';
+  st.style.color = getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+  st.style.textShadow = '0 0 10px rgba(46,230,140,0.95)';
+  const b = document.getElementById('modalBackdrop'); b.classList.add('show'); b.setAttribute('aria-hidden','false');
   document.getElementById('modalClose').focus();
 }
 
 document.getElementById('modalClose').addEventListener('click', closeModal);
-document.getElementById('modalBackdrop').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
-function closeModal(){ const b = document.getElementById('modalBackdrop'); b.classList.remove('show'); b.setAttribute('aria-hidden','true'); }
+document.getElementById('modalBackdrop').addEventListener('click', (e)=> { if(e.target === e.currentTarget) closeModal(); });
+function closeModal(){ const b=document.getElementById('modalBackdrop'); b.classList.remove('show'); b.setAttribute('aria-hidden','true'); }
 
 renderMembersGrid();
 
-/* keep tab switching behavior (only relevant sections present) */
+/* Opponents kept from previous */
+const opponents = [
+  { id:'o1', name:'BloodHound/79', street:'East 79th and South Maryland', avatar:'https://i.ibb.co/9myLRdcm/ieEOkVK.jpg' },
+  { id:'o2', name:'ShortyMobb', street:'74th & Kingston Avenue', avatar:'https://i.ibb.co/1JJTW1yX/image-1.png' },
+  { id:'o3', name:'NLMB', street:'78th and Muskegon', avatar:'https://i.pravatar.cc/150?img=7' },
+  { id:'o4', name:'DottieRoad', street:'72nd & Coles Avenue', avatar:'https://i.ibb.co/ksJys5LG/MTV-2.png' }
+];
+
+function renderOppsGrid(){
+  const grid = document.getElementById('oppsGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  opponents.forEach(o=>{
+    const card = document.createElement('div');
+    card.className = 'opponent-card glow';
+    card.tabIndex = 0;
+    card.dataset.id = o.id;
+    card.innerHTML = `<img class="opponent-avatar" src="${o.avatar}" alt="${o.name}"><div style="min-width:0"><div class="opponent-name">${o.name}</div><div class="opponent-role">Opposing set</div></div>`;
+    card.addEventListener('click', ()=> openOppModal(o.id));
+    grid.appendChild(card);
+  });
+}
+function openOppModal(id){ const o = opponents.find(x=>x.id===id); if(!o) return; document.getElementById('oppModalName').textContent = o.name; document.getElementById('oppModalStreet').textContent = o.street; const b=document.getElementById('oppModalBackdrop'); b.classList.add('show'); b.setAttribute('aria-hidden','false'); document.getElementById('oppModalClose').focus(); }
+document.getElementById('oppModalClose').addEventListener('click', ()=> { const b=document.getElementById('oppModalBackdrop'); b.classList.remove('show'); b.setAttribute('aria-hidden','true'); });
+document.getElementById('oppModalBackdrop').addEventListener('click', (e)=> { if(e.target===e.currentTarget){ const b=document.getElementById('oppModalBackdrop'); b.classList.remove('show'); b.setAttribute('aria-hidden','true'); }});
+renderOppsGrid();
+
+/* Tabs behavior */
 document.querySelectorAll('.nav-link').forEach(link=>{
   link.addEventListener('click', e=>{
     e.preventDefault();
@@ -271,9 +356,35 @@ document.querySelectorAll('.nav-link').forEach(link=>{
     link.classList.add('active');
     const tab = link.getAttribute('data-tab');
     const el = document.getElementById(tab);
-    if (el) el.classList.add('active');
+    if(el) el.classList.add('active');
   });
 });
+
+/* YouTube player - single provided song (cZHmnvXZGeA) */
+const ytPlaylist = [{ id: 'cZHmnvXZGeA', title: 'Dottie Road Track' }];
+let ytPlayer = null, currentIndex = 0, ytReady=false, progressTimer=null, loopCurrent=false, autoplayAttempts=0;
+(function loadYT(){ if(window.YT && window.YT.Player){ onYouTubeIframeAPIReady(); return; } const tag=document.createElement('script'); tag.src="https://www.youtube.com/iframe_api"; document.head.appendChild(tag); })();
+function onYouTubeIframeAPIReady(){ ytPlayer = new YT.Player('yt-player',{height:'0',width:'0',videoId:ytPlaylist[currentIndex].id, playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,disablekb:1,playsinline:1}, events:{'onReady':onPlayerReady,'onStateChange':onPlayerStateChange,'onError':onPlayerError}}); }
+function onPlayerReady(){ ytReady=true; try{ ytPlayer.setVolume(Math.round(parseFloat(document.getElementById('volRange').value || 0.8)*100)); }catch(e){} updateTrackMeta(); attemptAutoplay(); }
+function onPlayerError(e){}
+function onPlayerStateChange(e){ if(e.data === YT.PlayerState.PLAYING){ setPlayingUI(true); startProgressTimer(); document.getElementById('unmuteBtn').style.display='none'; } else if(e.data === YT.PlayerState.PAUSED){ setPlayingUI(false); stopProgressTimer(); } else if(e.data === YT.PlayerState.ENDED){ stopProgressTimer(); if(loopCurrent){ ytPlayer.seekTo(0); ytPlayer.playVideo(); } } }
+function setPlayingUI(playing){ const btn=document.getElementById('playBtn'), icon=document.getElementById('playIcon'); if(playing){ btn.classList.remove('paused'); icon.className='fa-solid fa-pause'; btn.setAttribute('aria-pressed','true'); } else { btn.classList.add('paused'); icon.className='fa-solid fa-play'; btn.setAttribute('aria-pressed','false'); } }
+function updateTrackMeta(){ const meta = ytPlaylist[currentIndex]||{}; document.getElementById('trackTitle').textContent = meta.title || 'Dottie Road Showcase'; document.getElementById('trackArtist').textContent = `Track ${currentIndex+1} of ${ytPlaylist.length}`; }
+function startProgressTimer(){ stopProgressTimer(); progressTimer = setInterval(()=>{ if(!ytReady||!ytPlayer||typeof ytPlayer.getCurrentTime!=='function') return; const cur=ytPlayer.getCurrentTime()||0; const dur=ytPlayer.getDuration()||0; const pct = dur ? (cur/dur)*100 : 0; document.getElementById('progressFilled').style.width = pct+'%'; document.getElementById('timeElapsed').textContent = formatTime(cur); document.getElementById('timeTotal').textContent = formatTime(dur); },400); }
+function stopProgressTimer(){ if(progressTimer){ clearInterval(progressTimer); progressTimer=null; } }
+function formatTime(s){ if(!isFinite(s)) return '0:00'; s=Math.floor(s); const m=Math.floor(s/60); const sec=s%60; return m+':'+(sec<10? '0'+sec: sec); }
+function attemptAutoplay(){ if(!ytReady) return; autoplayAttempts++; try{ ytPlayer.loadVideoById(ytPlaylist[currentIndex].id); ytPlayer.playVideo && ytPlayer.playVideo(); }catch(e){} setTimeout(()=>{ const state = ytPlayer && ytPlayer.getPlayerState ? ytPlayer.getPlayerState() : -1; if(state === YT.PlayerState.PLAYING){ setPlayingUI(true); document.getElementById('unmuteBtn').style.display='none'; } else { setPlayingUI(false); if(autoplayAttempts < 12) setTimeout(attemptAutoplay,1000); else document.getElementById('unmuteBtn').style.display='flex'; } },700); }
+document.getElementById('playBtn').addEventListener('click', (e)=>{ e.preventDefault(); if(!ytReady){ document.getElementById('unmuteBtn').style.display='flex'; return; } const state = ytPlayer.getPlayerState(); if(state === YT.PlayerState.PLAYING) ytPlayer.pauseVideo(); else ytPlayer.playVideo(); });
+document.getElementById('volRange').addEventListener('input', (e)=>{ try{ ytPlayer.setVolume(Math.round(parseFloat(e.target.value)*100)); }catch(e){} });
+document.getElementById('toggleLoop').addEventListener('click', (e)=>{ loopCurrent = !loopCurrent; e.currentTarget.setAttribute('aria-pressed', String(loopCurrent)); e.currentTarget.style.opacity = loopCurrent ? '1' : '0.6'; });
+document.getElementById('unmuteBtn').addEventListener('click', async (e)=>{ e.preventDefault(); try{ ytPlayer.loadVideoById(ytPlaylist[currentIndex].id); ytPlayer.playVideo(); }catch(e){ try{ ytPlayer.playVideo(); }catch(e){} } document.getElementById('unmuteBtn').style.display='none'; });
+updateTrackMeta();
+
+/* util: initialize clock already done above; keep code tidy */
 </script>
+
+<!-- YT API and FontAwesome -->
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" defer></script>
 </body>
 </html>
