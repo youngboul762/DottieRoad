@@ -14,10 +14,8 @@
     --text:#e8eef8;
     --muted:#98a6b8;
     --green:#4ef083;
-    --pink-1:#ff6fcf;
-    --pink-2:#ff3db6;
-    --red-1:#ff6b6b;
-    --red-2:#ff2b2b;
+    --pink-1: #ff6fcf;
+    --pink-2: #ff3db6;
     --glass: rgba(255,255,255,0.03);
     --card-radius:14px;
     --shadow: 0 10px 40px rgba(0,0,0,.6);
@@ -49,23 +47,44 @@
   .rr-list-item { margin-bottom:10px; }
   .rr-list-title { font-weight:700; color:var(--accent-2); margin-right:8px; }
 
-  /* Grid - Contraband style cards */
+  /* Grid - Contraband/Killadelphia style cards */
   #membersGrid{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap:18px;
     margin-top:12px;
   }
+
+  /* Contraband-like card */
   .contraband-card{
-    position:relative;height:150px;border-radius:var(--card-radius);overflow:hidden;cursor:pointer;
-    transition: transform .18s ease, box-shadow .18s ease;border:1px solid rgba(255,255,255,0.04);
-    background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));box-shadow:0 8px 30px rgba(0,0,0,0.6);
+    position:relative;
+    height:150px;
+    border-radius:var(--card-radius);
+    overflow:hidden;
+    cursor:pointer;
+    transform-origin:center;
+    transition: transform .2s ease, box-shadow .2s ease;
+    border: 1px solid rgba(255,255,255,0.04);
+    background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
   }
-  .contraband-card:hover{ transform: translateY(-8px) scale(1.02); box-shadow:0 18px 40px rgba(0,0,0,0.75) }
-  .contraband-card .bg{ position:absolute; inset:0; background-size:cover; background-position:center; filter:brightness(.36) contrast(1.05); transform:scale(1.06); transition:transform .4s ease; }
+  .contraband-card:hover{ transform: translateY(-8px) scale(1.02); box-shadow:0 18px 40px rgba(0,0,0,0.7) }
+
+  .contraband-card .bg{
+    position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.36) contrast(1.05);transform:scale(1.06);transition:transform .4s ease}
   .contraband-card:hover .bg{ transform:scale(1.12) }
-  .contraband-card::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(2,6,8,0.6) 55%, rgba(2,6,8,0.85) 100%); pointer-events:none; }
-  .contraband-card::after{ content:""; position:absolute; inset:-2px; border-radius:inherit; z-index:0; background: linear-gradient(90deg, rgba(78,240,131,0.12), rgba(75,200,255,0.04)); mix-blend-mode: screen; filter:blur(10px); opacity:.95; pointer-events:none; }
+
+  .contraband-card::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(2,6,8,0.6) 55%, rgba(2,6,8,0.85) 100%);
+    pointer-events:none;
+  }
+
+  .contraband-card::after{
+    content:"";position:absolute;inset: -2px;border-radius:inherit;z-index:0;
+    background: linear-gradient(90deg, rgba(78,240,131,0.12), rgba(75,200,255,0.04));
+    mix-blend-mode: screen;filter:blur(10px);opacity:.95;pointer-events:none;
+  }
 
   .card-content{position:relative;z-index:2;display:flex;height:100%;align-items:flex-end;padding:14px;gap:12px}
   .card-left{display:flex;flex-direction:column;gap:8px;min-width:0}
@@ -73,15 +92,23 @@
   .handle small{font-weight:700;color:var(--muted);font-size:11px}
   .meta-row{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted)}
   .clan-pill{padding:4px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-weight:800;font-size:11px}
+
   .status-badge{display:inline-flex;align-items:center;gap:8px;font-weight:900;color:var(--green);text-shadow:0 0 10px rgba(78,240,131,0.85)}
   .status-dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(180deg,var(--green),#28d56b);box-shadow:0 0 16px rgba(78,240,131,0.92);border:1px solid rgba(255,255,255,0.06)}
 
-  .contraband-card.pink::after{ background: linear-gradient(90deg, rgba(255,111,207,0.18), rgba(255,61,182,0.06)); }
+  .contraband-card.pink::after{
+    background: linear-gradient(90deg, rgba(255,111,207,0.18), rgba(255,61,182,0.06));
+  }
   .contraband-card.pink .status-badge{ color: var(--pink-2); text-shadow: 0 0 10px rgba(255,61,182,0.85); }
   .contraband-card.pink .status-dot{ background: linear-gradient(180deg,var(--pink-1),var(--pink-2)); box-shadow: 0 0 18px rgba(255,61,182,0.95); }
 
+  .contraband-card.alive::after{
+    /* green glow default (overridden by pink::after for pink cards) */
+  }
+
   .avatar-box{width:92px;height:92px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);flex-shrink:0}
   .avatar-box img{width:100%;height:100%;object-fit:cover;display:block}
+
   .card-footer{position:absolute;left:14px;bottom:12px;right:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:2}
   .card-footer .left{color:rgba(255,255,255,0.6);font-size:11px}
   .card-footer .right{color:var(--muted);font-size:11px}
@@ -93,68 +120,9 @@
   .modal p{margin:6px 0;color:var(--text)}
   .close-btn{float:right;background:transparent;border:0;color:var(--muted);font-size:20px;cursor:pointer}
 
-  /* Opponent cards — BLACK background, RED glow */
-  #oppsGrid { display:grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-top:10px; }
-  .opponent-card {
-    position:relative;
-    border-radius:12px;
-    padding:12px;
-    display:flex;
-    gap:12px;
-    align-items:center;
-    background: #000000; /* solid black background */
-    border:1px solid rgba(255,40,40,0.06);
-    overflow:visible;
-    cursor:pointer;
-    transition: transform .12s ease, box-shadow .12s ease;
-    min-height:76px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-  }
-  .opponent-card:hover{ transform: translateY(-6px); }
-
-  .opponent-avatar {
-    width:56px;
-    height:56px;
-    border-radius:8px;
-    object-fit:cover;
-    border:1px solid rgba(255,255,255,0.04);
-    flex-shrink:0;
-    background: #100000;
-    display:block;
-  }
-
-  .opponent-name {
-    font-weight:900;
-    color:#ff8b8b; /* slight red tint for text */
-    font-size:14px;
-    text-shadow: 0 0 6px rgba(255,80,80,0.6);
-  }
-  .opponent-role { font-size:12px; color:var(--muted); }
-
-  /* strong red glow effect */
-  .opponent-card.red::after{
-    content: "";
-    position: absolute;
-    inset: -10px;
-    border-radius: 16px;
-    z-index: -1;
-    background: radial-gradient(ellipse at center,
-      rgba(255,40,40,0.45) 0%,
-      rgba(255,40,40,0.18) 25%,
-      rgba(255,40,40,0.08) 45%,
-      transparent 70%);
-    filter: blur(14px);
-    opacity: 1;
-    animation: redPulse 1.6s infinite;
-  }
-  @keyframes redPulse { 0%{opacity:.95;transform:scale(1)}50%{opacity:.45;transform:scale(1.03)}100%{opacity:.95;transform:scale(1)} }
-
-  .opponent-card .meta { display:flex; flex-direction:column; gap:4px; min-width:0; }
-
   @media (max-width:560px){
     .avatar-box{width:68px;height:68px}
     .contraband-card{height:140px}
-    #oppsGrid { grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); }
   }
 </style>
 </head>
@@ -165,15 +133,15 @@
     <div class="hero-inner">
       <div class="brand">
         <h1 class="hero-title">Dottie Road Faction Showcase</h1>
-        <div class="hero-sub">Active Members & Opps</div>
+        <div class="hero-sub">Active Members — Call of Duty / Contraband style cards</div>
       </div>
     </div>
 
     <nav class="nav" aria-label="Main navigation">
       <a class="nav-link" data-tab="riskyroad" href="#">Set Profile</a>
       <a class="nav-link" data-tab="faction" href="#">Faction Showcase</a>
-      <a class="nav-link" data-tab="activemembers" href="#">Active Members</a>
-      <a class="nav-link active" data-tab="opps" href="#">Opps</a>
+      <a class="nav-link active" data-tab="activemembers" href="#">Active Members</a>
+      <a class="nav-link" data-tab="opps" href="#">Opps</a>
     </nav>
 
     <div id="riskyroad" class="nav-section">
@@ -183,6 +151,14 @@
           <li class="rr-list-item"><span class="rr-list-title">Sets:</span> DottieRoad / M60 (075)</li>
           <li class="rr-list-item"><span class="rr-list-title">Main Blocks:</span> 75th &amp; Kingston</li>
           <li class="rr-list-item"><span class="rr-list-title">Notable Blocks:</span> 74th &amp; Phillips, 75th &amp; Coles, 75th &amp; Exchange (Dottie Road)</li>
+          <li class="rr-list-item"><span class="rr-list-title">Gang Composition:</span> Black P. Stones, Maniac Four Corner Hustlers, Gangster Disciples, Black Disciples</li>
+          <li class="rr-list-item"><span class="rr-list-title">Area Formerly Controlled By:</span> Black P. Stones, Maniac Four Corner Hustlers, Vice Lords</li>
+          <li class="rr-list-item"><span class="rr-list-title">Location:</span> South Shore, Chicago</li>
+          <li class="rr-list-item"><span class="rr-list-title">Other Names:</span> CoreyBlock, MikeyWay, MikeyDrive, Kill4K, Kill4Kill, K4K</li>
+          <li class="rr-list-item"><span class="rr-list-title">Fallen Members:</span> G Dottie, 60, Mikey, Corey, Lil K</li>
+          <li class="rr-list-item"><span class="rr-list-title">Rappers:</span> Luh Ek, EBK Badazz, Sonny Bailout, fastbuckzcamo</li>
+          <li class="rr-list-item"><span class="rr-list-title">Allies &amp; Associates:</span> BeltSumGang, DrillCity, MTV, 400East, NLMB, ShortyMobb, BurleyBoyz, TTD, 166 Stateline, GoolyGang, Zone3, TossGang</li>
+          <li class="rr-list-item"><span class="rr-list-title">Rivals:</span> ColesMobb, BlackMobb, TrapCity, PocketTown, 8TreMobb, OTV, Rawtown, YoungMoney, 95Mobb, 808 Mobb, EvansMobb, 757, TyquanWorld, BKN, ESD, RiskyRoad, SaneGang, DeathRow, Lakeside, SMV, EBC, SnoBlock, BOG, DaroGang, HootyGang, THF446 (IC).</li>
         </ul>
       </div>
     </div>
@@ -194,32 +170,53 @@
       </div>
     </div>
 
-    <div id="activemembers" class="nav-section">
+    <div id="activemembers" class="nav-section active">
       <div class="section-card">
         <div class="section-title">Active Members</div>
         <div id="membersGrid" aria-live="polite"></div>
       </div>
     </div>
 
-    <div id="opps" class="nav-section active">
+    <div id="opps" class="nav-section">
       <div class="section-card">
         <div class="section-title">Opps</div>
-        <div id="oppsGrid" aria-live="polite" role="list"></div>
+        <div id="oppsGrid" aria-live="polite"></div>
       </div>
     </div>
   </div>
 
-  <!-- Modal (used for both members and opps) -->
+  <!-- Member Modal -->
   <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
     <div class="modal" role="document" aria-describedby="modalDesc">
       <button class="close-btn" id="modalClose" aria-label="Close">&times;</button>
-      <h3 id="modalName">Item</h3>
-      <p id="modalDesc"><strong>Info:</strong> <span id="modalInfo">—</span></p>
+      <h3 id="modalName">Member</h3>
+      <img id="modalAvatar" src="" alt="" style="width:100%;max-height:340px;object-fit:cover;border-radius:10px;margin:8px 0;border:1px solid rgba(255,255,255,0.04)">
+      <p id="modalDesc"><strong>Handle:</strong> <span id="modalHandle">—</span></p>
+      <p><strong>Status:</strong> <span id="modalStatus" class="status alive" style="color:var(--green)">Alive</span></p>
     </div>
   </div>
 
 <script>
-/* ---------- Members (kept simple) ---------- */
+/*
+ - Removed top-right gif (no hero-logo)
+ - pink variant remains for @msbounceoutclapem.tootie
+ - specialClan7579 and specialClan074 used to determine clan pill text
+ - Changed requested handles to show clan '074': @dtrrecklessgoski74, @weapplybelt, @bailoutblick
+*/
+
+const specialClan7579 = new Set([
+  '075.semiautoo',
+  'cantduckthese_ftoo75',
+  'diddyslime.7430',
+  'zowick7579'
+]);
+
+const specialClan074 = new Set([
+  'dtrrecklessgoski74',
+  'weapplybelt',
+  'bailoutblick'
+]);
+
 const members = [
   { id:'u1', display:'@zowick7579', handle:'zowick7579', avatar:'https://i.pravatar.cc/600?img=32', status:'Alive' },
   { id:'u2', display:'@weapplybelt', handle:'weapplybelt', avatar:'https://i.pravatar.cc/600?img=33', status:'Alive' },
@@ -234,102 +231,108 @@ const members = [
   { id:'u11', display:'@msbounceoutclapem.tootie', handle:'msbounceoutclapem.tootie', avatar:'https://i.pravatar.cc/600?img=58', status:'Alive', pink:true }
 ];
 
-function createMemberCard(m){
+function clanFor(handle){
+  if (specialClan074.has(handle)) return '074';
+  if (specialClan7579.has(handle)) return '7579';
+  return '075';
+}
+
+function createCard(m){
   const card = document.createElement('div');
-  card.className = 'contraband-card' + (m.pink ? ' pink' : '');
+  card.className = 'contraband-card alive' + (m.pink ? ' pink' : '');
   card.tabIndex = 0;
 
-  const bg = document.createElement('div'); bg.className='bg'; bg.style.backgroundImage = `url(${m.avatar})`;
+  const bg = document.createElement('div');
+  bg.className = 'bg';
+  bg.style.backgroundImage = `url(${m.avatar})`;
   card.appendChild(bg);
 
-  const content = document.createElement('div'); content.className='card-content';
-  const avatarBox = document.createElement('div'); avatarBox.className='avatar-box';
-  const im = document.createElement('img'); im.src = m.avatar; im.alt = m.display; avatarBox.appendChild(im);
+  const content = document.createElement('div');
+  content.className = 'card-content';
 
-  const left = document.createElement('div'); left.className='card-left';
-  const handle = document.createElement('div'); handle.className='handle'; handle.innerHTML = `${m.display} <small>${m.handle}</small>`;
-  const meta = document.createElement('div'); meta.className='meta-row';
-  const clan = document.createElement('div'); clan.className='clan-pill'; clan.textContent = '075';
-  const status = document.createElement('div'); status.className='status-badge'; status.innerHTML = `<span class="status-dot" aria-hidden="true"></span>Alive`;
-  meta.appendChild(clan); meta.appendChild(status);
-  left.appendChild(handle); left.appendChild(meta);
+  const avatarBox = document.createElement('div');
+  avatarBox.className = 'avatar-box';
+  const im = document.createElement('img');
+  im.src = m.avatar;
+  im.alt = m.display;
+  avatarBox.appendChild(im);
 
-  content.appendChild(avatarBox); content.appendChild(left);
-  const footer = document.createElement('div'); footer.className='card-footer'; footer.innerHTML = `<div class="left">Active Member</div><div class="right">Dottie Road</div>`;
-
-  card.appendChild(content); card.appendChild(footer);
-
-  card.addEventListener('click', ()=> openModal(m.display, `Handle: ${m.handle}\nStatus: ${m.status}`));
-  return card;
-}
-
-/* render members in their tab */
-function renderMembersGrid(){
-  const grid = document.getElementById('membersGrid'); if(!grid) return;
-  grid.innerHTML = '';
-  members.forEach(m => grid.appendChild(createMemberCard(m)));
-}
-
-/* ---------- Opponents (requested black boxes with red glow) ---------- */
-const opponents = [
-  { id:'o1', name:'ESD', info:'Rival set - ESD' },
-  { id:'o2', name:'Rawtown', info:'Rival set - Rawtown' },
-  { id:'o3', name:'808 Mobb', info:'Rival set - 808 Mobb' },
-  { id:'o4', name:'RiskyRoad', info:'Rival set - RiskyRoad' },
-  { id:'o5', name:'TrapCity', info:'Rival set - TrapCity' },
-  { id:'o6', name:'BOG', info:'Rival set - BOG' },
-  { id:'o7', name:'SaneGang', info:'Rival set - SaneGang' }
-];
-
-function createOppCard(o){
-  const card = document.createElement('div');
-  card.className = 'opponent-card red';
-  card.tabIndex = 0;
-
-  const avatar = document.createElement('img');
-  const label = encodeURIComponent(o.name);
-  avatar.src = `https://via.placeholder.com/150/000000/ff2b2b?text=${label}`;
-  avatar.alt = o.name;
-  avatar.className = 'opponent-avatar';
+  const left = document.createElement('div');
+  left.className = 'card-left';
+  const handle = document.createElement('div');
+  handle.className = 'handle';
+  handle.innerHTML = `${m.display} <small>${m.handle}</small>`;
 
   const meta = document.createElement('div');
-  meta.className = 'meta';
-  const name = document.createElement('div');
-  name.className = 'opponent-name';
-  name.textContent = o.name;
-  const role = document.createElement('div');
-  role.className = 'opponent-role';
-  role.textContent = 'Opposing set';
+  meta.className = 'meta-row';
+  const clan = document.createElement('div');
+  clan.className = 'clan-pill';
+  clan.textContent = clanFor(m.handle);
 
-  meta.appendChild(name);
-  meta.appendChild(role);
+  const status = document.createElement('div');
+  status.className = 'status-badge';
+  status.innerHTML = `<span class="status-dot" aria-hidden="true"></span>Alive`;
 
-  card.appendChild(avatar);
-  card.appendChild(meta);
+  if(m.pink){
+    clan.style.background = 'rgba(255,111,207,0.06)';
+    clan.style.borderColor = 'rgba(255,61,182,0.12)';
+    clan.style.color = 'var(--pink-2)';
+  }
 
-  card.addEventListener('click', ()=> openModal(o.name, o.info));
-  card.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(o.name, o.info); }});
+  meta.appendChild(clan);
+  meta.appendChild(status);
+
+  left.appendChild(handle);
+  left.appendChild(meta);
+
+  content.appendChild(avatarBox);
+  content.appendChild(left);
+
+  const footer = document.createElement('div');
+  footer.className = 'card-footer';
+  footer.innerHTML = `<div class="left">Active Member</div><div class="right">Dottie Road</div>`;
+
+  card.appendChild(content);
+  card.appendChild(footer);
+
+  card.addEventListener('click', ()=> openMemberModal(m));
+  card.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openMemberModal(m); }});
 
   return card;
 }
 
-function renderOppsGrid(){
-  const grid = document.getElementById('oppsGrid'); if(!grid) return;
+function renderMembersGrid(){
+  const grid = document.getElementById('membersGrid');
   grid.innerHTML = '';
-  opponents.forEach(o => grid.appendChild(createOppCard(o)));
+  members.forEach(m => grid.appendChild(createCard(m)));
 }
 
-/* ---------- Modal handling ---------- */
-function openModal(title, info){
-  document.getElementById('modalName').textContent = title;
-  document.getElementById('modalInfo').textContent = info;
-  const b = document.getElementById('modalBackdrop'); b.classList.add('show'); b.setAttribute('aria-hidden','false');
+function openMemberModal(m){
+  document.getElementById('modalName').textContent = m.display;
+  document.getElementById('modalAvatar').src = m.avatar;
+  document.getElementById('modalHandle').textContent = m.handle;
+  const st = document.getElementById('modalStatus');
+  st.textContent = m.status;
+  st.className = 'status alive';
+  if(m.pink){
+    st.style.color = getComputedStyle(document.documentElement).getPropertyValue('--pink-2').trim();
+    st.style.textShadow = '0 0 10px rgba(255,61,182,0.95)';
+  } else {
+    st.style.color = getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+    st.style.textShadow = '0 0 10px rgba(78,240,131,0.95)';
+  }
+  const b = document.getElementById('modalBackdrop');
+  b.classList.add('show'); b.setAttribute('aria-hidden','false');
   document.getElementById('modalClose').focus();
 }
-document.getElementById('modalClose').addEventListener('click', ()=> { const b=document.getElementById('modalBackdrop'); b.classList.remove('show'); b.setAttribute('aria-hidden','true'); });
-document.getElementById('modalBackdrop').addEventListener('click', (e)=> { if(e.target === e.currentTarget){ const b=document.getElementById('modalBackdrop'); b.classList.remove('show'); b.setAttribute('aria-hidden','true'); }});
 
-/* ---------- Tabs behavior ---------- */
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalBackdrop').addEventListener('click', (e)=> { if(e.target === e.currentTarget) closeModal(); });
+function closeModal(){ const b = document.getElementById('modalBackdrop'); b.classList.remove('show'); b.setAttribute('aria-hidden','true'); }
+
+renderMembersGrid();
+
+/* tabs */
 document.querySelectorAll('.nav-link').forEach(link=>{
   link.addEventListener('click', e=>{
     e.preventDefault();
@@ -342,11 +345,7 @@ document.querySelectorAll('.nav-link').forEach(link=>{
   });
 });
 
-/* ---------- Initialize grids ---------- */
-renderMembersGrid();
-renderOppsGrid();
-
-/* ---------- CT clock ---------- */
+/* CT clock */
 (function updateClock(){
   const id = 'clock';
   if(!document.getElementById(id)){
