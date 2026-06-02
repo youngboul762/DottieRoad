@@ -7,20 +7,21 @@
 
 <style>
 /* ------------------------------
-   KILLADELPHIA PRODIGY-STYLE THEME
+   KILLADELPHIA CHIRO-BLUE THEME
    ------------------------------ */
 :root{
-  --bg:#0a0b0d;
-  --panel:#111318;
-  --panel-soft:#16181f;
-  --glass:rgba(255,255,255,.03);
+  --bg:#05070d;
+  --panel:#0b0e16;
+  --panel-soft:#11141f;
+  --glass:rgba(255,255,255,.04);
 
-  --accent:#ffb03a;
-  --accent-soft:#ffd27a;
+  --accent:#3b82f6;        /* Electric Blue */
+  --accent-soft:#60a5fa;   /* Lighter Blue */
+  --accent-glow:#1d4ed8;   /* Deep Blue Glow */
 
   --text:#f3f4f6;
   --text-soft:#cbd5e1;
-  --muted:#9ca3af;
+  --muted:#94a3b8;
 
   --border-soft:rgba(255,255,255,.06);
   --border-mid:rgba(255,255,255,.12);
@@ -34,8 +35,8 @@
 body{
   margin:0;
   background:
-    radial-gradient(900px 420px at 8% -10%, rgba(255,176,58,.10), transparent 60%),
-    radial-gradient(900px 420px at 110% 10%, rgba(255,140,64,.08), transparent 60%),
+    radial-gradient(900px 420px at 8% -10%, rgba(59,130,246,.12), transparent 60%),
+    radial-gradient(900px 420px at 110% 10%, rgba(37,99,235,.10), transparent 60%),
     var(--bg);
   color:var(--text);
   font-family:Inter, system-ui, sans-serif;
@@ -47,7 +48,7 @@ body{
   inset:0;
   background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat;
   filter:blur(14px) saturate(1.05);
-  opacity:.18;
+  opacity:.14;
   pointer-events:none;
   z-index:-1;
 }
@@ -57,7 +58,7 @@ body{
   position:sticky;
   top:0;
   z-index:50;
-  background:rgba(0,0,0,.45);
+  background:rgba(0,0,20,.45);
   backdrop-filter:blur(14px);
   border-bottom:1px solid var(--border-soft);
 }
@@ -95,6 +96,7 @@ body{
 .nav-links button.active{
   background:rgba(255,255,255,.06);
   color:var(--accent-soft);
+  box-shadow:0 0 12px var(--accent-glow);
 }
 
 /* PAGE WRAPPER */
@@ -121,12 +123,15 @@ body{
 /* HERO */
 .hero{
   padding:60px 0;
+  background:
+    linear-gradient(180deg,rgba(5,7,13,.85),rgba(5,7,13,.65)),
+    radial-gradient(circle at 20% 0%, rgba(59,130,246,.25), transparent 60%);
 }
 .hero-title{
   font-size:48px;
   font-weight:900;
   color:var(--accent-soft);
-  text-shadow:0 0 20px rgba(255,176,58,.35);
+  text-shadow:0 0 22px rgba(59,130,246,.45);
 }
 .hero-sub{
   font-size:18px;
@@ -137,13 +142,18 @@ body{
 
 /* PANELS */
 .panel{
-  background:var(--glass);
-  backdrop-filter:blur(14px);
-  border:1px solid var(--border-soft);
+  background:rgba(20,25,40,.35);
+  backdrop-filter:blur(18px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.08);
   border-radius:var(--radius);
   padding:20px;
   margin-top:20px;
-  box-shadow:0 8px 20px rgba(0,0,0,.35);
+  box-shadow:0 8px 20px rgba(0,0,0,.45);
+  transition:var(--transition);
+}
+.panel:hover{
+  border-color:var(--accent-soft);
+  box-shadow:0 0 22px rgba(59,130,246,.25);
 }
 
 /* SHOP GRID */
@@ -163,6 +173,7 @@ body{
 .shop-item:hover{
   transform:translateY(-3px);
   border-color:var(--accent-soft);
+  box-shadow:0 0 14px rgba(59,130,246,.25);
 }
 .shop-item img{
   width:100%;
@@ -184,6 +195,7 @@ body{
 .streamer-card:hover{
   border-color:var(--accent-soft);
   transform:translateY(-3px);
+  box-shadow:0 0 14px rgba(59,130,246,.25);
 }
 .streamer-card img{
   width:70px;
@@ -209,6 +221,7 @@ body{
 .gallery img:hover{
   transform:scale(1.03);
   border-color:var(--accent-soft);
+  box-shadow:0 0 14px rgba(59,130,246,.25);
 }
 
 /* RULES */
