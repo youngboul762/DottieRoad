@@ -21,36 +21,22 @@
     color:var(--text); font:500 16px/1.4 "Rajdhani", system-ui, sans-serif;
   }
 
-  .page-bg{ 
-    position:fixed; inset:0; z-index:0; pointer-events:none;
+  .page-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
     background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat fixed;
     filter: blur(14px) saturate(1.05); opacity:.22;
   }
 
   /* Top Navigation */
-  .topbar {
-    position: sticky; top: 0; z-index: 100;
-    background: linear-gradient(180deg, rgba(11,11,18,0.98), rgba(11,11,18,0.92));
-    border-bottom: 1px solid rgba(255,107,59,0.25);
-    backdrop-filter: blur(12px);
-  }
-  .top-inner {
-    max-width: 1280px; margin: 0 auto; padding: 14px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
+  .topbar { position: sticky; top: 0; z-index: 100; background: linear-gradient(180deg, rgba(11,11,18,0.98), rgba(11,11,18,0.92));
+    border-bottom: 1px solid rgba(255,107,59,0.25); backdrop-filter: blur(12px); }
+  .top-inner { max-width: 1280px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
   .brand { font-size: 26px; font-weight: 800; }
   .brand .accent { color: var(--accent-2); }
-
   .nav { display: flex; gap: 28px; font-size: 15.5px; font-weight: 600; }
-  .nav-link {
-    color: #e0e0e8; text-decoration: none; position: relative;
-  }
+  .nav-link { color: #e0e0e8; text-decoration: none; position: relative; }
   .nav-link:hover { color: var(--accent-2); }
   .nav-link.active { color: #fff; }
-  .nav-link.active::after {
-    content: ''; position: absolute; bottom: -6px; left: 0;
-    width: 100%; height: 2px; background: var(--accent-2);
-  }
+  .nav-link.active::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 100%; height: 2px; background: var(--accent-2); }
 
   .purchase-btn {
     background: linear-gradient(180deg, rgba(255,107,59,0.28), rgba(255,176,58,0.08));
@@ -58,17 +44,15 @@
     padding: 8px 18px; border-radius: 10px; font-weight: 700; cursor: pointer;
   }
 
-  /* Views */
-  .main-view { display: none; padding: 20px 0; }
+  .main-view { display: none; }
   .main-view.active { display: block; }
 
   /* Music Player */
   .music-player {
     position: fixed; bottom: 15px; right: 15px; z-index: 200;
-    background: rgba(18,20,32,0.95); border: 1px solid rgba(255,176,58,0.3);
-    border-radius: 12px; padding: 8px 14px; font-size: 13px;
-    display: flex; align-items: center; gap: 10px;
-    backdrop-filter: blur(8px);
+    background: rgba(18,20,32,0.95); border: 1px solid rgba(255,176,58,0.4);
+    border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; gap: 10px;
+    font-size: 13px; backdrop-filter: blur(8px);
   }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -80,87 +64,5 @@
 <div class="topbar">
   <div class="top-inner">
     <h1 class="brand">Killadelphia <span class="accent">Contraband</span></h1>
-    
     <div class="nav">
-      <a href="#" class="nav-link active" id="navHome">Home</a>
-      <a href="#" class="nav-link" id="navShop">Shop</a>
-      <a href="#" class="nav-link" id="navStreamers">Streamers</a>
-      <a href="#" class="nav-link" id="navSneak">Sneak Peeks</a>
-      <a href="#" class="nav-link" id="navRules">Rules</a>
-    </div>
-
-    <button class="purchase-btn">
-      <i class="fa-solid fa-cart-shopping"></i> Buy Credits
-    </button>
-  </div>
-</div>
-
-<div class="wrap">
-  <!-- Home View (Your Spinner) -->
-  <div id="homeView" class="main-view active">
-    <!-- Paste all your original content here (Hero, Spinner, Stage, Drawers, Stats Overlay, etc.) -->
-    <!-- Keep everything from your original <section class="hero"> down to the watermark -->
-  </div>
-
-  <!-- Other Views -->
-  <div id="shopView" class="main-view">
-    <h2 class="section-title">Shop</h2>
-    <p>Credits and exclusive contraband shop coming soon.</p>
-  </div>
-
-  <div id="streamersView" class="main-view">
-    <h2 class="section-title">Streamers</h2>
-    <p>Featured Killadelphia streamers will appear here.</p>
-  </div>
-
-  <div id="sneakView" class="main-view">
-    <h2 class="section-title">Sneak Peeks</h2>
-    <p>New items and updates preview.</p>
-  </div>
-
-  <div id="rulesView" class="main-view">
-    <h2 class="section-title">Server Rules</h2>
-    <p>Contraband usage rules will be listed here.</p>
-  </div>
-</div>
-
-<!-- Music Player -->
-<div class="music-player">
-  <button id="musicToggle"><i class="fa-solid fa-play"></i></button>
-  <span id="nowPlaying">Now Playing: Loading...</span>
-  <button id="nextTrack"><i class="fa-solid fa-forward"></i></button>
-</div>
-
-<script>
-// Your new YouTube playlist
-const playlist = [
-  "NyRbZVl4P6s",
-  "yflFa6undWk",
-  "uSHHqS8HZhs",
-  "z4PndMZNUX8",
-  "8e80zDhTONc",
-  "VvItaijf80Y"
-];
-
-let currentTrack = 0;
-let isPlaying = false;
-let player;
-
-// Create hidden YouTube iframe
-function createPlayer() {
-  const iframe = document.createElement('iframe');
-  iframe.style.display = "none";
-  iframe.width = "0"; iframe.height = "0";
-  iframe.allow = "autoplay";
-  document.body.appendChild(iframe);
-  return iframe;
-}
-
-player = createPlayer();
-
-function playTrack(index) {
-  currentTrack = index % playlist.length;
-  const videoId = playlist[currentTrack];
-  player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&rel=0`;
-  
-  document.getElementById('nowPlaying').textContent = `Now Playing: Track ${currentTrack + 1}
+      <
