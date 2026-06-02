@@ -357,6 +357,79 @@ body{
 
 </div>
 
+<!-- ⭐ MUSIC CONTROLS UI -->
+<div id="music-controls" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(20,25,40,.65);
+  backdrop-filter: blur(10px);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 9999;
+">
+  <button id="mute-btn" style="
+    background: none;
+    border: 1px solid rgba(255,255,255,.25);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  ">Mute</button>
+
+  <input id="volume-slider" type="range" min="0" max="100" value="50" style="width: 120px;">
+</div>
+
+<!-- ⭐ BACKGROUND MUSIC PLAYLIST -->
+<iframe 
+  id="killadelphia-bgm"
+  width="0" 
+  height="0" 
+  frameborder="0"
+  allow="autoplay"
+  src="https://www.youtube.com/embed/NyRbZVl4P6s?autoplay=1&loop=1&enablejsapi=1&playlist=NyRbZVl4P6s,uSHHqS8HZhs,yflFa6undWk,xvbNWYQCumw,D0ZfzQSNYvU,yK_fhs7JuRU">
+</iframe>
+
+<!-- ⭐ MUSIC CONTROL SCRIPT -->
+<script>
+let player;
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('killadelphia-bgm', {
+    events: {
+      'onReady': onPlayerReady
+    }
+  });
+}
+
+function onPlayerReady() {
+  player.setVolume(50);
+}
+
+document.getElementById("volume-slider").addEventListener("input", function() {
+  const vol = parseInt(this.value);
+  player.setVolume(vol);
+});
+
+document.getElementById("mute-btn").addEventListener("click", function() {
+  if (player.isMuted()) {
+    player.unMute();
+    this.textContent = "Mute";
+  } else {
+    player.mute();
+    this.textContent = "Unmute";
+  }
+});
+
+// Load YouTube API
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.body.appendChild(tag);
+</script>
+
 <script>
 document.querySelectorAll('.nav-links button').forEach(btn=>{
   btn.addEventListener('click',()=>{
