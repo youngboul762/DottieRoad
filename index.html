@@ -1,768 +1,848 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Killadelphia's Contraband System</title>
-<style>
-  :root{
-    --bg:#0b0b12;
-    --panel:#121421;
-    --accent:#ff6b3b;
-    --accent-2:#ffb03a;
-    --text:#e8e8f2;
-    --muted:#94a3b8;
-    --card-common:#2b2f44;
-    --card-uncommon:#214a2f;
-    --card-rare:#133a5a;
-    --card-epic:#3a2165;
-    --card-legendary:#6b5200;
-    --shadow:0 10px 30px rgba(0,0,0,.45);
-    /* Reel sizing */
-    --slot-w:100px;
-    --slot-h:100px;
-    --reel-gap:10px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%; overflow-x:hidden}
-  body{
-    margin:0;background:radial-gradient(1200px 600px at 10% -10%, rgba(255,140,64,.16), transparent 60%),
-    radial-gradient(1200px 600px at 110% 10%, rgba(255,92,48,.12), transparent 60%), var(--bg);
-    color:var(--text); font:500 16px/1.4 "Rajdhani", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    letter-spacing:.2px; display:flex; align-items:flex-start; justify-content:center; padding:0px 16px 96px;
-  }
-  
-  /* Background image layer: blurred and subtle */
-  .page-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
-    background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat fixed;
-    filter: blur(14px) saturate(1.05);
-    opacity:.22;
-    transform: scale(1.06); /* hide blur edges */
-  }
-  .wrap{max-width:1280px; width:100%; margin:0 auto}
+  <meta charset="utf-8" />
+  <title>Killadelphia's Contraband System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#050712;
+      --panel:#101322;
+      --panel-soft:#15192a;
+      --accent:#ff6b3b;
+      --accent-soft:#ffb03a;
+      --text:#e5e7f5;
+      --muted:#9ca3af;
+      --border-soft:rgba(255,255,255,.08);
+      --border-strong:rgba(255,255,255,.18);
+      --shadow:0 18px 40px rgba(0,0,0,.55);
 
-  /* Topbar navigation styling */
-  .topbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: linear-gradient(180deg, rgba(10,10,16,0.95), rgba(10,10,16,0.7));
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(8px) saturate(1.2);
-  }
-
-  .top-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 14px 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .brand {
-    font-size: clamp(20px, 3vw, 28px);
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: 0.02em;
-    margin: 0;
-  }
-
-  .brand .accent {
-    color: var(--accent-2);
-    text-shadow: 0 0 10px rgba(255,176,58,0.40);
-  }
-
-  .nav {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-  }
-
-  .nav-link {
-    color: #d8dee9;
-    font-size: 14px;
-    text-decoration: none;
-    transition: color 0.2s ease, text-shadow 0.2s ease;
-  }
-
-  .nav-link:hover {
-    color: var(--accent-2);
-    text-shadow: 0 0 8px rgba(255,176,58,0.40);
-  }
-
-  .purchase-btn {
-    background: linear-gradient(180deg, rgba(255,107,59,0.28), rgba(255,176,58,0.08));
-    color: #fff;
-    border: 1px solid rgba(255,176,58,0.45);
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .purchase-btn:hover {
-    box-shadow: 0 0 0 3px rgba(255,176,58,0.18);
-  }
-  .card{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01)),
-      rgba(12,14,22,.55);
-    backdrop-filter: blur(8px) saturate(1.05);
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:14px; box-shadow:var(--shadow); padding:18px;
-    position: relative; /* allow anchored footer labels inside cards */
-  }
-  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-  .label{color:var(--muted); font-size:14px; margin-right:8px}
-  select, button{
-    background:#181a2a; color:var(--text); border:1px solid rgba(255,255,255,.14);
-    padding:10px 12px; border-radius:10px; outline:none;
-  }
-  button{
-    background: linear-gradient(180deg, rgba(255,176,58,.30), rgba(255,107,59,.08));
-    border:1px solid rgba(255,176,58,.40);
-    padding:10px 16px; font-weight:700; letter-spacing:.03em; cursor:pointer;
-    transition:transform .08s ease, box-shadow .2s ease;
-  }
-  button:hover{box-shadow:0 0 0 3px rgba(255,176,58,.18)}
-  button:active{transform:translateY(1px)}
-
-  /* Icon button (dice shuffle) */
-  .icon-btn{
-    width:38px; height:38px; padding:0; margin-right:8px;
-    display:inline-flex; align-items:center; justify-content:center;
-    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-    border:1px solid rgba(255,255,255,.22);
-    border-radius:10px; cursor:pointer;
-  }
-  .icon-btn i{ font-size:18px; opacity:.9 }
-  .icon-btn:hover{ box-shadow:0 0 0 3px rgba(255,255,255,.12) }
-
-  /* Reel */
-  .reel{
-    position:relative; overflow:hidden; border-radius:12px; border:1px solid rgba(255,255,255,.06);
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)),
-      rgba(10,12,20,.45);
-    backdrop-filter: blur(6px) saturate(1.02);
-    margin-top:12px; width:100%; padding:12px;
-  }
-  .strip{display:flex; gap:var(--reel-gap); padding:0; transition:transform .25s ease; will-change:transform}
-  .slot{
-    width:var(--slot-w);
-    height:var(--slot-h);
-    /* Prevent flexbox from shrinking tiles so all tiers stay identical */
-    flex: 0 0 var(--slot-w);
-    min-width: var(--slot-w);
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    border-radius:12px;
-    /* Crisp white stroke around slots */
-    border:1px solid rgba(255,255,255,.65);
-    /* keep inner shading and add a subtle outer ring for clarity */
-    box-shadow:
-      inset 0 -30px 60px rgba(0,0,0,.25),
-      0 0 0 1px rgba(255,255,255,.15);
-  }
-  /* Rarity gradient styling for spin slots: light top -> rarity bottom */
-  .slot.common{
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.04) 70%, rgba(255,255,255,.08) 100%),
-    linear-gradient(180deg, rgba(43,47,68,0) 55%, rgba(161,161,161,.85) 100%), rgba(15,17,32,.60);
-  }
-  .slot.uncommon{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 14%, rgba(15,17,32,0) 50%),
-      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(33,74,47,.85) 100%),
-      rgba(15,17,32,.60);
-  }
-  .slot.rare{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 14%, rgba(15,17,32,0) 50%),
-      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(19,58,90,.85) 100%),
-      rgba(15,17,32,.60);
-  }
-  .slot.epic{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 14%, rgba(15,17,32,0) 50%),
-      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(58,33,101,.85) 100%),
-      rgba(15,17,32,.60);
-  }
-  .slot.legendary{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 14%, rgba(15,17,32,0) 50%),
-      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(107,82,0,.88) 100%),
-      rgba(15,17,32,.60);
-  }
-
-  /* weapon image fills the 100x100 tile but preserves aspect */
-  .slot img.weapon-img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    display:block;
-    pointer-events:none;
-    user-select:none;
-  }
-
-  /* overlays */
-  .slot .title{
-    position:absolute; left:6px; right:36px; bottom:6px;
-    /* Keep on one line, shrink slightly on small tiles */
-    font-size: clamp(11px, calc(var(--slot-w) * 0.12), 13px);
-    line-height:1.1; color:#fff;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    text-shadow:0 2px 6px rgba(0,0,0,.6);
-  }
-
-  .cut{
-    position:absolute; top:0; bottom:0; left:50%; width:6px; transform:translateX(-50%);
-    /* Bright core (center) with darker gold edges + soft vertical shimmer */
-    background:
-      linear-gradient(90deg,
-        rgba(107,82,0,0.55) 0%,
-        rgba(191,140,0,0.65) 30%,
-        rgba(255,227,154,0.88) 50%,
-        rgba(191,140,0,0.65) 70%,
-        rgba(107,82,0,0.55) 100%
-      ),
-      linear-gradient(180deg,
-        rgba(255,240,200,0.00) 0%,
-        rgba(255,240,200,0.22) 50%,
-        rgba(255,240,200,0.00) 100%
-      );
-    background-size: 100% 100%, 100% 200%;
-    background-position: center, 50% 0%;
-    box-shadow: 0 0 10px rgba(191,140,0,.35), 0 0 18px rgba(191,140,0,.18) !important;
-    pointer-events:none;
-    z-index:5;
-    animation: cutPulse 3.2s ease-in-out infinite alternate, goldFlow 7s ease-in-out infinite;
-  }
-  /* Holy glow + rays around the center cut */
-  .cut::before{
-    content:"";
-    position:absolute;
-    top:-12px; bottom:-12px; left:50%;
-    width:24px; transform:translateX(-50%);
-    background: linear-gradient(90deg, rgba(255,210,130,0), rgba(255,215,128,.28), rgba(255,210,130,0));
-    filter: blur(10px);
-    opacity:.5;
-    pointer-events:none;
-  }
-  /* Removed rotating rays to focus on center gradient flow */
-  /* removed .cut::after blend overlay (was forcing white when over bright borders) */
-  /* removed .cut::before halo to avoid any white-looking bloom */
-  @keyframes cutPulse{
-    0%,100%{
-      box-shadow: 0 0 8px rgba(229,179,0,.45), 0 0 16px rgba(255,176,58,.22), 0 0 2px rgba(220,140,0,.45);
+      --rar-common:#a1a1aa;
+      --rar-uncommon:#4ade80;
+      --rar-rare:#60a5fa;
+      --rar-epic:#a855f7;
+      --rar-legendary:#facc15;
     }
-    50%{
-      box-shadow: 0 0 14px rgba(229,178,0,.55), 0 0 28px rgba(255,176,58,.30), 0 0 6px rgba(220,140,0,.55);
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:
+        radial-gradient(900px 420px at 8% -10%, rgba(255,140,64,.18), transparent 60%),
+        radial-gradient(900px 420px at 110% 10%, rgba(255,92,48,.14), transparent 60%),
+        #020617;
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
     }
-  }
-  @keyframes goldFlow{
-    0%{ background-position: center, 50% 0%; }
-    100%{ background-position: center, 50% 100%; }
-  }
 
-  .drops{display:flex; gap:16px; flex-wrap:wrap; margin-top:14px}
-  .drop-card{
-    width:180px; aspect-ratio: 16/13; border-radius:14px; padding:12px; position:relative;
-    /* Match slot stroke style */
-    border:1px solid rgba(255,255,255,.65); background:#0f1120;
-    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15);
-  }
-  /* Rarity gradient styling for drop cards */
-  /* Rarity gradient: light at top -> rarity color at bottom */
-  .drop-card.common{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.04) 70%,rgba(255,255,255,.08) 100%),
-    linear-gradient(180deg,rgba(43,47,68,0) 55%,rgba(161,161,161,.85) 100%),
-    rgba(15,17,32,.60);
-  }
-  .drop-card.uncommon{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 12%, rgba(15,17,32,0) 50%),
-      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(33,74,47,.85) 100%),
-      rgba(15,17,32,.60);
-  }
-  .drop-card.rare{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 12%, rgba(15,17,32,0) 50%),
-      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(19,58,90,.85) 100%),
-      rgba(15,17,32,.60);
-  }
-  .drop-card.epic{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 12%, rgba(15,17,32,0) 50%),
-      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(58,33,101,.85) 100%),
-      rgba(15,17,32,.60);
-  }
-  .drop-card.legendary{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.08) 12%, rgba(15,17,32,0) 50%),
-      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(107,82,0,.88) 100%),
-      rgba(15,17,32,.60);
-  }
-  .drop-title{font-weight:700; font-size:15px; color:var(--accent-2); margin-bottom:8px}
-  .badge{
-    position:absolute; bottom:8px; right:8px; background:#0e1726; padding:2px 8px; border-radius:999px;
-    border:1px solid rgba(255,255,255,.08); font-size:12px; color:#cbd5e1;
-  }
-  /* Acquired Items: enhanced glow for names and cards */
-  #drops .drop-title{
-    /* warm gold glow complementing the existing gold text */
-    text-shadow:
-      0 0 6px rgba(255,176,58,.55),
-      0 0 12px rgba(255,140,64,.25),
-      0 0 2px rgba(255,236,200,.35);
-  }
-  #drops .badge{ text-shadow: 0 0 6px rgba(255,255,255,.22) }
-  #drops .drop-card{ transition: box-shadow .25s ease, transform .12s ease }
-  #drops .drop-card:hover{ transform: translateY(-1px) }
-  /* Subtle rarity-tinted outer glow for acquired items */
-  #drops .drop-card.common{
-    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 16px rgba(161,161,161,.18);
-  }
-  #drops .drop-card.uncommon{
-    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 18px rgba(64,200,120,.22);
-  }
-  #drops .drop-card.rare{
-    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 18px rgba(80,160,255,.22);
-  }
-  #drops .drop-card.epic{
-    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 18px rgba(180,120,255,.24);
-  }
-  #drops .drop-card.legendary{
-    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 20px rgba(255,195,90,.28), 0 0 40px rgba(255,176,58,.16);
-  }
-  /* Slightly stronger on hover */
-  #drops .drop-card.common:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 24px rgba(161,161,161,.28) }
-  #drops .drop-card.uncommon:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 26px rgba(64,200,120,.32) }
-  #drops .drop-card.rare:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 26px rgba(80,160,255,.32) }
-  #drops .drop-card.epic:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 26px rgba(180,120,255,.34) }
-  #drops .drop-card.legendary:hover{ box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.15), 0 0 28px rgba(255,195,90,.36), 0 0 52px rgba(255,176,58,.22) }
-  /* Glow for the "Acquired Items" section header */
-  #viewDrops .section-title{
-    text-shadow:
-      0 0 6px rgba(255,176,58,.55),
-      0 0 12px rgba(255,140,64,.25),
-      0 0 2px rgba(255,236,200,.35);
-  }
+    .page-bg{
+      position:fixed;inset:0;pointer-events:none;z-index:-1;
+      background:url("https://i.imgur.com/z17MUhQ.png") center/cover no-repeat fixed;
+      filter:blur(14px) saturate(1.05);
+      opacity:.22;
+      transform:scale(1.06);
+    }
 
-  /* Image inside "Your drops" cards */
-  .drop-img{
-    width:100%;
-    height:120px;
-    object-fit:contain;
-    display:block;
-    margin-top:8px;
-    pointer-events:none;
-    user-select:none;
-  }
+    .topbar{
+      position:sticky;top:0;z-index:40;
+      background:linear-gradient(180deg,rgba(3,7,18,.96),rgba(3,7,18,.82));
+      border-bottom:1px solid var(--border-soft);
+      backdrop-filter:blur(10px) saturate(1.2);
+    }
+    .top-inner{
+      max-width:1200px;margin:0 auto;
+      padding:10px 18px;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+    }
+    .brand{
+      font-weight:900;
+      letter-spacing:.08em;
+      font-size:clamp(18px,3vw,22px);
+      text-transform:uppercase;
+      color:#f9fafb;
+    }
+    .brand span{
+      color:var(--accent-soft);
+      text-shadow:0 0 10px rgba(255,176,58,.45);
+    }
+    .nav{
+      display:flex;align-items:center;gap:14px;
+      font-size:13px;
+    }
+    .nav a{
+      color:#e5e7eb;text-decoration:none;
+      padding:4px 8px;border-radius:999px;
+      border:1px solid transparent;
+      transition:.18s;
+    }
+    .nav a:hover{
+      border-color:var(--border-soft);
+      background:rgba(15,23,42,.9);
+      color:var(--accent-soft);
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,var(--accent-soft),var(--accent));
+      color:#020617;
+      font-weight:700;
+      border-radius:999px;
+      padding:7px 14px;
+      border:none;
+      cursor:pointer;
+      font-size:13px;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      box-shadow:0 0 0 1px rgba(0,0,0,.6),0 10px 25px rgba(0,0,0,.6);
+      transition:transform .08s ease,box-shadow .18s ease,filter .18s ease;
+    }
+    .btn-primary:hover{
+      filter:brightness(1.05);
+      box-shadow:0 0 0 1px rgba(0,0,0,.7),0 14px 32px rgba(0,0,0,.75);
+      transform:translateY(-1px);
+    }
+    .btn-primary:active{transform:translateY(1px);box-shadow:0 0 0 1px rgba(0,0,0,.7),0 6px 18px rgba(0,0,0,.7)}
 
-  .section-title{
-    margin:22px 0 8px; font-weight:700; letter-spacing:.04em;
-    color:var(--accent-2); text-shadow:0 0 10px rgba(255,176,58,.25)
-  }
+    .hero{
+      border-bottom:1px solid rgba(148,163,184,.25);
+      background:
+        linear-gradient(120deg,rgba(15,23,42,.98),rgba(24,20,12,.96)),
+        radial-gradient(900px 420px at 8% -10%, rgba(255,140,64,.18), transparent 60%);
+    }
+    .hero-inner{
+      max-width:1200px;margin:0 auto;
+      padding:26px 18px 20px;
+      display:grid;
+      grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);
+      gap:18px;
+      align-items:center;
+      position:relative;
+    }
+    @media (max-width:800px){
+      .hero-inner{grid-template-columns:1fr}
+    }
+    .hero-main h1{
+      font-size:clamp(26px,4vw,36px);
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      color:var(--accent-soft);
+      text-shadow:0 0 14px rgba(255,176,58,.4);
+      margin-bottom:6px;
+    }
+    .hero-main p{
+      font-size:14px;
+      color:#cbd5f5;
+      max-width:520px;
+    }
+    .hero-tags{
+      margin-top:10px;
+      display:flex;flex-wrap:wrap;gap:8px;
+      font-size:11px;
+    }
+    .pill{
+      border-radius:999px;
+      padding:4px 9px;
+      border:1px solid rgba(148,163,184,.4);
+      background:rgba(15,23,42,.9);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#e5e7eb;
+    }
+    .pill-accent{
+      border-color:rgba(248,250,252,.8);
+      background:linear-gradient(135deg,rgba(255,176,58,.16),rgba(255,107,59,.08));
+      color:#fef3c7;
+    }
+    .hero-actions{
+      margin-top:14px;
+      display:flex;flex-wrap:wrap;gap:10px;
+      align-items:center;
+    }
+    .hero-actions button,
+    .hero-actions a{
+      font-size:13px;
+    }
+    .hero-secondary-link{
+      color:#e5e7eb;
+      text-decoration:none;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.5);
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(15,23,42,.9);
+      transition:.18s;
+    }
+    .hero-secondary-link span{
+      font-size:15px;opacity:.8;
+    }
+    .hero-secondary-link:hover{
+      border-color:var(--accent-soft);
+      color:var(--accent-soft);
+    }
 
-  .hint{color:var(--muted); font-size:13px; margin-top:6px}
-  /* Subtle maker tag inside cards */
-  .brand-hint{
-    position:absolute; right:16px; bottom:12px;
-    margin-top:0; padding:4px 8px; border-radius:8px;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.12);
-    color:#cbd5e1; font-size:12px; letter-spacing:.02em;
-    pointer-events:none; /* decorative */
-  }
+    .hero-side{
+      justify-self:end;
+      max-width:320px;
+      width:100%;
+    }
+    .hero-card{
+      background:radial-gradient(circle at 0 0,rgba(255,176,58,.16),transparent 55%),var(--panel);
+      border-radius:18px;
+      border:1px solid var(--border-soft);
+      box-shadow:var(--shadow);
+      padding:14px 14px 12px;
+      display:grid;gap:10px;
+    }
+    .hero-card-header{
+      display:flex;align-items:center;justify-content:space-between;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .hero-card-title{
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#e5e7eb;
+    }
+    .hero-card-badge{
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.6);
+      background:rgba(15,23,42,.9);
+      font-size:11px;
+    }
+    .hero-card-body{
+      font-size:12px;
+      color:#cbd5f5;
+    }
+    .hero-card-footer{
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:11px;
+      color:var(--muted);
+    }
+    .hero-card-footer span strong{color:#e5e7eb}
 
-  /* Bottom-center watermark */
-  .watermark{
-    position:fixed; left:50%; bottom:17px; transform:translateX(-50%);
-    z-index:50; /* below drawers (z-index:60) so it never overlays modals */
-    pointer-events:none; user-select:none;
-    font-size:clamp(14px, 2vw, 18px); letter-spacing:.03em; font-weight:800;
-    color:rgba(255,176,58,.70);
-    text-shadow:
-      0 0 7px rgba(255,176,58,.45),
-      0 0 14px rgba(255,107,59,.28),
-      0 0 1px rgba(255,236,200,.30);
-    animation:breathe 9s ease-in-out infinite alternate;
-  }
-  .watermark .inner{ display:inline-block; animation:floatX 8s ease-in-out infinite alternate }
-  /* Make watermark link clickable but keep style */
-  .watermark a{ color:inherit; text-decoration:none; pointer-events:auto }
-  .watermark a:hover{ text-shadow: 0 0 9px rgba(255,176,58,.65), 0 0 18px rgba(255,140,64,.32), 0 0 2px rgba(255,236,200,.38) }
-  @keyframes floatX{ from{ transform:translateX(-16px) } to{ transform:translateX(16px) } }
-  @keyframes breathe{ from{ opacity:.62 } to{ opacity:.9 } }
-  .grid{display:grid; gap:14px; justify-content:center}
-  /* Center the spinner section and prep for view swapping */
-  .grid > .card{min-width:0; width:min(1200px, 92vw); margin:0 auto}
-  .stage{width:100%; position:relative}
-  .stage .view{position:absolute; inset:0; opacity:0; transform:translateY(10px); pointer-events:none; visibility:hidden; transition:opacity .25s ease, transform .25s ease; display:grid; justify-items:center; align-content:start; padding-top:12px}
-  .stage .view.active{opacity:1; transform:none; pointer-events:auto; visibility:visible}
-  /* Align category views with Drops position at the top */
-  .stage .view .grid{margin-top:0}
-  /* Pull category panels up to align with Drops under the hero */
-  #viewT1 .grid, #viewT2 .grid, #viewAttach .grid, #viewDrugs .grid{ margin-top:0 }
-  @media (min-width: 920px){
-    .grid{grid-template-columns: minmax(0,1fr); align-items:start}
-  }
+    .wrap{
+      max-width:1200px;margin:0 auto;
+      padding:18px;
+    }
 
-  .pill{
-    display:inline-flex; align-items:center; gap:8px;
-    background:rgba(255,176,58,.10); border:1px solid rgba(255,176,58,.28);
-    color:#fff3e0; padding:6px 10px; border-radius:999px; font-size:13px
-  }
+    .layout-main{
+      display:grid;
+      grid-template-columns:minmax(0,1.6fr) minmax(0,1.1fr);
+      gap:18px;
+      align-items:flex-start;
+    }
+    @media (max-width:960px){
+      .layout-main{grid-template-columns:1fr}
+    }
 
-  /* Side tab for Tier 1 Weaponry */
-  .side-tabs{position:fixed; left:16px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:10px; z-index:50}
-  .side-btn{
-    background:linear-gradient(180deg, rgba(255,176,58,.25), rgba(255,107,59,.08));
-    border:1px solid rgba(255,176,58,.45); color:#ffe8c7; padding:8px 12px; border-radius:10px; cursor:pointer;
-    font-weight:700; letter-spacing:.02em; box-shadow:0 6px 16px rgba(0,0,0,.35);
-  }
-  .side-btn:hover{box-shadow:0 0 0 3px rgba(255,176,58,.20)}
+    .card{
+      background:var(--panel);
+      border-radius:16px;
+      border:1px solid var(--border-soft);
+      box-shadow:var(--shadow);
+      padding:14px 14px 16px;
+    }
+    .card-header{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:10px;
+    }
+    .card-title{
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:#e5e7eb;
+    }
+    .card-sub{
+      font-size:11px;
+      color:var(--muted);
+    }
 
-  /* Drawer panel for Tier 1 gallery */
-  .drawer{position:fixed; inset:0; background:rgba(3,6,12,.6); backdrop-filter: blur(4px); display:none; z-index:60}
-  .drawer.open{display:block}
-  .drawer .panel{position:absolute; left:50%; top:54px; transform:translateX(-50%); width:min(1100px, 92vw);
-    background:rgba(12,14,22,.55); backdrop-filter: blur(8px) saturate(1.05);
-    border:1px solid rgba(255,255,255,.10); border-radius:14px; padding:16px; box-shadow:var(--shadow)}
-  .drawer .panel-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
-  .drawer .panel-title{font-weight:800; color:var(--accent-2); letter-spacing:.04em}
-  .drawer .close{background:#1a1d2e; border:1px solid rgba(255,255,255,.18); color:#cbd5e1; border-radius:8px; padding:6px 10px; cursor:pointer}
-  .t1-grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:14px}
-  /* Stage grids: show up to ~3 rows, then enable thin internal scrollbar */
-  #t1GridStage, #t2GridStage, #attachGridStage, #drugsGridStage{
-    max-height: clamp(420px, 52vh, 620px);
-    overflow-y:auto;
-    overscroll-behavior: contain;
-    padding-right:10px; /* add breathing room so bar sits further right */
-    scrollbar-gutter: stable; /* keep content from shifting when bar shows */
-  }
-  /* Sleek scrollbar styling (no arrows, blends with card) */
-  #t1GridStage::-webkit-scrollbar,
-  #t2GridStage::-webkit-scrollbar,
-  #attachGridStage::-webkit-scrollbar,
-  #drugsGridStage::-webkit-scrollbar{ width:7px; background: transparent }
-  /* Hide arrows/buttons completely */
-  #t1GridStage::-webkit-scrollbar-button,
-  #t2GridStage::-webkit-scrollbar-button,
-  #attachGridStage::-webkit-scrollbar-button,
-  #drugsGridStage::-webkit-scrollbar-button,
-  #t1GridStage::-webkit-scrollbar-button:start:decrement,
-  #t2GridStage::-webkit-scrollbar-button:start:decrement,
-  #attachGridStage::-webkit-scrollbar-button:start:decrement,
-  #drugsGridStage::-webkit-scrollbar-button:start:decrement,
-  #t1GridStage::-webkit-scrollbar-button:end:increment,
-  #t2GridStage::-webkit-scrollbar-button:end:increment,
-  #attachGridStage::-webkit-scrollbar-button:end:increment,
-  #drugsGridStage::-webkit-scrollbar-button:end:increment,
-  #t1GridStage::-webkit-scrollbar-button:single-button,
-  #t2GridStage::-webkit-scrollbar-button:single-button,
-  #attachGridStage::-webkit-scrollbar-button:single-button,
-  #drugsGridStage::-webkit-scrollbar-button:single-button{
-    display:none; width:0; height:0; background:transparent; border:none;
-  }
-  #t1GridStage::-webkit-scrollbar-track,
-  #t2GridStage::-webkit-scrollbar-track,
-  #attachGridStage::-webkit-scrollbar-track,
-  #drugsGridStage::-webkit-scrollbar-track,
-  #t1GridStage::-webkit-scrollbar-track-piece,
-  #t2GridStage::-webkit-scrollbar-track-piece,
-  #attachGridStage::-webkit-scrollbar-track-piece,
-  #drugsGridStage::-webkit-scrollbar-track-piece{
-    background: transparent; /* no background box behind the thumb */
-    border-radius: 8px;
-    margin: 6px 0; /* slight inset to avoid end caps */
-  }
-  #t1GridStage::-webkit-scrollbar-thumb,
-  #t2GridStage::-webkit-scrollbar-thumb,
-  #attachGridStage::-webkit-scrollbar-thumb,
-  #drugsGridStage::-webkit-scrollbar-thumb{
-    background: linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.26));
-    border-radius: 8px;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 1px 3px rgba(0,0,0,.2);
-  }
-  #t1GridStage::-webkit-scrollbar-thumb:hover,
-  #t2GridStage::-webkit-scrollbar-thumb:hover,
-  #attachGridStage::-webkit-scrollbar-thumb:hover,
-  #drugsGridStage::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.55) }
-  /* Avoid corner artifacts */
-  #t1GridStage::-webkit-scrollbar-corner,
-  #t2GridStage::-webkit-scrollbar-corner,
-  #attachGridStage::-webkit-scrollbar-corner,
-  #drugsGridStage::-webkit-scrollbar-corner{ background: transparent }
-  /* Firefox */
-  #t1GridStage, #t2GridStage, #attachGridStage, #drugsGridStage{
-    scrollbar-width: thin;
-    scrollbar-color: rgba(220,228,240,.48) transparent; /* no track fill */
-    scrollbar-gutter: stable; /* reserve space; keeps it aligned right */
-  }
-  .gallery-card{border-radius:14px; padding:12px; position:relative; border:1px solid rgba(255,255,255,.65); box-shadow:0 0 0 1px rgba(255,255,255,.15)}
-  .gallery-card{border-radius:14px; padding:12px; position:relative; border:1px solid rgba(255,255,255,.65); box-shadow:0 0 0 1px rgba(255,255,255,.15); display:grid; grid-template-rows:38px 1fr; align-items:end}
-  /* Add frosted top highlight to common cards */
-  .gallery-card.common{
-    background:
-      /* use the exact same top frost gradient as epic */
-      linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%),
-      /* keep the common rarity tone at the bottom */
-      linear-gradient(180deg, rgba(43,47,68,0) 55%, rgba(161,161,161,.85) 100%),
-      rgba(15,17,32,.60);
-  }
-  .gallery-card.uncommon{background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%), linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(33,74,47,.85) 100%), rgba(15,17,32,.60)}
-  .gallery-card.rare{background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%), linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(19,58,90,.85) 100%), rgba(15,17,32,.60)}
-  .gallery-card.epic{background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%), linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(58,33,101,.85) 100%), rgba(15,17,32,.60)}
-  .gallery-card.legendary{background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.06) 12%, rgba(15,17,32,0) 50%), linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(107,82,0,.88) 100%), rgba(15,17,32,.60)}
-  .gallery-card .name{font-weight:800; color:#cfe7ff; margin-bottom:6px}
-  .gallery-card .name{font-weight:800; color:#cfe7ff; min-height:38px; line-height:1.1; display:flex; align-items:center; overflow:hidden}
-  .gallery-card img{width:100%; height:120px; object-fit:contain; display:block; user-select:none; pointer-events:none; align-self:end}
+    .controls-row{
+      display:flex;flex-wrap:wrap;gap:10px;
+      margin-bottom:10px;
+      font-size:13px;
+    }
+    .field{
+      display:flex;flex-direction:column;gap:3px;
+    }
+    .field label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+    }
+    select{
+      background:var(--panel-soft);
+      border-radius:10px;
+      border:1px solid var(--border-strong);
+      color:var(--text);
+      padding:7px 9px;
+      font-size:13px;
+      min-width:140px;
+    }
+    .btn-ghost{
+      background:var(--panel-soft);
+      border-radius:10px;
+      border:1px solid var(--border-strong);
+      color:#e5e7eb;
+      padding:7px 10px;
+      font-size:12px;
+      cursor:pointer;
+      display:inline-flex;align-items:center;gap:6px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .btn-ghost span{font-size:14px;opacity:.8}
+    .btn-ghost:hover{border-color:var(--accent-soft);color:var(--accent-soft)}
 
-  /* Click-for-stats hint on Tier 1 tiles */
-  .gallery-card.clickable{ cursor:pointer }
-  .gallery-card .stats-hint{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    color:#ffe8c7; font-weight:800; letter-spacing:.03em; opacity:0;
-    background: radial-gradient(120px 60px at 50% 70%, rgba(255,176,58,.10), transparent 60%);
-    text-shadow: 0 0 8px rgba(255,176,58,.35);
-    transition: opacity .18s ease;
-    pointer-events:none;
-  }
-  .gallery-card:hover .stats-hint{ opacity:1 }
+    .spinner-shell{
+      margin-top:6px;
+      background:radial-gradient(circle at 50% 0,rgba(255,255,255,.06),transparent 60%),var(--panel-soft);
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.4);
+      padding:10px;
+      position:relative;
+      overflow:hidden;
+    }
+    .spinner-strip{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      padding-bottom:4px;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(148,163,184,.7) transparent;
+    }
+    .spinner-strip::-webkit-scrollbar{height:6px}
+    .spinner-strip::-webkit-scrollbar-track{background:transparent}
+    .spinner-strip::-webkit-scrollbar-thumb{
+      background:rgba(148,163,184,.8);
+      border-radius:999px;
+    }
 
-  /* Weapon Stats Overlay */
-  .stats-overlay{ position:fixed; inset:0; display:none; place-items:center; z-index:70; background: rgba(6,8,14,.72); }
-  .stats-overlay.open{ display:grid; animation: overlayFade .18s ease }
-  @keyframes overlayFade{ from{ opacity:0 } to{ opacity:1 } }
-  .stats-card{
-    width:min(900px, 92vw);
-    display:grid; grid-template-columns: 1.2fr 1fr; gap:16px;
-    background: rgba(10,12,18,.95);
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:14px; padding:16px; box-shadow: var(--shadow);
-    transform: translateY(8px); opacity:0; animation: slideIn .24s ease forwards;
-  }
-  @keyframes slideIn{ to{ transform:none; opacity:1 } }
-  .stats-card .close{ justify-self:end; background:#1a1d2e; border:1px solid rgba(255,255,255,.18); color:#cbd5e1; border-radius:8px; padding:6px 10px; cursor:pointer }
-  .stats-header{ grid-column: 1 / -1; display:flex; align-items:center; justify-content:space-between; margin-bottom:4px }
-  .stats-title{ font-weight:900; font-size:20px; color:#ffe1a6; text-shadow: 0 0 6px rgba(255,176,58,.45) }
-  .stats-rarity{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background: rgba(18,22,32,.88); color:#cbd5e1 }
-  .stats-preview{ align-self:center; justify-self:center; }
-  /* Effect badges row */
-  .stats-badges{ grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 2px }
-  /* Per-item tweak: move the Line of Green badge slightly down */
-  /* per-item badge offsets removed; use default positioning */
-  .badge-pill{ display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:0 10px; height:24px; min-height:24px; line-height:1; white-space:nowrap; border-radius:999px; font-weight:800; font-size:12px; letter-spacing:.02em; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#e6f6ff; text-shadow:0 0 6px rgba(255,255,255,.12) }
-  .badge-pill.hp{ background:rgba(64,200,120,.14); border-color:rgba(64,200,120,.35); color:#baffd2 }
-  .badge-pill.armor{ background:rgba(80,160,255,.14); border-color:rgba(80,160,255,.35); color:#d5e9ff }
-  .badge-pill.stamina{ background:rgba(255,215,120,.14); border-color:rgba(255,215,120,.35); color:#fff4c6 }
-  /* Site-wide last-updated indicator */
-  .site-updated{
-    position:fixed; right:16px; bottom:12px; z-index:120;
-    background: rgba(12,14,22,.75);
-    backdrop-filter: blur(6px) saturate(1.02);
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:10px; padding:6px 10px;
-    color:#cbd5e1; font-size:12px; letter-spacing:.02em;
-    box-shadow: 0 6px 20px rgba(0,0,0,.4);
-    pointer-events:none;
-  }
-  .stats-preview img{ width:100%; height:auto; max-height:280px; object-fit:contain; filter: drop-shadow(0 6px 16px rgba(0,0,0,.35)) }
-  /* Reduce background effects while modal is open to save GPU */
-  body.modal-open .page-bg{ filter:none; opacity:.16 }
-  body.modal-open .cut{ animation:none !important }
-  body.modal-open .watermark, body.modal-open .watermark .inner{ animation:none !important }
-  .stats-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px }
-  .stat{ background: rgba(18,22,32,.88); border:1px solid rgba(255,255,255,.10); border-radius:10px; padding:10px }
-  .stat .label{ display:block; color:#94a3b8; font-size:12px; margin-bottom:4px }
-  .stat .value{ font-weight:800; font-size:18px; letter-spacing:.02em }
-  .value.green{ color:#78ffb0; text-shadow: 0 0 8px rgba(120,255,176,.25) }
-  .value.red{ color:#ff8f8f; text-shadow: 0 0 8px rgba(255,143,143,.25) }
-  .value.gold{ color:#ffd27a; text-shadow: 0 0 8px rgba(255,176,58,.25) }
+    .slot{
+      flex:0 0 90px;
+      height:90px;
+      border-radius:12px;
+      border:1px solid rgba(248,250,252,.7);
+      box-shadow:
+        inset 0 -26px 40px rgba(0,0,0,.35),
+        0 0 0 1px rgba(15,23,42,.7);
+      position:relative;
+      overflow:hidden;
+      background:radial-gradient(circle at 50% 0,rgba(255,255,255,.12),transparent 60%),#020617;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .slot img{
+      width:100%;height:100%;
+      object-fit:contain;
+      pointer-events:none;
+      user-select:none;
+    }
+    .slot-label{
+      position:absolute;
+      left:6px;right:6px;bottom:4px;
+      font-size:11px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      text-shadow:0 2px 6px rgba(0,0,0,.7);
+    }
+    .slot[data-rarity="common"]{box-shadow:inset 0 -26px 40px rgba(24,24,27,.7),0 0 0 1px rgba(161,161,170,.7)}
+    .slot[data-rarity="uncommon"]{box-shadow:inset 0 -26px 40px rgba(22,101,52,.7),0 0 0 1px rgba(74,222,128,.7)}
+    .slot[data-rarity="rare"]{box-shadow:inset 0 -26px 40px rgba(30,64,175,.7),0 0 0 1px rgba(96,165,250,.7)}
+    .slot[data-rarity="epic"]{box-shadow:inset 0 -26px 40px rgba(91,33,182,.7),0 0 0 1px rgba(168,85,247,.7)}
+    .slot[data-rarity="legendary"]{box-shadow:inset 0 -26px 40px rgba(133,77,14,.8),0 0 0 1px rgba(250,204,21,.9)}
 
-  /* Server badge (Killadelphia) */
-:root{
-  --server-badge: url('https://i.imgur.com/291z6a2.png');
-}
+    .cut-line{
+      position:absolute;
+      top:-10px;bottom:-10px;left:50%;
+      width:5px;
+      transform:translateX(-50%);
+      background:
+        linear-gradient(180deg,rgba(255,237,213,0) 0%,rgba(255,237,213,.7) 50%,rgba(255,237,213,0) 100%);
+      box-shadow:0 0 16px rgba(250,204,21,.6);
+      pointer-events:none;
+      opacity:.9;
+    }
 
-/* Show the badge on drop cards and gallery tiles */
-.drop-card::after,
-.gallery-card::after{
-  content:"";
-  position:absolute;
-  right:8px;
-  bottom:8px;
-  width:clamp(30px, 12%, 40px);
-  height:clamp(30px, 12%, 40px);
-  background: var(--server-badge) center/contain no-repeat;
-  pointer-events:none;
-  opacity:.9;
-  filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
-}
+    .spinner-footer{
+      margin-top:8px;
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:11px;
+      color:var(--muted);
+    }
 
-/* Optional: badge on reel tiles too */
-.slot::after{
-  content:"";
-  position:absolute;
-  right:4px;
-  bottom:4px;
-  width:18px;
-  height:18px;
-  background: var(--server-badge) center/contain no-repeat;
-  pointer-events:none;
-  opacity:.9;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,.6));
-}
-/* ───────── Hero ───────── */
-  .hero {
-  /* Full-bleed header section */
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  margin-top: 0;
-  margin-bottom: 18px;
-  background: linear-gradient(
-      90deg,
-      rgba(10, 10, 16, 0.95) 0%,
-      rgba(20, 16, 12, 0.95) 50%,
-      rgba(14, 10, 8, 0.92) 100%
-    ),
-    radial-gradient(900px 420px at 8% -10%, rgba(255, 140, 64, 0.16), transparent 60%),
-    radial-gradient(900px 420px at 110% 10%, rgba(255, 92, 48, 0.12), transparent 60%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.4);
-}
+    .drops-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+      gap:10px;
+      margin-top:8px;
+    }
+    .drop-card{
+      position:relative;
+      border-radius:14px;
+      padding:9px 9px 10px;
+      background:var(--panel-soft);
+      border:1px solid rgba(148,163,184,.6);
+      box-shadow:0 10px 26px rgba(0,0,0,.6);
+      display:grid;gap:6px;
+      font-size:12px;
+    }
+    .drop-title{
+      font-weight:700;
+      font-size:13px;
+      color:#fef3c7;
+      text-shadow:0 0 10px rgba(250,204,21,.4);
+    }
+    .drop-meta{
+      font-size:11px;
+      color:var(--muted);
+    }
+    .drop-rarity{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+    }
+    .drop-rarity[data-rarity="common"]{color:var(--rar-common)}
+    .drop-rarity[data-rarity="uncommon"]{color:var(--rar-uncommon)}
+    .drop-rarity[data-rarity="rare"]{color:var(--rar-rare)}
+    .drop-rarity[data-rarity="epic"]{color:var(--rar-epic)}
+    .drop-rarity[data-rarity="legendary"]{color:var(--rar-legendary)}
+    .drop-img{
+      width:100%;height:110px;
+      object-fit:contain;
+      margin-top:4px;
+      filter:drop-shadow(0 6px 14px rgba(0,0,0,.7));
+    }
+    .drop-badge{
+      position:absolute;
+      right:8px;bottom:8px;
+      font-size:10px;
+      padding:3px 7px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.95);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:#e5e7eb;
+    }
 
-.hero-inner {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 36px 32px 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start; /* keep everything aligned left */
-  position: relative; /* allow absolutely-positioned logo inside */
-}
+    .section-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
 
-.hero-title {
-  margin: 0 0 6px 0;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  font-size: clamp(28px, 4.2vw, 40px);
-  color: var(--accent-2);
-  text-shadow: 0 0 14px rgba(255, 176, 58, 0.35);
-}
+    .tabs{
+      display:flex;flex-wrap:wrap;gap:6px;
+      margin-bottom:10px;
+    }
+    .tab{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.6);
+      background:rgba(15,23,42,.9);
+      color:#e5e7eb;
+      cursor:pointer;
+    }
+    .tab[data-active="true"]{
+      border-color:var(--accent-soft);
+      background:linear-gradient(135deg,rgba(255,176,58,.18),rgba(255,107,59,.08));
+      color:#fef3c7;
+    }
 
-/* Server logo in hero (top-right) */
-.hero-logo {
-  position: absolute;
-  top: 12px;               /* lift logo to the top */
-  right: 36px;             /* nudge left for better balance */
-  transform: none;         /* no vertical centering */
-  height: clamp(64px, 12vw, 120px); /* slightly smaller for balance */
-  width: auto;
-  display: block;
-  filter: drop-shadow(0 2px 10px rgba(0,0,0,.45));
-  opacity: 0.98;
-  pointer-events: none;    /* avoid blocking nearby links */
-  z-index: 1;
-}
+    .tier-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+      gap:10px;
+      margin-top:6px;
+    }
+    .tier-card{
+      border-radius:14px;
+      padding:9px 9px 10px;
+      background:var(--panel-soft);
+      border:1px solid rgba(148,163,184,.6);
+      display:grid;gap:6px;
+      cursor:pointer;
+      transition:.16s;
+    }
+    .tier-card:hover{
+      border-color:var(--accent-soft);
+      box-shadow:0 10px 26px rgba(0,0,0,.7);
+      transform:translateY(-1px);
+    }
+    .tier-name{
+      font-size:13px;
+      font-weight:700;
+      color:#e5e7eb;
+    }
+    .tier-rarity{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+    }
+    .tier-img{
+      width:100%;height:110px;
+      object-fit:contain;
+      filter:drop-shadow(0 6px 14px rgba(0,0,0,.7));
+    }
 
-@media (max-width: 700px) {
-  .hero-logo {
-    top: 10px;
-    right: 12px;
-    height: clamp(56px, 18vw, 88px);
-  }
-}
+    .watermark{
+      position:fixed;
+      left:50%;bottom:14px;
+      transform:translateX(-50%);
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--accent-soft);
+      text-shadow:0 0 10px rgba(255,176,58,.5);
+      pointer-events:none;
+      opacity:.85;
+    }
 
-.hero-accent {
-  color: var(--accent-2);
-  text-shadow: 0 0 14px rgba(255,176,58,0.35);
-}
+    .watermark a{
+      color:inherit;
+      text-decoration:none;
+      pointer-events:auto;
+    }
+    .watermark a:hover{text-decoration:underline}
 
-.hero-sub {
-  margin: 0;
-  color: #a6b3c6;
-  font-size: clamp(14px, 1.4vw, 16px);
-}
+    .stats-overlay{
+      position:fixed;inset:0;
+      background:rgba(15,23,42,.88);
+      display:none;
+      place-items:center;
+      z-index:50;
+    }
+    .stats-overlay[data-open="true"]{display:grid}
+    .stats-card{
+      width:min(900px,94vw);
+      background:radial-gradient(circle at 0 0,rgba(255,176,58,.16),transparent 55%),#020617;
+      border-radius:18px;
+      border:1px solid var(--border-soft);
+      box-shadow:var(--shadow);
+      padding:16px;
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+      gap:16px;
+    }
+    @media (max-width:800px){
+      .stats-card{grid-template-columns:1fr}
+    }
+    .stats-header{
+      grid-column:1/-1;
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:6px;
+    }
+    .stats-title{
+      font-size:18px;
+      font-weight:800;
+      color:#fef3c7;
+      text-shadow:0 0 10px rgba(250,204,21,.4);
+    }
+    .stats-rarity{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      padding:4px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.95);
+      color:#e5e7eb;
+    }
+    .stats-img{
+      width:100%;height:220px;
+      object-fit:contain;
+      filter:drop-shadow(0 10px 24px rgba(0,0,0,.8));
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+      font-size:12px;
+    }
+    .stat-box{
+      border-radius:10px;
+      background:rgba(15,23,42,.95);
+      border:1px solid rgba(148,163,184,.6);
+      padding:8px;
+    }
+    .stat-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+      margin-bottom:3px;
+    }
+    .stat-value{
+      font-size:15px;
+      font-weight:700;
+    }
+    .stat-value.green{color:#4ade80}
+    .stat-value.red{color:#f97373}
+    .stat-value.gold{color:#facc15}
+    .stats-close{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.95);
+      color:#e5e7eb;
+      padding:5px 10px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-bg"></div>
 
-.hero-actions {
-  margin-top: 14px;
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  align-items: center;
-}
+  <header class="topbar">
+    <div class="top-inner">
+      <div class="brand">KILL<span>ADELPHIA</span></div>
+      <nav class="nav">
+        <a href="#spinner">Spinner</a>
+        <a href="#drops">Drops</a>
+        <a href="#tiers">Tiers</a>
+        <button class="btn-primary">Connect Server</button>
+      </nav>
+    </div>
+  </header>
 
-.hero-link{
-  color:#e7e5e4; text-decoration:none; font-size:14px; padding:6px 10px; border-radius:10px;
-  transition:color .2s, background .2s, box-shadow .2s;
-}
-.hero-link:hover{ color:var(--accent-2); background:rgba(255,176,58,.10); box-shadow:0 0 0 2px rgba(255,176,58,.20) inset; }
-.hero-link.active{
-  color:#fff7e6;
-  background:linear-gradient(180deg, rgba(255,176,58,.30), rgba(255,107,59,.12));
-  box-shadow:0 0 0 2px rgba(255,176,58,.38) inset, 0 4px 16px rgba(255,107,59,.18);
-}
-  .hero-link .icon, .hero-link i.icon{ display:inline-block; width:1.2em; text-align:center; margin-right:8px; opacity:.95 }
-.hero-link:hover{ color:var(--accent-2); text-shadow:0 0 8px rgba(255,176,58,.35); background:rgba(255,176,58,.08); }
-  /* Prices dropdown */
-  .dropdown{ position:relative }
-  .dropdown-toggle{ display:inline-flex; align-items:center; gap:8px }
-  .dropdown .caret{ font-size:12px; opacity:.8; margin-left:6px; transition:transform .2s ease }
-  .dropdown.open .caret{ transform:rotate(180deg) }
-  .dropdown-menu{
-    position:absolute; top:100%; left:0; z-index:100;
-    min-width:200px; margin-top:8px; padding:8px 6px;
-    background:rgba(10,12,20,.94);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.45);
-    display:none;
-  }
-  .dropdown.open .dropdown-menu{ display:block; animation:dropfade .18s ease; }
-  .dropdown-menu a{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; color:#e5e7eb; text-decoration:none }
-  .dropdown-menu a:hover{ background:rgba(255,176,58,.10); color:#fff }
-  @keyframes dropfade{ from{ opacity:0; transform:translateY(-4px) } to{ opacity:1; transform:none } }
-  .hero-cta{
-  background: linear-gradient(180deg, rgba(255,176,58,.30), rgba(255,107,59,.08));
-  color:#fff; border:1px solid rgba(255,176,58,.42);
-  padding:8px 16px; border-radius:10px; font-weight:800; letter-spacing:.03em; cursor:pointer;
-  transition: box-shadow .2s, transform .1s;
-}
-.hero-cta:hover{ box-shadow:0 0 0 3px rgba(255,176,58,.18) }
-.hero-cta:active{ transform:translateY(1px) }
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-main">
+        <h1>Contraband System</h1>
+        <p>Spin the wheel, feed the streets, and track every illegal piece that flows through Killadelphia.</p>
+        <div class="hero-tags">
+          <span class="pill pill-accent">Live economy</span>
+          <span class="pill">Tiered weapon pools</span>
+          <span class="pill">Server‑bound drops</span>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary">Start Spin Session</button>
+          <a href="#tiers" class="hero-secondary-link">
+            <span>⟲</span> View full armory
+          </a>
+        </div>
+      </div>
+      <aside class="hero-side">
+        <div class="hero-card">
+          <div class="hero-card-header">
+            <div class="hero-card-title">Session Snapshot</div>
+            <div class="hero-card-badge">Killadelphia • v2.0</div>
+          </div>
+          <div class="hero-card-body">
+            Track contraband pulls, rarity distribution, and server‑locked items in real time. Designed for serious RP economies.
+          </div>
+          <div class="hero-card-footer">
+            <span>Last update: <strong>Live</strong></span>
+            <span>Seed: <strong>#KD‑CONTRA</strong></span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
 
-/* (Removed performance-heavy hero orb effects) */
-  /* Social links (Discord, YouTube) */
-  .social-links {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-left: 10px;
-    border-left: 1px solid rgba(255,255,255,.08);
-    padding-left: 14px;
-  }
+  <main class="wrap">
+    <div class="layout-main">
+      <!-- Spinner / Controls -->
+      <section class="card" id="spinner">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Spin engine</div>
+            <div class="card-sub">Configure pool, then roll your contraband.</div>
+          </div>
+        </div>
 
-  .social-links a {
-    color: #a6b3c6;
-    font-size: 18px;
-    transition: color .2s ease, transform .15s ease;
-  }
+        <div class="controls-row">
+          <div class="field">
+            <label for="tierSelect">Tier pool</label>
+            <select id="tierSelect">
+              <option>Tier 1 • Street heat</option>
+              <option>Tier 2 • Heavy hitters</option>
+              <option>Attachments only</option>
+              <option>Drugs & misc</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="modeSelect">Mode</label>
+            <select id="modeSelect">
+              <option>Single spin</option>
+              <option>10x batch</option>
+              <option>Streamer mode</option>
+            </select>
+          </div>
+          <button class="btn-ghost" type="button">
+            <span>🎲</span> Randomize
+          </button>
+          <button class="btn-primary" type="button">
+            Spin
+          </button>
+        </div>
 
-  .social-links a:hover {
-    color: var(--accent-2);
-    transform: scale(1.15);
-  }
-</style>
+        <div class="spinner-shell">
+          <div class="spinner-strip" data-role="spinner-strip">
+            <!-- Example tiles (replace with dynamic content) -->
+            <div class="slot" data-rarity="common">
+              <img src="https://i.imgur.com/8QfQq0P.png" alt="Pistol" />
+              <div class="slot-label">9mm Beater</div>
+            </div>
+            <div class="slot" data-rarity="uncommon">
+              <img src="https://i.imgur.com/8QfQq0P.png" alt="SMG" />
+              <div class="slot-label">Back‑alley SMG</div>
+            </div>
+            <div class="slot" data-rarity="rare">
+              <img src="https://i.imgur.com/8QfQq0P.png" alt="Rifle" />
+              <div class="slot-label">Cut‑down AR</div>
+            </div>
+            <div class="slot" data-rarity="epic">
+              <img src="https://i.imgur.com/8QfQq0P.png" alt="Shotgun" />
+              <div class="slot-label">Trench Sweeper</div>
+            </div>
+            <div class="slot" data-rarity="legendary">
+              <img src="https://i.imgur.com/8QfQq0P.png" alt="Legendary" />
+              <div class="slot-label">Golden Line</div>
+            </div>
+          </div>
+          <div class="cut-line"></div>
+        </div>
+
+        <div class="spinner-footer">
+          <span>Hint: hook this strip to your server‑side RNG and log every pull.</span>
+          <span>Rarity colors: C / U / R / E / L</span>
+        </div>
+      </section>
+
+      <!-- Drops -->
+      <section class="card" id="drops">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Acquired items</div>
+            <div class="card-sub">Recent contraband pulled this session.</div>
+          </div>
+        </div>
+
+        <div class="drops-grid" data-role="drops-grid">
+          <!-- Example drop -->
+          <article class="drop-card">
+            <div class="drop-title">Line of Green</div>
+            <div class="drop-meta">Tier 2 • Rifle • Server‑locked</div>
+            <div class="drop-rarity" data-rarity="epic">Epic</div>
+            <img class="drop-img" src="https://i.imgur.com/8QfQq0P.png" alt="Line of Green" />
+            <div class="drop-badge">NEW PULL</div>
+          </article>
+
+          <article class="drop-card">
+            <div class="drop-title">Dirty .38</div>
+            <div class="drop-meta">Tier 1 • Sidearm</div>
+            <div class="drop-rarity" data-rarity="common">Common</div>
+            <img class="drop-img" src="https://i.imgur.com/8QfQq0P.png" alt="Dirty .38" />
+            <div class="drop-badge">LOGGED</div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tiers / Armory -->
+    <section class="card" id="tiers" style="margin-top:18px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Armory index</div>
+          <div class="card-sub">Browse every weapon, attachment, and illicit good by tier.</div>
+        </div>
+      </div>
+
+      <div class="section-label">Category</div>
+      <div class="tabs">
+        <button class="tab" data-active="true" type="button">Tier 1 weaponry</button>
+        <button class="tab" type="button">Tier 2 weaponry</button>
+        <button class="tab" type="button">Attachments</button>
+        <button class="tab" type="button">Drugs & misc</button>
+      </div>
+
+      <div class="tier-grid" data-role="tier-grid">
+        <!-- Example tier cards -->
+        <article class="tier-card" data-rarity="common">
+          <div class="tier-name">Rusty 9mm</div>
+          <div class="tier-rarity">Tier 1 • Common</div>
+          <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png" alt="Rusty 9mm" />
+        </article>
+
+        <article class="tier-card" data-rarity="rare">
+          <div class="tier-name">Block King AR</div>
+          <div class="tier-rarity">Tier 1 • Rare</div>
+          <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png" alt="Block King AR" />
+        </article>
+
+        <article class="tier-card" data-rarity="legendary">
+          <div class="tier-name">Killadelphia Special</div>
+          <div class="tier-rarity">Tier 1 • Legendary</div>
+          <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png" alt="Killadelphia Special" />
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Stats modal (for clicking a tier card) -->
+  <div class="stats-overlay" data-role="stats-overlay" data-open="false">
+    <div class="stats-card">
+      <header class="stats-header">
+        <div class="stats-title" data-role="stats-name">Killadelphia Special</div>
+        <div class="stats-rarity" data-role="stats-rarity">Tier 1 • Legendary</div>
+      </header>
+      <div>
+        <img class="stats-img" src="https://i.imgur.com/8QfQq0P.png" alt="" data-role="stats-img" />
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Damage</div>
+          <div class="stat-value gold" data-role="stats-dmg">92</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Recoil</div>
+          <div class="stat-value red" data-role="stats-recoil">High</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Control</div>
+          <div class="stat-value green" data-role="stats-control">Strong</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Street value</div>
+          <div class="stat-value gold" data-role="stats-value">$85,000</div>
+        </div>
+      </div>
+      <div style="grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:10px;">
+        <button class="stats-close" type="button" data-role="stats-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="watermark">
+    KILLADELPHIA • CONTRABAND SYSTEM
+  </div>
+
+  <!-- Optional: tiny JS hook example (no logic, just modal toggle) -->
+  <script>
+    const overlay = document.querySelector('[data-role="stats-overlay"]');
+    const closeBtn = document.querySelector('[data-role="stats-close"]');
+    document.querySelectorAll('.tier-card').forEach(card=>{
+      card.addEventListener('click',()=>{
+        overlay.dataset.open = 'true';
+      });
+    });
+    closeBtn.addEventListener('click',()=>overlay.dataset.open='false');
+    overlay.addEventListener('click',e=>{
+      if(e.target === overlay) overlay.dataset.open='false';
+    });
+  </script>
+</body>
 </html>
