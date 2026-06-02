@@ -10,25 +10,28 @@
 
 <style>
   :root{
-    --bg: #020409;
-    --accent: #0b4b63;
-    --accent-2: #2aa6dd;
-    --text: #cfe7ee;
-    --muted: #6e8a94;
+    /* Palette sampled from the logo */
+    --bg: #020409;       /* very dark / near black */
+    --accent: #0b4b63;   /* deep navy ring */
+    --accent-2: #2aa6dd; /* bright cyan rim / highlight */
+    --text: #cfe7ee;     /* frosted / icy text */
+    --muted: #6e8a94;    /* muted blue-gray */
 
+    /* Fonts */
     --font-body: "Rajdhani", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-heading: "Oswald", "Rajdhani", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-accent: "Great Vibes", cursive;
   }
 
   *{box-sizing:border-box; margin:0; padding:0}
-  html,body{height:100%}
+  html,body{ height:100%; }
   body{
     background: var(--bg);
-    color: var(--text);
+    color:var(--text);
     font-family: var(--font-body);
     font-weight: 500;
     line-height: 1.4;
+    min-height:100vh;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
   }
@@ -42,9 +45,9 @@
 
   /* Top Navigation */
   .topbar {
-    position: sticky; top: 0; z-index: 1000;
+    position: sticky; top: 0; z-index: 100;
     background: linear-gradient(180deg, rgba(2,4,9,0.92), rgba(2,4,9,0.98));
-    border-bottom: 1px solid rgba(42,166,221,0.12);
+    border-bottom: 1px solid rgba(42,166,221,0.12); /* subtle cyan line */
     backdrop-filter: blur(12px);
   }
   .top-inner {
@@ -72,26 +75,32 @@
     font-family: var(--font-heading);
   }
   .nav-link:hover { color: var(--accent-2); }
-  .nav-link.active { color: var(--text); }
+  .nav-link.active {
+    color: var(--text);
+  }
   .nav-link.active::after {
     content: ''; position: absolute; bottom: -6px; left: 0;
     width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2));
     border-radius: 2px;
   }
 
-  /* CHI logo on the right (faded) */
+  /* CHI logo placed where the Buy Credits button used to be */
   .brand-logo {
     width: 56px;
     height: 56px;
     object-fit: contain;
-    opacity: 0.78;
+    opacity: 0.78;                 /* faded a bit by default */
     transition: opacity .18s ease, transform .18s ease;
     filter: drop-shadow(0 8px 22px rgba(42,166,221,0.06));
-    border-radius: 8px;
+    border-radius: 10px;
     background: transparent;
   }
-  .brand-logo:hover { opacity: 1; transform: translateY(-2px) scale(1.02); }
+  .brand-logo:hover {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02);
+  }
 
+  /* layout */
   .wrap { max-width:1280px; margin: 36px auto; padding: 0 20px; }
 
   .main-view { display: none; padding: 30px 20px; color:var(--text); }
@@ -100,7 +109,7 @@
   h2 { color: var(--text); text-shadow: 0 2px 12px rgba(10,20,28,0.6); font-family:var(--font-heading); }
   p { color: var(--muted); }
 
-  /* SNEAK PEEKS: boxed cards + glow */
+  /* --- SNEAK PEEKS styles (cards + glow) --- */
   .sneak-wrapper{
     padding: 16px;
     border-radius: 10px;
@@ -125,6 +134,7 @@
     transition: transform .18s ease, box-shadow .18s ease;
     position: relative;
   }
+
   .card:hover {
     transform: translateY(-6px);
     box-shadow:
@@ -133,60 +143,403 @@
       0 0 60px rgba(42,166,221,0.06);
   }
 
-  .card-media { height: 220px; background-size: cover; background-position: center; position: relative; }
+  .card-media {
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+
   .card-media::after{
-    content:''; position:absolute; inset:0;
+    content:'';
+    position:absolute; inset:0;
     background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.55));
-    mix-blend-mode: multiply; pointer-events:none;
+    mix-blend-mode: multiply;
+    pointer-events:none;
   }
-  .card-media::before{
-    content:''; position:absolute; inset:4px; border-radius:6px;
-    box-shadow: 0 0 18px rgba(42,166,221,0.08) inset; pointer-events:none;
+  .card-media::before {
+    /* inner neon rim */
+    content:'';
+    position:absolute; inset:4px;
+    border-radius:6px;
+    box-shadow: 0 0 18px rgba(42,166,221,0.08) inset;
+    pointer-events:none;
   }
 
-  .card-body { padding: 14px 16px; }
-  .card-title { font-family: var(--font-heading); font-weight:700; margin-bottom:8px; font-size:18px; color:var(--text); }
-  .card-excerpt { color:var(--muted); font-size:13px; line-height:1.45; max-height:3.6em; overflow:hidden; text-overflow:ellipsis; }
+  .card-body {
+    padding: 14px 16px;
+  }
 
-  .card-meta { display:flex; align-items:center; gap:8px; margin-top:12px; font-size:12px; color: rgba(207,231,238,0.75); justify-content:space-between; }
-  .meta-left { display:flex; align-items:center; gap:8px; }
-  .meta-left img.author-avatar { width:20px; height:20px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.05); }
-  .view-link { color: var(--accent-2); font-weight:700; text-decoration:none; font-size:13px; }
+  .card-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 18px;
+    color: var(--text);
+  }
 
-  .sneak-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:18px; margin-top:10px; }
-  .small-card .card-media { height:140px; }
+  .card-excerpt {
+    color: var(--muted);
+    font-size: 13px;
+    line-height:1.45;
+    max-height: 3.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-meta {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:12px;
+    font-size:12px;
+    color: rgba(207,231,238,0.75);
+    justify-content: space-between;
+  }
+
+  .meta-left {
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .meta-left img.author-avatar {
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    object-fit:cover;
+    border:1px solid rgba(255,255,255,0.05);
+  }
+
+  .view-link {
+    color: var(--accent-2);
+    font-weight:700;
+    text-decoration:none;
+    font-size:13px;
+  }
+
+  .sneak-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 10px;
+  }
+
+  .small-card .card-media { height: 140px; }
   .small-card .card-body { padding:12px; }
   .small-card .card-title { font-size:15px; }
 
-  @media (max-width:980px) { .sneak-top{grid-template-columns:1fr;} .sneak-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:540px) { .sneak-grid{grid-template-columns:1fr;} .brand-logo{display:none;} }
+  /* responsive */
+  @media (max-width: 980px) {
+    .sneak-top { grid-template-columns: 1fr; }
+    .sneak-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 540px) {
+    .sneak-grid { grid-template-columns: 1fr; }
+  }
 
-  .badge { display:inline-block; padding:6px 10px; background: linear-gradient(90deg, rgba(11,75,99,0.9), rgba(42,166,221,0.12)); color:var(--text); border-radius:6px; font-size:13px; font-weight:700; box-shadow: 0 6px 18px rgba(42,166,221,0.04); }
+  .badge {
+    display:inline-block;
+    padding:6px 10px;
+    background: linear-gradient(90deg, rgba(11,75,99,0.9), rgba(42,166,221,0.12));
+    color:var(--text);
+    border-radius:6px;
+    font-size:13px;
+    font-weight:700;
+    box-shadow: 0 6px 18px rgba(42,166,221,0.04);
+  }
 
   /* clock */
   .clock {
-    position: fixed; right: 20px; bottom: 20px; z-index: 2000;
-    background: linear-gradient(180deg, rgba(2,6,10,0.95), rgba(2,6,10,0.8));
-    color: var(--text); padding: 10px 14px; border-radius: 10px;
-    font-family: var(--font-body); font-size: 13px;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1200;
+    background: linear-gradient(180deg, rgba(2,6,10,0.9), rgba(2,6,10,0.75));
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 13px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 18px rgba(42,166,221,0.06);
-    border: 1px solid rgba(42,166,221,0.06); text-align: right; min-width:150px;
+    border: 1px solid rgba(42,166,221,0.06);
+    text-align: right;
+    min-width: 140px;
   }
   .clock .time { display:block; font-weight:700; font-size:14px; }
   .clock .date { display:block; color:var(--muted); font-size:12px; margin-top:4px; }
 
-  /* hide music UI */
-  #yt-audio { width:0; height:0; overflow:hidden; position:fixed; left:-9999px; top:-9999px; pointer-events:none; }
+  /* hide the music-player UI because user wants hidden music */
+  .music-player { display:none; }
 </style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="page-bg"></div>
 
 <div class="topbar">
   <div class="top-inner">
-    <div class="brand">Killadelphia <span class="accent">Contraband</span></div>
+    <div class="brand">
+      Killadelphia <span class="accent">Contraband</span>
+    </div>
 
-    <nav class="nav" role="tablist" aria-label="Primary">
+    <div class="nav" role="tablist" aria-label="Primary">
       <a href="#" class="nav-link active" id="navHome" role="tab" aria-selected="true" aria-controls="homeView">Home</a>
-      <*
-
+      <a href="#" class="nav-link" id="navShop" role="tab" aria-selected="false" aria-controls="shopView">Shop</a>
+      <a href="#" class="nav-link" id="navStreamers" role="tab" aria-selected="false" aria-controls="streamersView">Streamers</a>
+      <a href="#" class="nav-link" id="navSneak" role="tab" aria-selected="false" aria-controls="sneakView">Sneak Peeks</a>
+      <a href="#" class="nav-link" id="navRules" role="tab" aria-selected="false" aria-controls="rulesView">Rules</a>
+    </div>
+
+    <!-- CHI logo (user-provided Imgur) - placed to the right, faint/faded -->
+    <!-- Direct Imgur image URL (album id used as filename) -->
+    <img class="brand-logo" src="https://i.imgur.com/y94qdND.png" alt="CHI Cinematic Roleplay logo" />
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- HOME VIEW -->
+  <div id="homeView" class="main-view active" role="tabpanel" tabindex="0" aria-labelledby="navHome">
+    <h2>Welcome to the Contraband System</h2>
+    <p><strong>Click Spin!</strong> to test. Your full spinner code goes here.</p>
+  </div>
+
+  <!-- SHOP -->
+  <div id="shopView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navShop">
+    <h2>Shop</h2>
+    <p>Credit store and packages coming soon.</p>
+  </div>
+
+  <!-- STREAMERS -->
+  <div id="streamersView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navStreamers">
+    <h2>Streamers</h2>
+    <p>Featured streamers will be listed here.</p>
+  </div>
+
+  <!-- SNEAK PEEKS (boxed layout with glow) -->
+  <div id="sneakView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navSneak">
+    <div class="sneak-wrapper">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 style="margin:0;font-family:var(--font-heading);">Sneak Peeks</h2>
+        <div class="badge">Latest</div>
+      </div>
+
+      <div class="sneak-container">
+        <!-- Top featured pair -->
+        <div class="sneak-top">
+          <article class="card">
+            <div class="card-media" style="background-image: url('https://i.imgur.com/9QfK6gX.jpg');"></div>
+            <div class="card-body">
+              <div class="card-title">Do Not Disturb</div>
+              <div class="card-excerpt">Hello everyone, 🌞 It's been almost a year since the server has been out. We're thankful for everyone that has shown love to our community...</div>
+              <div class="card-meta">
+                <div class="meta-left">
+                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=12" alt="avatar">
+                  <div style="font-size:13px;color:var(--muted)">By Los Scandalous • Jul 22, 2022</div>
+                </div>
+                <a href="#" class="view-link">View full article →</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media" style="background-image: url('https://i.imgur.com/3nXr4sF.jpg');"></div>
+            <div class="card-body">
+              <div class="card-title">June Update</div>
+              <div class="card-excerpt">Hello everyone, ☀️ It's been six months since the last time we had addressed a bunch of updates and things to the community. We've been growing...</div>
+              <div class="card-meta">
+                <div class="meta-left">
+                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=5" alt="avatar">
+                  <div style="font-size:13px;color:var(--muted)">By Los Scandalous • Jun 10, 2022</div>
+                </div>
+                <a href="#" class="view-link">View full article →</a>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- smaller grid posts below -->
+        <div class="sneak-grid">
+          <article class="card small-card">
+            <div class="card-media" style="background-image: url('https://i.imgur.com/J8Yz2tC.jpg');"></div>
+            <div class="card-body">
+              <div class="card-title">December Update</div>
+              <div class="card-excerpt">It's crazy to believe that it's only been three months since the server launched. Since the launch we've grown as a community...</div>
+              <div class="card-meta">
+                <div class="meta-left">
+                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=18" alt="avatar">
+                  <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Dec 04, 2021</div>
+                </div>
+                <a href="#" class="view-link">View →</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card small-card">
+            <div class="card-media" style="background-image: url('https://i.imgur.com/0m6zq0H.jpg');"></div>
+            <div class="card-body">
+              <div class="card-title">Thank Us Later</div>
+              <div class="card-excerpt">With the official release of the server fast approaching, management wanted to close the beta by giving you an update on the future...</div>
+              <div class="card-meta">
+                <div class="meta-left">
+                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=34" alt="avatar">
+                  <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Oct 21, 2021</div>
+                </div>
+                <a href="#" class="view-link">View →</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card small-card">
+            <div class="card-media" style="background-image: url('https://i.imgur.com/GTJjWbE.jpg');"></div>
+            <div class="card-body">
+              <div class="card-title">Two Birds One Stone</div>
+              <div class="card-excerpt">With version three almost complete we as management thought it would be time to let you all know the direction we're moving in...</div>
+              <div class="card-meta">
+                <div class="meta-left">
+                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=9" alt="avatar">
+                  <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Sep 12, 2021</div>
+                </div>
+                <a href="#" class="view-link">View →</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RULES -->
+  <div id="rulesView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navRules">
+    <h2>Rules</h2>
+    <p>Contraband rules will be posted here.</p>
+  </div>
+</div>
+
+<!-- Hidden music (autoplay after user gesture) retained but UI hidden per request -->
+<div id="yt-audio" style="width:0;height:0;overflow:hidden;position:fixed;left:-9999px" aria-hidden="true">
+  <div id="yt-player"></div>
+</div>
+
+<!-- clock -->
+<div id="clock" class="clock" aria-live="polite">
+  <span class="time" id="clock-time">--:--:--</span>
+  <span class="date" id="clock-date">Loading date...</span>
+</div>
+
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+// --- Music player (hidden) ---
+const playlist = [
+  "NyRbZVl4P6s", "yflFa6undWk", "uSHHqS8HZhs",
+  "z4PndMZNUX8", "8e80zDhTONc", "VvItaijf80Y"
+];
+
+let current = 0;
+let player = null;
+let playerReady = false;
+const desiredVolume = 20; // low volume 0-100
+
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('yt-player', {
+    height: '0',
+    width: '0',
+    videoId: playlist[current],
+    playerVars: {
+      rel: 0,
+      controls: 0,
+      modestbranding: 1,
+      disablekb: 1,
+      iv_load_policy: 3
+    },
+    events: {
+      onReady: (e) => {
+        playerReady = true;
+        try { player.setVolume(desiredVolume); } catch (err) {}
+      },
+      onStateChange: (e) => {
+        if (e.data === YT.PlayerState.ENDED) {
+          current = (current + 1) % playlist.length;
+          player.loadVideoById(playlist[current]);
+          setTimeout(() => { try { player.setVolume(desiredVolume); } catch (err){} }, 200);
+          updateNowPlaying();
+        }
+      }
+    }
+  });
+}
+
+function updateNowPlaying() {
+  // kept intentionally minimal since UI is hidden
+}
+
+// Start playback after first user gesture
+document.addEventListener('click', function handler() {
+  if (playerReady && player) {
+    try {
+      player.setVolume(desiredVolume);
+      player.playVideo();
+    } catch (err) { /* ignore */ }
+  } else {
+    const onReadyOnce = setInterval(() => {
+      if (playerReady && player) {
+        try {
+          player.setVolume(desiredVolume);
+          player.playVideo();
+        } catch (err) {}
+        clearInterval(onReadyOnce);
+      }
+    }, 200);
+  }
+  document.removeEventListener('click', handler);
+}, { once: true });
+
+
+// --- Tab System (maps nav IDs to view IDs) ---
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+
+    document.querySelectorAll('.nav-link').forEach(l => {
+      l.classList.remove('active');
+      l.setAttribute('aria-selected', 'false');
+    });
+    this.classList.add('active');
+    this.setAttribute('aria-selected', 'true');
+
+    document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
+    const raw = this.id.replace('nav', '');
+    const viewId = raw.charAt(0).toLowerCase() + raw.slice(1) + 'View';
+    const view = document.getElementById(viewId);
+    if (view) view.classList.add('active');
+  });
+});
+
+
+// --- Clock (time + date) ---
+function updateClock() {
+  const d = new Date();
+  // time: HH:MM:SS
+  const timeEl = document.getElementById('clock-time');
+  const dateEl = document.getElementById('clock-date');
+
+  // Format time with leading zeros
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  const ss = String(d.getSeconds()).padStart(2, '0');
+  timeEl.textContent = `${hh}:${mm}:${ss}`;
+
+  // Format date: Weekday, MMM DD, YYYY
+  const opts = { weekday: 'short', year: 'numeric', month: 'short', day: '2-digit' };
+  dateEl.textContent = d.toLocaleDateString(undefined, opts);
+}
+
+// initialize clock immediately and update every second
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
