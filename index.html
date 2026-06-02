@@ -384,14 +384,14 @@ body{
   <input id="volume-slider" type="range" min="0" max="100" value="50" style="width: 120px;">
 </div>
 
-<!-- ⭐ BACKGROUND MUSIC PLAYLIST -->
+<!-- ⭐ FIXED AUTOPLAY BACKGROUND MUSIC -->
 <iframe 
   id="killadelphia-bgm"
   width="0" 
   height="0" 
   frameborder="0"
-  allow="autoplay"
-  src="https://www.youtube.com/embed/NyRbZVl4P6s?autoplay=1&loop=1&enablejsapi=1&playlist=NyRbZVl4P6s,uSHHqS8HZhs,yflFa6undWk,xvbNWYQCumw,D0ZfzQSNYvU,yK_fhs7JuRU">
+  allow="autoplay; encrypted-media"
+  src="https://www.youtube.com/embed/NyRbZVl4P6s?autoplay=1&mute=1&loop=1&enablejsapi=1&playlist=NyRbZVl4P6s,uSHHqS8HZhs,yflFa6undWk,xvbNWYQCumw,D0ZfzQSNYvU,yK_fhs7JuRU">
 </iframe>
 
 <!-- ⭐ MUSIC CONTROL SCRIPT -->
@@ -406,6 +406,7 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady() {
+  player.unMute();
   player.setVolume(50);
 }
 
