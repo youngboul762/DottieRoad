@@ -128,15 +128,19 @@
   </div>
 </div>
 
-<!-- Music -->
-<div class="music-player" aria-live="polite">
-  <button id="musicToggle" aria-label="Toggle music" title="Toggle music"><i class="fa-solid fa-volume-high" aria-hidden="true"></i></button>
-  <span id="nowPlaying">Track 1/6</span>
-  <button id="nextTrack" aria-label="Next track" title="Next track"><i class="fa-solid fa-forward" aria-hidden="true"></i></button>
+<!-- Music: no visible controls; autoplay after first user gesture and low volume -->
+<div class="music-player" aria-live="polite" style="display:none;">
+  <!-- Hidden visual UI — music plays in background. The container remains for ARIA/live updates if needed. -->
+  <span id="nowPlaying" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">Track 1/6</span>
 
   <!-- persistent container for the iframe; invisible but present so we can remove/update the iframe -->
-  <div id="yt-audio" aria-hidden="true"></div>
+  <div id="yt-audio" aria-hidden="true">
+    <div id="yt-player"></div>
+  </div>
 </div>
+
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 // Music - Your 6 Songs
@@ -146,65 +150,72 @@ const playlist = [
 ];
 
 let current = 0;
-let iframe = null;
-let isPlaying = false;
-const audioContainer = document.getElementById('yt-audio');
+let player = null;
+let playerReady = false;
+const desiredVolume = 20; // percent (0-100), low volume
 
-function createOrReuseIframe() {
-  if (!iframe) {
-    iframe = document.createElement('iframe');
-    iframe.width = 0;
-    iframe.height = 0;
-    iframe.style.border = '0';
-    iframe.allow = 'autoplay; encrypted-media';
-    // keep it hidden but present
-    audioContainer.appendChild(iframe);
-  }
-  return iframe;
+// Create the YT player when API is ready
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('yt-player', {
+    height: '0',
+    width: '0',
+    videoId: playlist[current],
+    playerVars: {
+      rel: 0,
+      controls: 0,
+      modestbranding: 1,
+      disablekb: 1,
+      iv_load_policy: 3
+    },
+    events: {
+      onReady: (e) => {
+        playerReady = true;
+        // ensure volume is set early (won't unmute automatically without gesture on some browsers)
+        try { player.setVolume(desiredVolume); } catch (err) { /* ignore until ready */ }
+      },
+      onStateChange: (e) => {
+        // When a video ends, advance to next track
+        if (e.data === YT.PlayerState.ENDED) {
+          current = (current + 1) % playlist.length;
+          player.loadVideoById(playlist[current]);
+          // ensure volume after load
+          setTimeout(() => { try { player.setVolume(desiredVolume); } catch (err){} }, 200);
+          updateNowPlaying();
+        }
+      }
+    }
+  });
 }
 
-function playCurrent() {
-  const id = playlist[current];
-  document.getElementById('nowPlaying').textContent = `Track ${current+1}/${playlist.length}`;
-
-  const f = createOrReuseIframe();
-
-  // Use playlist param so loop works for single-video loops
-  // enablejsapi not strictly necessary here since we recreate the src
-  f.src = `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&rel=0`;
-  isPlaying = true;
+function updateNowPlaying() {
+  const el = document.getElementById('nowPlaying');
+  if (el) el.textContent = `Track ${current+1}/${playlist.length}`;
 }
 
-function stopMusic() {
-  if (iframe) {
-    // remove iframe to stop playback and free resources
-    iframe.remove();
-    iframe = null;
-  }
-  isPlaying = false;
-  document.getElementById('nowPlaying').textContent = `Track ${current+1}/${playlist.length} (stopped)`;
-}
-
-// Toggle button: start/stop
-document.getElementById('musicToggle').addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (isPlaying) {
-    stopMusic();
-  } else {
-    playCurrent();
-  }
-});
-
-// Next track button
-document.getElementById('nextTrack').addEventListener('click', (e) => {
-  e.stopPropagation();
-  current = (current + 1) % playlist.length;
-  playCurrent();
-});
-
-// Auto start music after first user click anywhere (only once)
+// Start playback after first user gesture (autoplay policy)
 document.addEventListener('click', function handler() {
-  if (!isPlaying) playCurrent();
+  // only attempt to play once on first user interaction
+  if (playerReady && player) {
+    try {
+      player.setVolume(desiredVolume);
+      player.playVideo();
+      updateNowPlaying();
+    } catch (err) {
+      /* ignore playback errors; user gesture should allow it */
+    }
+  } else {
+    // If player not ready yet, try to play once it becomes ready
+    const onReadyOnce = setInterval(() => {
+      if (playerReady && player) {
+        try {
+          player.setVolume(desiredVolume);
+          player.playVideo();
+          updateNowPlaying();
+        } catch (err) {}
+        clearInterval(onReadyOnce);
+      }
+    }, 200);
+  }
   document.removeEventListener('click', handler);
 }, { once: true });
 
