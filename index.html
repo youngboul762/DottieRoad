@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>The Chi Cinematic</title>
+<title>Killadelphia's Contraband System</title>
 <style>
   :root{
     --bg:#0b0b12;
@@ -19,7 +19,6 @@
     background:radial-gradient(1200px 600px at 10% -10%, rgba(255,140,64,.16), transparent 60%),
     radial-gradient(1200px 600px at 110% 10%, rgba(255,92,48,.12), transparent 60%), var(--bg);
     color:var(--text); font:500 16px/1.4 "Rajdhani", system-ui, sans-serif;
-    letter-spacing:.2px;
   }
 
   .page-bg{ 
@@ -28,91 +27,56 @@
     filter: blur(14px) saturate(1.05); opacity:.22;
   }
 
-  /* ==================== TOP NAV ==================== */
+  /* Top Navigation */
   .topbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; top: 0; z-index: 100;
     background: linear-gradient(180deg, rgba(11,11,18,0.98), rgba(11,11,18,0.92));
     border-bottom: 1px solid rgba(255,107,59,0.25);
-    backdrop-filter: blur(12px) saturate(1.3);
+    backdrop-filter: blur(12px);
   }
-
   .top-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    max-width: 1280px; margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
   }
-
-  .brand {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-  }
-
+  .brand { font-size: 26px; font-weight: 800; }
   .brand .accent { color: var(--accent-2); }
 
-  .nav {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-    font-size: 15.5px;
-    font-weight: 600;
-  }
-
+  .nav { display: flex; gap: 28px; font-size: 15.5px; font-weight: 600; }
   .nav-link {
-    color: #e0e0e8;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    position: relative;
+    color: #e0e0e8; text-decoration: none; position: relative;
   }
-
   .nav-link:hover { color: var(--accent-2); }
-
-  .nav-link.active {
-    color: #fff;
-  }
-
+  .nav-link.active { color: #fff; }
   .nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--accent-2);
+    content: ''; position: absolute; bottom: -6px; left: 0;
+    width: 100%; height: 2px; background: var(--accent-2);
   }
 
   .purchase-btn {
     background: linear-gradient(180deg, rgba(255,107,59,0.28), rgba(255,176,58,0.08));
-    color: #fff;
-    border: 1px solid rgba(255,176,58,0.45);
-    padding: 8px 18px;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
+    color: #fff; border: 1px solid rgba(255,176,58,0.45);
+    padding: 8px 18px; border-radius: 10px; font-weight: 700; cursor: pointer;
   }
 
-  /* ==================== VIEWS ==================== */
+  /* Views */
   .main-view { display: none; padding: 20px 0; }
   .main-view.active { display: block; }
 
-  /* Keep your original styles (reel, cards, etc.) */
-  .wrap{max-width:1280px; width:100%; margin:0 auto; padding:0 16px;}
-
-  /* Paste all your original CSS here (card, reel, drops, gallery, etc.) */
-  /* ... (I'm keeping it short for readability - use all your previous CSS) ... */
-
+  /* Music Player */
+  .music-player {
+    position: fixed; bottom: 15px; right: 15px; z-index: 200;
+    background: rgba(18,20,32,0.95); border: 1px solid rgba(255,176,58,0.3);
+    border-radius: 12px; padding: 8px 14px; font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+    backdrop-filter: blur(8px);
+  }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="page-bg"></div>
 
-<!-- ==================== TOP NAV ==================== -->
+<!-- Top Navigation -->
 <div class="topbar">
   <div class="top-inner">
     <h1 class="brand">Killadelphia <span class="accent">Contraband</span></h1>
@@ -132,83 +96,71 @@
 </div>
 
 <div class="wrap">
-
-  <!-- ==================== HOME VIEW (Your Original Spinner) ==================== -->
+  <!-- Home View (Your Spinner) -->
   <div id="homeView" class="main-view active">
-    <!-- Paste your entire original content here (hero + stage + drawers + stats overlay) -->
-    <!-- For brevity, I'm showing the structure. Replace with your full original body content inside this div. -->
-
-    <section class="hero">...</section>   <!-- Your existing hero -->
-
-    <div id="stage" class="stage">
-      <div id="viewDrops" class="view active"> ... your spinner ... </div>
-      <!-- other views -->
-    </div>
+    <!-- Paste all your original content here (Hero, Spinner, Stage, Drawers, Stats Overlay, etc.) -->
+    <!-- Keep everything from your original <section class="hero"> down to the watermark -->
   </div>
 
-  <!-- ==================== SHOP VIEW ==================== -->
+  <!-- Other Views -->
   <div id="shopView" class="main-view">
-    <h2 class="section-title">Contraband Shop</h2>
-    <p>Coming soon - Purchase credits and exclusive items.</p>
+    <h2 class="section-title">Shop</h2>
+    <p>Credits and exclusive contraband shop coming soon.</p>
   </div>
 
-  <!-- ==================== STREAMERS VIEW ==================== -->
   <div id="streamersView" class="main-view">
-    <h2 class="section-title">Featured Streamers</h2>
-    <p>Watch top Killadelphia streamers using the contraband system.</p>
-    <!-- Add Twitch/YouTube embeds here later -->
+    <h2 class="section-title">Streamers</h2>
+    <p>Featured Killadelphia streamers will appear here.</p>
   </div>
 
-  <!-- ==================== SNEAK PEEKS VIEW ==================== -->
   <div id="sneakView" class="main-view">
     <h2 class="section-title">Sneak Peeks</h2>
-    <p>New weapons, drugs, and updates coming soon...</p>
+    <p>New items and updates preview.</p>
   </div>
 
-  <!-- ==================== RULES VIEW ==================== -->
   <div id="rulesView" class="main-view">
-    <h2 class="section-title">Contraband Rules</h2>
-    <ul>
-      <li>No scamming or chargebacks</li>
-      <li>Only use in-character</li>
-      <li>Respect server rules</li>
-      <li>No exploiting the spinner</li>
-    </ul>
+    <h2 class="section-title">Server Rules</h2>
+    <p>Contraband usage rules will be listed here.</p>
   </div>
+</div>
 
+<!-- Music Player -->
+<div class="music-player">
+  <button id="musicToggle"><i class="fa-solid fa-play"></i></button>
+  <span id="nowPlaying">Now Playing: Loading...</span>
+  <button id="nextTrack"><i class="fa-solid fa-forward"></i></button>
 </div>
 
 <script>
-// Tab Switching Logic
-const navLinks = document.querySelectorAll('.nav-link');
+// Your new YouTube playlist
+const playlist = [
+  "NyRbZVl4P6s",
+  "yflFa6undWk",
+  "uSHHqS8HZhs",
+  "z4PndMZNUX8",
+  "8e80zDhTONc",
+  "VvItaijf80Y"
+];
 
-navLinks.forEach(link => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
+let currentTrack = 0;
+let isPlaying = false;
+let player;
 
-    // Remove active from all links
-    navLinks.forEach(l => l.classList.remove('active'));
-    link.classList.add('active');
+// Create hidden YouTube iframe
+function createPlayer() {
+  const iframe = document.createElement('iframe');
+  iframe.style.display = "none";
+  iframe.width = "0"; iframe.height = "0";
+  iframe.allow = "autoplay";
+  document.body.appendChild(iframe);
+  return iframe;
+}
 
-    // Hide all views
-    document.querySelectorAll('.main-view').forEach(view => {
-      view.classList.remove('active');
-    });
+player = createPlayer();
 
-    // Show selected view
-    const viewId = link.id.replace('nav', '') + 'View';
-    const targetView = document.getElementById(viewId);
-    if (targetView) targetView.classList.add('active');
-  });
-});
-
-// Purchase button example
-document.querySelector('.purchase-btn').addEventListener('click', () => {
-  alert("Redirecting to credit purchase page... (Coming Soon)");
-});
-</script>
-
-<!-- Paste all your original script (spinner logic, stats, music, etc.) here -->
-
-</body>
-</html>
+function playTrack(index) {
+  currentTrack = index % playlist.length;
+  const videoId = playlist[currentTrack];
+  player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&rel=0`;
+  
+  document.getElementById('nowPlaying').textContent = `Now Playing: Track ${currentTrack + 1}
