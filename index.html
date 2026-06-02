@@ -89,13 +89,6 @@
 
   .close-btn{background:transparent;border:0;color:var(--muted);font-weight:700;cursor:pointer;font-size:16px}
 
-  /* edit UI (hidden by default) */
-  .edit-toggle{position:fixed;left:20px;bottom:20px;z-index:3000;background:linear-gradient(180deg,rgba(42,166,221,.12),rgba(42,166,221,.06));border-radius:10px;padding:8px 12px;border:1px solid rgba(42,166,221,.12);color:var(--text);cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.6)}
-  .edit-controls{position:fixed;left:20px;bottom:72px;z-index:3000;display:none;flex-direction:column;gap:8px}
-  .edit-controls button{padding:8px 10px;border-radius:8px;border:0;background:var(--accent-2);color:#001;padding:6px 10px;cursor:pointer;font-weight:700}
-  .editing .card{outline:2px dashed rgba(42,166,221,.12)}
-  .editing .editable{outline:2px dashed rgba(42,166,221,.18);background:linear-gradient(90deg, rgba(42,166,221,.01), transparent)}
-
   /* clock */
   .clock{position:fixed;right:20px;bottom:20px;z-index:3000;background:linear-gradient(180deg,rgba(2,6,10,.95),rgba(2,6,10,.8));color:var(--text);padding:10px 14px;border-radius:10px;font-family:var(--font-body);font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.6);border:1px solid rgba(42,166,221,.06);text-align:right;min-width:150px}
   .clock .time{display:block;font-weight:700;font-size:14px}
@@ -117,7 +110,7 @@
         <a href="#" class="nav-link" id="navRules" role="tab" aria-controls="rulesView">Rules</a>
       </nav>
 
-      <!-- CHI logo: using the Imgur direct image (replace if needed) -->
+      <!-- CHI logo: using the Imgur direct image -->
       <img class="brand-logo" src="https://i.imgur.com/y94qdND.png" alt="CHI Cinematic Roleplay logo">
     </div>
   </header>
@@ -149,16 +142,17 @@
 
         <div class="sneak-container" id="sneakContainer">
           <div class="sneak-top">
-            <!-- Featured 1 -->
+            <!-- Featured 1 (Do Not Disturb) -> use CHI logo as its large image, and update author to "By Chi Cinematic" -->
             <article class="card" data-id="1">
-              <div class="card-media" style="background-image:url('https://i.imgur.com/9QfK6gX.jpg');"></div>
+              <div class="card-media" style="background-image:url('https://i.imgur.com/y94qdND.png');"></div>
               <div class="card-body">
-                <div class="card-title editable" data-field="title">Do Not Disturb</div>
-                <div class="card-excerpt editable" data-field="excerpt">Hello everyone, 🌞 It's been almost a year... we're thankful for everyone that has shown love to our community.</div>
+                <div class="card-title">Do Not Disturb</div>
+                <div class="card-excerpt">Hello everyone, 🌞 It's been almost a year... we're thankful for everyone that has shown love to our community.</div>
                 <div class="card-meta">
                   <div class="meta-left">
-                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=12" alt="">
-                    <div style="font-size:13px;color:var(--muted)">By Los Scandalous • Jul 22, 2022</div>
+                    <!-- small CHI avatar -->
+                    <img class="author-avatar" src="https://i.imgur.com/y94qdND.png" alt="Chi logo">
+                    <div style="font-size:13px;color:var(--muted)">By Chi Cinematic</div>
                   </div>
                   <div>
                     <a class="view-link" data-id="1">View full article →</a>
@@ -166,7 +160,7 @@
                 </div>
                 <div class="full-article" style="display:none">
                   <h3>Do Not Disturb</h3>
-                  <p>Full article content for "Do Not Disturb" goes here. You can edit this in edit mode.</p>
+                  <p>Full article content for "Do Not Disturb" goes here.</p>
                 </div>
               </div>
             </article>
@@ -175,12 +169,12 @@
             <article class="card" data-id="2">
               <div class="card-media" style="background-image:url('https://i.imgur.com/3nXr4sF.jpg');"></div>
               <div class="card-body">
-                <div class="card-title editable" data-field="title">June Update</div>
-                <div class="card-excerpt editable" data-field="excerpt">Hello everyone, ☀️ It's been six months since the last update... we've been growing.</div>
+                <div class="card-title">June Update</div>
+                <div class="card-excerpt">Hello everyone, ☀️ It's been six months since the last update... we've been growing.</div>
                 <div class="card-meta">
                   <div class="meta-left">
-                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=5" alt="">
-                    <div style="font-size:13px;color:var(--muted)">By Los Scandalous • Jun 10, 2022</div>
+                    <img class="author-avatar" src="https://i.imgur.com/y94qdND.png" alt="Chi logo">
+                    <div style="font-size:13px;color:var(--muted)">By Chi Cinematic</div>
                   </div>
                   <div><a class="view-link" data-id="2">View full article →</a></div>
                 </div>
@@ -197,12 +191,12 @@
             <article class="card small-card" data-id="3">
               <div class="card-media" style="background-image:url('https://i.imgur.com/J8Yz2tC.jpg');"></div>
               <div class="card-body">
-                <div class="card-title editable" data-field="title">December Update</div>
-                <div class="card-excerpt editable" data-field="excerpt">It's crazy to believe that it's only been three months since the server launched...</div>
+                <div class="card-title">December Update</div>
+                <div class="card-excerpt">It's crazy to believe that it's only been three months since the server launched...</div>
                 <div class="card-meta">
                   <div class="meta-left">
-                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=18" alt="">
-                    <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Dec 04, 2021</div>
+                    <img class="author-avatar" src="https://i.imgur.com/y94qdND.png" alt="Chi logo">
+                    <div style="font-size:12px;color:var(--muted)">By Chi Cinematic</div>
                   </div>
                   <div><a class="view-link" data-id="3">View →</a></div>
                 </div>
@@ -214,12 +208,12 @@
             <article class="card small-card" data-id="4">
               <div class="card-media" style="background-image:url('https://i.imgur.com/0m6zq0H.jpg');"></div>
               <div class="card-body">
-                <div class="card-title editable" data-field="title">Thank Us Later</div>
-                <div class="card-excerpt editable" data-field="excerpt">With the official release of the server fast approaching, management wanted to close the beta...</div>
+                <div class="card-title">Thank Us Later</div>
+                <div class="card-excerpt">With the official release of the server fast approaching, management wanted to close the beta...</div>
                 <div class="card-meta">
                   <div class="meta-left">
-                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=34" alt="">
-                    <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Oct 21, 2021</div>
+                    <img class="author-avatar" src="https://i.imgur.com/y94qdND.png" alt="Chi logo">
+                    <div style="font-size:12px;color:var(--muted)">By Chi Cinematic</div>
                   </div>
                   <div><a class="view-link" data-id="4">View →</a></div>
                 </div>
@@ -231,12 +225,12 @@
             <article class="card small-card" data-id="5">
               <div class="card-media" style="background-image:url('https://i.imgur.com/GTJjWbE.jpg');"></div>
               <div class="card-body">
-                <div class="card-title editable" data-field="title">Two Birds One Stone</div>
-                <div class="card-excerpt editable" data-field="excerpt">With version three almost complete we as management thought it would be time to let you all know...</div>
+                <div class="card-title">Two Birds One Stone</div>
+                <div class="card-excerpt">With version three almost complete we as management thought it would be time to let you all know...</div>
                 <div class="card-meta">
                   <div class="meta-left">
-                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=9" alt="">
-                    <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Sep 12, 2021</div>
+                    <img class="author-avatar" src="https://i.imgur.com/y94qdND.png" alt="Chi logo">
+                    <div style="font-size:12px;color:var(--muted)">By Chi Cinematic</div>
                   </div>
                   <div><a class="view-link" data-id="5">View →</a></div>
                 </div>
@@ -268,15 +262,6 @@
     </div>
   </div>
 
-  <!-- Edit toggle & controls (edits are local only, stored in localStorage) -->
-  <button id="editToggle" class="edit-toggle" title="Enter/Exit edit mode (Ctrl+Shift+E)">Edit (Ctrl+Shift+E)</button>
-  <div id="editControls" class="edit-controls" aria-hidden="true">
-    <button id="saveDraft">Save Draft (local)</button>
-    <button id="clearDraft">Clear Draft</button>
-    <button id="exportJSON">Export JSON</button>
-    <button id="importJSONBtn">Import JSON</button>
-  </div>
-
   <!-- Clock (bottom-right) -->
   <div id="clock" class="clock" aria-live="polite">
     <span class="time" id="clock-time">--:--:--</span>
@@ -287,9 +272,7 @@
   <div id="yt-audio" aria-hidden="true" style="width:0;height:0;overflow:hidden;position:fixed;left:-9999px;top:-9999px"><div id="yt-player"></div></div>
 
 <script>
-/* -----------------------
-  Tabs
-------------------------*/
+/* Tabs */
 document.querySelectorAll('.nav-link').forEach(link=>{
   link.addEventListener('click', e=>{
     e.preventDefault();
@@ -302,11 +285,7 @@ document.querySelectorAll('.nav-link').forEach(link=>{
   });
 });
 
-/* -----------------------
-  Article modal (popup)
-  - Full article contents are stored inside each article's .full-article element (hidden).
-  - Clicking "View full article" will open the modal and show the content.
-------------------------*/
+/* Article modal (popup) */
 const modal = document.getElementById('articleModal');
 const modalTitle = document.getElementById('modalTitle');
 const modalContent = document.getElementById('modalContent');
@@ -332,7 +311,6 @@ document.querySelectorAll('.view-link').forEach(a=>{
     }
     modal.classList.add('open');
     modal.setAttribute('aria-hidden','false');
-    // trap focus (simple)
     modalClose.focus();
   });
 });
@@ -341,112 +319,7 @@ modal.addEventListener('click', e=>{ if(e.target === modal) closeModal(); });
 document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeModal(); });
 function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
 
-/* -----------------------
-  Edit mode (local-only)
-  - Toggle edit mode with Ctrl+Shift+E or the Edit button.
-  - Editable fields have class .editable and data-field attributes.
-  - Save Draft stores a JSON of editable content in localStorage (key 'sneakDraft').
-  - Import/Export to copy JSON for publishing manually.
-------------------------*/
-const editToggle = document.getElementById('editToggle');
-const editControls = document.getElementById('editControls');
-let editing = false;
-
-function setEditing(on){
-  editing = on;
-  document.documentElement.classList.toggle('editing', on);
-  editControls.style.display = on ? 'flex' : 'none';
-  // enable/disable contentEditable
-  document.querySelectorAll('.editable').forEach(el=>{
-    el.contentEditable = on ? 'true' : 'false';
-    if(on) el.classList.add('editable--active'); else el.classList.remove('editable--active');
-  });
-  // show outlines visually (handled by CSS .editing)
-}
-editToggle.addEventListener('click', ()=> setEditing(!editing));
-document.addEventListener('keydown', e=>{
-  if(e.ctrlKey && e.shiftKey && e.code === 'KeyE'){
-    e.preventDefault(); setEditing(!editing);
-  }
-});
-
-// Save draft (localStorage)
-document.getElementById('saveDraft').addEventListener('click', ()=>{
-  const cards = Array.from(document.querySelectorAll('.card')).map(card=>{
-    const id = card.getAttribute('data-id');
-    const title = card.querySelector('.card-title')?.textContent || '';
-    const excerpt = card.querySelector('.card-excerpt')?.textContent || '';
-    const img = (card.querySelector('.card-media')?.style.backgroundImage||'').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-    const full = card.querySelector('.full-article')?.innerHTML || '';
-    return {id,title,excerpt,img,full};
-  });
-  localStorage.setItem('sneakDraft', JSON.stringify(cards));
-  alert('Draft saved locally (browser only). No one else sees this.');
-});
-
-// Load draft if exists (apply on start)
-function loadDraftIfExists(){
-  const raw = localStorage.getItem('sneakDraft');
-  if(!raw) return;
-  try{
-    const cards = JSON.parse(raw);
-    cards.forEach(c=>{
-      const card = document.querySelector('.card[data-id="'+c.id+'"]');
-      if(!card) return;
-      if(c.title) card.querySelector('.card-title').textContent = c.title;
-      if(c.excerpt) card.querySelector('.card-excerpt').textContent = c.excerpt;
-      if(c.img) card.querySelector('.card-media').style.backgroundImage = `url('${c.img}')`;
-      if(c.full) card.querySelector('.full-article').innerHTML = c.full;
-    });
-  }catch(e){ console.warn('Failed to load draft', e); }
-}
-loadDraftIfExists();
-
-document.getElementById('clearDraft').addEventListener('click', ()=>{
-  if(confirm('Clear local draft? This cannot be undone.')){ localStorage.removeItem('sneakDraft'); location.reload(); }
-});
-
-// Export JSON (copy to clipboard)
-document.getElementById('exportJSON').addEventListener('click', async ()=>{
-  const cards = Array.from(document.querySelectorAll('.card')).map(card=>{
-    const id = card.getAttribute('data-id');
-    const title = card.querySelector('.card-title')?.textContent || '';
-    const excerpt = card.querySelector('.card-excerpt')?.textContent || '';
-    const img = (card.querySelector('.card-media')?.style.backgroundImage||'').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-    const full = card.querySelector('.full-article')?.innerHTML || '';
-    return {id,title,excerpt,img,full};
-  });
-  const json = JSON.stringify(cards, null, 2);
-  try{
-    await navigator.clipboard.writeText(json);
-    alert('JSON copied to clipboard. Use this to publish or store on server.');
-  }catch(e){
-    // fallback: open prompt
-    prompt('Copy the JSON below (Ctrl/Cmd+C):', json);
-  }
-});
-
-// Import JSON (paste)
-document.getElementById('importJSONBtn').addEventListener('click', ()=>{
-  const raw = prompt('Paste JSON export here to load (overwrites current cards in page):');
-  if(!raw) return;
-  try{
-    const cards = JSON.parse(raw);
-    cards.forEach(c=>{
-      const card = document.querySelector('.card[data-id="'+c.id+'"]');
-      if(!card) return;
-      if(c.title) card.querySelector('.card-title').textContent = c.title;
-      if(c.excerpt) card.querySelector('.card-excerpt').textContent = c.excerpt;
-      if(c.img) card.querySelector('.card-media').style.backgroundImage = `url('${c.img}')`;
-      if(c.full) card.querySelector('.full-article').innerHTML = c.full;
-    });
-    alert('Imported JSON applied locally. Save draft to persist in this browser.');
-  }catch(e){ alert('Invalid JSON'); }
-});
-
-/* -----------------------
-  Clock
-------------------------*/
+/* Clock */
 function updateClock(){
   const d = new Date();
   const hh = String(d.getHours()).padStart(2,'0');
@@ -458,12 +331,20 @@ function updateClock(){
 }
 updateClock(); setInterval(updateClock,1000);
 
-/* -----------------------
-  UX note:
-   - All edits performed in Edit mode are stored only in the browser (localStorage) when you press "Save Draft".
-   - To publish edits to the live site you must copy the exported JSON and update your server or CMS.
-   - The modal displays the full article content (from the hidden .full-article element) when a "View" link is clicked.
-------------------------*/
+/* Minimal hidden YouTube audio player setup (kept hidden) */
+const playlist = ["NyRbZVl4P6s","yflFa6undWk","uSHHqS8HZhs","z4PndMZNUX8","8e80zDhTONc","VvItaijf80Y"];
+let current = 0, player = null, playerReady = false;
+const desiredVolume = 20;
+function onYouTubeIframeAPIReady(){
+  player = new YT.Player('yt-player',{height:'0',width:'0',videoId:playlist[current],playerVars:{rel:0,controls:0,modestbranding:1,disablekb:1,iv_load_policy:3},events:{
+    onReady:()=>{playerReady=true; try{player.setVolume(desiredVolume);}catch(e){}},
+    onStateChange:(e)=>{ if(e.data===YT.PlayerState.ENDED){ current=(current+1)%playlist.length; player.loadVideoById(playlist[current]); setTimeout(()=>{ try{player.setVolume(desiredVolume);}catch(e){} },200); } }
+  }});
+}
+document.addEventListener('click', function handler(){ if(playerReady && player){ try{player.setVolume(desiredVolume); player.playVideo(); }catch(e){} } document.removeEventListener('click', handler); },{once:true});
 </script>
+
+<!-- YouTube API must be included after the script reference above uses YT -->
+<script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
