@@ -43,12 +43,11 @@
   .top-inner {
     max-width: 1280px; margin: 0 auto; padding: 16px 24px;
     display: flex; align-items: center; justify-content: space-between;
-    gap: 18px;
   }
   .brand { font-size: 28px; font-weight: 800; color:var(--text); }
   .brand .accent { color: var(--accent-2); }
 
-  .nav { display: flex; gap: 32px; font-size: 16px; font-weight: 600; flex: 1 1 auto; }
+  .nav { display: flex; gap: 32px; font-size: 16px; font-weight: 600; }
   .nav-link {
     color: #bcdbe6; text-decoration: none; position: relative;
     transition: color .15s ease;
@@ -63,27 +62,11 @@
     border-radius: 2px;
   }
 
-  /* CHI logo placed where the Buy Credits button used to be */
-  .brand-logo {
-    width: 56px;
-    height: 56px;
-    object-fit: contain;
-    opacity: 0.78;                 /* faded a bit by default */
-    transition: opacity .18s ease, transform .18s ease;
-    filter: drop-shadow(0 8px 20px rgba(42,166,221,0.06));
-    border-radius: 8px;
-    will-change: opacity, transform;
-  }
-  .brand-logo:hover {
-    opacity: 1;
-    transform: translateY(-2px) scale(1.02);
-  }
-
-  /* keep layout tidy on very small screens */
-  @media (max-width:640px) {
-    .brand-logo { display:none; }
-    .nav { gap: 12px; }
-    .top-inner { padding: 12px; }
+  .purchase-btn {
+    background: linear-gradient(180deg, rgba(42,166,221,0.12), rgba(42,166,221,0.06));
+    color: var(--text); border: 1px solid rgba(42,166,221,0.18);
+    padding: 9px 20px; border-radius: 10px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(10,30,40,0.25);
   }
 
   .main-view { display: none; padding: 30px 20px; color:var(--text); }
@@ -112,7 +95,6 @@
 <div class="topbar">
   <div class="top-inner">
     <h1 class="brand">Killadelphia <span class="accent">Contraband</span></h1>
-
     <div class="nav" role="tablist" aria-label="Primary">
       <a href="#" class="nav-link active" id="navHome" role="tab" aria-selected="true" aria-controls="homeView">Home</a>
       <a href="#" class="nav-link" id="navShop" role="tab" aria-selected="false" aria-controls="shopView">Shop</a>
@@ -120,40 +102,38 @@
       <a href="#" class="nav-link" id="navSneak" role="tab" aria-selected="false" aria-controls="sneakView">Sneak Peeks</a>
       <a href="#" class="nav-link" id="navRules" role="tab" aria-selected="false" aria-controls="rulesView">Rules</a>
     </div>
-
-    <!-- Replaced the Buy Credits button with the CHI logo (faded) -->
-    <!-- Replace the src value with the actual path/URL of the logo image you provided -->
-    <img class="brand-logo" src="path/to/chi-logo.png" alt="CHI Cinematic Roleplay logo" aria-hidden="false" />
+    <button class="purchase-btn" aria-label="Buy credits"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Buy Credits</button>
   </div>
 </div>
 
 <div class="wrap">
   <!-- HOME VIEW -->
-  <div id="homeView" class="main-view active">
+  <div id="homeView" class="main-view active" role="tabpanel" tabindex="0" aria-labelledby="navHome">
     <h2>Welcome to the Contraband System</h2>
     <p><strong>Click Spin!</strong> to test. Your full spinner code goes here.</p>
+    <!-- Paste your full original spinner + hero + reel code inside this div -->
   </div>
 
   <!-- SHOP -->
-  <div id="shopView" class="main-view">
+  <div id="shopView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navShop">
     <h2>Shop</h2>
     <p>Credit store and packages coming soon.</p>
   </div>
 
   <!-- STREAMERS -->
-  <div id="streamersView" class="main-view">
+  <div id="streamersView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navStreamers">
     <h2>Streamers</h2>
     <p>Featured streamers will be listed here.</p>
   </div>
 
   <!-- SNEAK PEEKS -->
-  <div id="sneakView" class="main-view">
+  <div id="sneakView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navSneak">
     <h2>Sneak Peeks</h2>
     <p>New items and upcoming content.</p>
   </div>
 
   <!-- RULES -->
-  <div id="rulesView" class="main-view">
+  <div id="rulesView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navRules">
     <h2>Rules</h2>
     <p>Contraband rules will be posted here.</p>
   </div>
@@ -162,7 +142,9 @@
 <!-- Music: hidden controls, autoplay after first gesture and low volume -->
 <div class="music-player" aria-live="polite" style="display:none;">
   <span id="nowPlaying" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">Track 1/6</span>
-  <div id="yt-audio" aria-hidden="true"><div id="yt-player"></div></div>
+  <div id="yt-audio" aria-hidden="true">
+    <div id="yt-player"></div>
+  </div>
 </div>
 
 <!-- YouTube IFrame API -->
