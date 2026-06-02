@@ -4,156 +4,232 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Killadelphia's Contraband System</title>
+
+<!-- Rajdhani font -->
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700;800&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --bg:#0b0b12;
     --accent:#ff6b3b;
     --accent-2:#ffb03a;
     --text:#e8e8f2;
+    --muted:#94a3b8;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%; margin:0; overflow-x:hidden}
+  *{box-sizing:border-box; margin:0; padding:0}
   body{
-    background:radial-gradient(1200px 600px at 10% -10%, rgba(255,140,64,.16), transparent 60%),
-    radial-gradient(1200px 600px at 110% 10%, rgba(255,92,48,.12), transparent 60%), var(--bg);
-    color:var(--text); font:500 16px/1.4 "Rajdhani", system-ui, sans-serif;
+    background: var(--bg);
+    color:var(--text);
+    font:500 16px/1.4 "Rajdhani", system-ui, sans-serif;
+    min-height:100vh;
   }
-
-  .page-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
-    background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat fixed;
+  .page-bg{
+    position:fixed; inset:0; z-index:-1;
+    background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat;
     filter: blur(14px) saturate(1.05); opacity:.22;
   }
 
-  /* Top Bar */
+  /* Top Navigation */
   .topbar {
     position: sticky; top: 0; z-index: 100;
-    background: linear-gradient(180deg, rgba(11,11,18,0.98), rgba(11,11,18,0.92));
+    background: rgba(11,11,18,0.97);
     border-bottom: 1px solid rgba(255,107,59,0.3);
     backdrop-filter: blur(12px);
   }
   .top-inner {
-    max-width: 1280px; margin: 0 auto; padding: 14px 24px;
+    max-width: 1280px; margin: 0 auto; padding: 16px 24px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .brand { font-size: 26px; font-weight: 800; }
+  .brand { font-size: 28px; font-weight: 800; }
   .brand .accent { color: var(--accent-2); }
 
-  .nav { display: flex; gap: 28px; font-size: 15.5px; font-weight: 600; }
+  .nav { display: flex; gap: 32px; font-size: 16px; font-weight: 600; }
   .nav-link {
-    color: #e0e0e8; text-decoration: none; position: relative; padding-bottom: 4px;
+    color: #ddd; text-decoration: none; position: relative;
   }
-  .nav-link:hover, .nav-link.active { color: var(--accent-2); }
+  .nav-link:hover { color: var(--accent-2); }
+  .nav-link.active {
+    color: white;
+  }
   .nav-link.active::after {
-    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--accent-2);
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 100%; height: 2px; background: var(--accent-2);
   }
 
   .purchase-btn {
-    background: linear-gradient(180deg, rgba(255,107,59,0.28), rgba(255,176,58,0.08));
-    color: #fff; border: 1px solid rgba(255,176,58,0.45);
-    padding: 8px 18px; border-radius: 10px; font-weight: 700; cursor: pointer;
+    background: linear-gradient(180deg, rgba(255,107,59,0.3), rgba(255,176,58,0.1));
+    color: #fff; border: 1px solid rgba(255,176,58,0.5);
+    padding: 9px 20px; border-radius: 10px; font-weight: 700; cursor: pointer;
   }
 
-  .main-view { display: none; padding: 20px 0; }
+  .main-view { display: none; padding: 30px 20px; }
   .main-view.active { display: block; }
 
   .music-player {
-    position: fixed; bottom: 15px; right: 15px; z-index: 200;
-    background: rgba(18,20,32,0.95); border: 1px solid rgba(255,176,58,0.4);
-    border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; gap: 12px;
-    font-size: 13px; backdrop-filter: blur(8px);
+    position: fixed; bottom: 20px; right: 20px; z-index: 999;
+    background: rgba(20,22,35,0.95); border: 1px solid #ffb03a;
+    border-radius: 12px; padding: 10px 15px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 14px; backdrop-filter: blur(10px);
   }
+
+  /* Hidden but present container for the YouTube iframe (so we can control it) */
+  #yt-audio { width:0; height:0; overflow:hidden; position:relative; }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="page-bg"></div>
 
-<!-- Top Navigation -->
 <div class="topbar">
   <div class="top-inner">
     <h1 class="brand">Killadelphia <span class="accent">Contraband</span></h1>
-    <div class="nav">
-      <a href="#" class="nav-link active" id="navHome">Home</a>
-      <a href="#" class="nav-link" id="navShop">Shop</a>
-      <a href="#" class="nav-link" id="navStreamers">Streamers</a>
-      <a href="#" class="nav-link" id="navSneak">Sneak Peeks</a>
-      <a href="#" class="nav-link" id="navRules">Rules</a>
+    <div class="nav" role="tablist" aria-label="Primary">
+      <a href="#" class="nav-link active" id="navHome" role="tab" aria-selected="true" aria-controls="homeView">Home</a>
+      <a href="#" class="nav-link" id="navShop" role="tab" aria-selected="false" aria-controls="shopView">Shop</a>
+      <a href="#" class="nav-link" id="navStreamers" role="tab" aria-selected="false" aria-controls="streamersView">Streamers</a>
+      <a href="#" class="nav-link" id="navSneak" role="tab" aria-selected="false" aria-controls="sneakView">Sneak Peeks</a>
+      <a href="#" class="nav-link" id="navRules" role="tab" aria-selected="false" aria-controls="rulesView">Rules</a>
     </div>
-    <button class="purchase-btn"><i class="fa-solid fa-cart-shopping"></i> Buy Credits</button>
+    <button class="purchase-btn" aria-label="Buy credits"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Buy Credits</button>
   </div>
 </div>
 
 <div class="wrap">
-  <!-- HOME - Your Original Spinner Page -->
-  <div id="homeView" class="main-view active">
-    <!-- PASTE ALL YOUR ORIGINAL CONTENT HERE (Hero, Reel, Stage, Drawers, Stats, etc.) -->
-    <!-- Everything from <section class="hero"> to the end of your original body -->
+  <!-- HOME VIEW -->
+  <div id="homeView" class="main-view active" role="tabpanel" tabindex="0" aria-labelledby="navHome">
+    <h2>Welcome to the Contraband System</h2>
+    <p><strong>Click Spin!</strong> to test. Your full spinner code goes here.</p>
+    <!-- Paste your full original spinner + hero + reel code inside this div -->
   </div>
 
-  <!-- Other Tabs -->
-  <div id="shopView" class="main-view"><h2 class="section-title">Shop</h2><p>Coming Soon...</p></div>
-  <div id="streamersView" class="main-view"><h2 class="section-title">Streamers</h2><p>Coming Soon...</p></div>
-  <div id="sneakView" class="main-view"><h2 class="section-title">Sneak Peeks</h2><p>Coming Soon...</p></div>
-  <div id="rulesView" class="main-view"><h2 class="section-title">Rules</h2><p>Coming Soon...</p></div>
+  <!-- SHOP -->
+  <div id="shopView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navShop">
+    <h2>Shop</h2>
+    <p>Credit store and packages coming soon.</p>
+  </div>
+
+  <!-- STREAMERS -->
+  <div id="streamersView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navStreamers">
+    <h2>Streamers</h2>
+    <p>Featured streamers will be listed here.</p>
+  </div>
+
+  <!-- SNEAK PEEKS -->
+  <div id="sneakView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navSneak">
+    <h2>Sneak Peeks</h2>
+    <p>New items and upcoming content.</p>
+  </div>
+
+  <!-- RULES -->
+  <div id="rulesView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navRules">
+    <h2>Rules</h2>
+    <p>Contraband rules will be posted here.</p>
+  </div>
 </div>
 
 <!-- Music -->
-<audio id="bgmAudio" preload="auto" loop></audio>
+<div class="music-player" aria-live="polite">
+  <button id="musicToggle" aria-label="Toggle music" title="Toggle music"><i class="fa-solid fa-volume-high" aria-hidden="true"></i></button>
+  <span id="nowPlaying">Track 1/6</span>
+  <button id="nextTrack" aria-label="Next track" title="Next track"><i class="fa-solid fa-forward" aria-hidden="true"></i></button>
 
-<div class="music-player">
-  <button id="musicToggle"><i class="fa-solid fa-volume-high"></i></button>
-  <span id="nowPlaying">Now Playing: Track 1</span>
-  <button id="nextTrack"><i class="fa-solid fa-forward"></i></button>
+  <!-- persistent container for the iframe; invisible but present so we can remove/update the iframe -->
+  <div id="yt-audio" aria-hidden="true"></div>
 </div>
 
 <script>
-// ====================== MUSIC ======================
+// Music - Your 6 Songs
 const playlist = [
   "NyRbZVl4P6s", "yflFa6undWk", "uSHHqS8HZhs",
   "z4PndMZNUX8", "8e80zDhTONc", "VvItaijf80Y"
 ];
 
-let currentTrack = 0;
-const bgm = document.getElementById('bgmAudio');
-const musicToggle = document.getElementById('musicToggle');
-const nowPlaying = document.getElementById('nowPlaying');
+let current = 0;
+let iframe = null;
+let isPlaying = false;
+const audioContainer = document.getElementById('yt-audio');
 
-function playTrack(index) {
-  currentTrack = index % playlist.length;
-  const videoId = playlist[currentTrack];
-  nowPlaying.textContent = `Now Playing: Track ${currentTrack + 1}`;
-
-  // YouTube autoplay workaround (opens embed)
-  bgm.innerHTML = `<iframe width="0" height="0" src="https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}" allow="autoplay" frameborder="0"></iframe>`;
+function createOrReuseIframe() {
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.width = 0;
+    iframe.height = 0;
+    iframe.style.border = '0';
+    iframe.allow = 'autoplay; encrypted-media';
+    // keep it hidden but present
+    audioContainer.appendChild(iframe);
+  }
+  return iframe;
 }
 
-musicToggle.addEventListener('click', () => {
-  if (bgm.innerHTML.includes('iframe')) {
-    bgm.innerHTML = '';
-    musicToggle.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+function playCurrent() {
+  const id = playlist[current];
+  document.getElementById('nowPlaying').textContent = `Track ${current+1}/${playlist.length}`;
+
+  const f = createOrReuseIframe();
+
+  // Use playlist param so loop works for single-video loops
+  // enablejsapi not strictly necessary here since we recreate the src
+  f.src = `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&rel=0`;
+  isPlaying = true;
+}
+
+function stopMusic() {
+  if (iframe) {
+    // remove iframe to stop playback and free resources
+    iframe.remove();
+    iframe = null;
+  }
+  isPlaying = false;
+  document.getElementById('nowPlaying').textContent = `Track ${current+1}/${playlist.length} (stopped)`;
+}
+
+// Toggle button: start/stop
+document.getElementById('musicToggle').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (isPlaying) {
+    stopMusic();
   } else {
-    playTrack(currentTrack);
-    musicToggle.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+    playCurrent();
   }
 });
 
-document.getElementById('nextTrack').addEventListener('click', () => {
-  playTrack(currentTrack + 1);
+// Next track button
+document.getElementById('nextTrack').addEventListener('click', (e) => {
+  e.stopPropagation();
+  current = (current + 1) % playlist.length;
+  playCurrent();
 });
 
-// Try to autoplay after user interacts with the page
-document.addEventListener('click', () => {
-  if (!bgm.innerHTML) playTrack(0);
+// Auto start music after first user click anywhere (only once)
+document.addEventListener('click', function handler() {
+  if (!isPlaying) playCurrent();
+  document.removeEventListener('click', handler);
 }, { once: true });
 
-// ====================== TABS ======================
+// Tab System (fixed mapping to view IDs)
 document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', (e) => {
+  link.addEventListener('click', function(e) {
     e.preventDefault();
 
-    // Update active link
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    link.classList.add('active');
+    // update active class and aria-selected
+    document.querySelectorAll('.nav-link').forEach(l => {
+      l.classList.remove('active');
+      l.setAttribute('aria-selected', 'false');
+    });
+    this.classList.add('active');
+    this.setAttribute('aria-selected', 'true');
 
-    // Switch views
-    document
+    // switch views
+    document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
+    // convert "navHome" -> "homeView" (lowercase first letter)
+    const raw = this.id.replace('nav', '');        // "Home", "Shop", ...
+    const viewId = raw.charAt(0).toLowerCase() + raw.slice(1) + 'View'; // "homeView"
+    const view = document.getElementById(viewId);
+    if (view) view.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
