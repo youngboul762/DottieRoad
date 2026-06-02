@@ -1,848 +1,581 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Killadelphia's Contraband System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root{
-      --bg:#050712;
-      --panel:#101322;
-      --panel-soft:#15192a;
-      --accent:#ff6b3b;
-      --accent-soft:#ffb03a;
-      --text:#e5e7f5;
-      --muted:#9ca3af;
-      --border-soft:rgba(255,255,255,.08);
-      --border-strong:rgba(255,255,255,.18);
-      --shadow:0 18px 40px rgba(0,0,0,.55);
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Killadelphia • Contraband System</title>
 
-      --rar-common:#a1a1aa;
-      --rar-uncommon:#4ade80;
-      --rar-rare:#60a5fa;
-      --rar-epic:#a855f7;
-      --rar-legendary:#facc15;
-    }
+<style>
+/* ------------------------------
+   PRODIGYRP-STYLE THEME SYSTEM
+   ------------------------------ */
+:root{
+  --bg:#0a0b0d;
+  --bg-soft:#0f1115;
+  --panel:#111318;
+  --panel-soft:#16181f;
+  --panel-glass:rgba(255,255,255,.03);
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:
-        radial-gradient(900px 420px at 8% -10%, rgba(255,140,64,.18), transparent 60%),
-        radial-gradient(900px 420px at 110% 10%, rgba(255,92,48,.14), transparent 60%),
-        #020617;
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
-    }
+  --accent:#ffb03a;
+  --accent-soft:#ffd27a;
 
-    .page-bg{
-      position:fixed;inset:0;pointer-events:none;z-index:-1;
-      background:url("https://i.imgur.com/z17MUhQ.png") center/cover no-repeat fixed;
-      filter:blur(14px) saturate(1.05);
-      opacity:.22;
-      transform:scale(1.06);
-    }
+  --text:#f3f4f6;
+  --text-soft:#cbd5e1;
+  --muted:#9ca3af;
 
-    .topbar{
-      position:sticky;top:0;z-index:40;
-      background:linear-gradient(180deg,rgba(3,7,18,.96),rgba(3,7,18,.82));
-      border-bottom:1px solid var(--border-soft);
-      backdrop-filter:blur(10px) saturate(1.2);
-    }
-    .top-inner{
-      max-width:1200px;margin:0 auto;
-      padding:10px 18px;
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-    }
-    .brand{
-      font-weight:900;
-      letter-spacing:.08em;
-      font-size:clamp(18px,3vw,22px);
-      text-transform:uppercase;
-      color:#f9fafb;
-    }
-    .brand span{
-      color:var(--accent-soft);
-      text-shadow:0 0 10px rgba(255,176,58,.45);
-    }
-    .nav{
-      display:flex;align-items:center;gap:14px;
-      font-size:13px;
-    }
-    .nav a{
-      color:#e5e7eb;text-decoration:none;
-      padding:4px 8px;border-radius:999px;
-      border:1px solid transparent;
-      transition:.18s;
-    }
-    .nav a:hover{
-      border-color:var(--border-soft);
-      background:rgba(15,23,42,.9);
-      color:var(--accent-soft);
-    }
-    .btn-primary{
-      background:linear-gradient(135deg,var(--accent-soft),var(--accent));
-      color:#020617;
-      font-weight:700;
-      border-radius:999px;
-      padding:7px 14px;
-      border:none;
-      cursor:pointer;
-      font-size:13px;
-      letter-spacing:.05em;
-      text-transform:uppercase;
-      box-shadow:0 0 0 1px rgba(0,0,0,.6),0 10px 25px rgba(0,0,0,.6);
-      transition:transform .08s ease,box-shadow .18s ease,filter .18s ease;
-    }
-    .btn-primary:hover{
-      filter:brightness(1.05);
-      box-shadow:0 0 0 1px rgba(0,0,0,.7),0 14px 32px rgba(0,0,0,.75);
-      transform:translateY(-1px);
-    }
-    .btn-primary:active{transform:translateY(1px);box-shadow:0 0 0 1px rgba(0,0,0,.7),0 6px 18px rgba(0,0,0,.7)}
+  --border-soft:rgba(255,255,255,.06);
+  --border-mid:rgba(255,255,255,.12);
+  --border-strong:rgba(255,255,255,.18);
 
-    .hero{
-      border-bottom:1px solid rgba(148,163,184,.25);
-      background:
-        linear-gradient(120deg,rgba(15,23,42,.98),rgba(24,20,12,.96)),
-        radial-gradient(900px 420px at 8% -10%, rgba(255,140,64,.18), transparent 60%);
-    }
-    .hero-inner{
-      max-width:1200px;margin:0 auto;
-      padding:26px 18px 20px;
-      display:grid;
-      grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);
-      gap:18px;
-      align-items:center;
-      position:relative;
-    }
-    @media (max-width:800px){
-      .hero-inner{grid-template-columns:1fr}
-    }
-    .hero-main h1{
-      font-size:clamp(26px,4vw,36px);
-      font-weight:900;
-      letter-spacing:.04em;
-      text-transform:uppercase;
-      color:var(--accent-soft);
-      text-shadow:0 0 14px rgba(255,176,58,.4);
-      margin-bottom:6px;
-    }
-    .hero-main p{
-      font-size:14px;
-      color:#cbd5f5;
-      max-width:520px;
-    }
-    .hero-tags{
-      margin-top:10px;
-      display:flex;flex-wrap:wrap;gap:8px;
-      font-size:11px;
-    }
-    .pill{
-      border-radius:999px;
-      padding:4px 9px;
-      border:1px solid rgba(148,163,184,.4);
-      background:rgba(15,23,42,.9);
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:#e5e7eb;
-    }
-    .pill-accent{
-      border-color:rgba(248,250,252,.8);
-      background:linear-gradient(135deg,rgba(255,176,58,.16),rgba(255,107,59,.08));
-      color:#fef3c7;
-    }
-    .hero-actions{
-      margin-top:14px;
-      display:flex;flex-wrap:wrap;gap:10px;
-      align-items:center;
-    }
-    .hero-actions button,
-    .hero-actions a{
-      font-size:13px;
-    }
-    .hero-secondary-link{
-      color:#e5e7eb;
-      text-decoration:none;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.5);
-      display:inline-flex;align-items:center;gap:6px;
-      background:rgba(15,23,42,.9);
-      transition:.18s;
-    }
-    .hero-secondary-link span{
-      font-size:15px;opacity:.8;
-    }
-    .hero-secondary-link:hover{
-      border-color:var(--accent-soft);
-      color:var(--accent-soft);
-    }
+  --shadow-strong:0 18px 40px rgba(0,0,0,.55);
+  --shadow-soft:0 8px 20px rgba(0,0,0,.35);
 
-    .hero-side{
-      justify-self:end;
-      max-width:320px;
-      width:100%;
-    }
-    .hero-card{
-      background:radial-gradient(circle at 0 0,rgba(255,176,58,.16),transparent 55%),var(--panel);
-      border-radius:18px;
-      border:1px solid var(--border-soft);
-      box-shadow:var(--shadow);
-      padding:14px 14px 12px;
-      display:grid;gap:10px;
-    }
-    .hero-card-header{
-      display:flex;align-items:center;justify-content:space-between;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .hero-card-title{
-      font-weight:700;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:#e5e7eb;
-    }
-    .hero-card-badge{
-      padding:3px 8px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.6);
-      background:rgba(15,23,42,.9);
-      font-size:11px;
-    }
-    .hero-card-body{
-      font-size:12px;
-      color:#cbd5f5;
-    }
-    .hero-card-footer{
-      display:flex;justify-content:space-between;align-items:center;
-      font-size:11px;
-      color:var(--muted);
-    }
-    .hero-card-footer span strong{color:#e5e7eb}
+  --radius:16px;
+  --radius-sm:12px;
 
-    .wrap{
-      max-width:1200px;margin:0 auto;
-      padding:18px;
-    }
+  --transition:.22s cubic-bezier(.25,.1,.25,1);
+}
 
-    .layout-main{
-      display:grid;
-      grid-template-columns:minmax(0,1.6fr) minmax(0,1.1fr);
-      gap:18px;
-      align-items:flex-start;
-    }
-    @media (max-width:960px){
-      .layout-main{grid-template-columns:1fr}
-    }
+/* Global reset */
+body{
+  margin:0;
+  background:
+    radial-gradient(900px 420px at 8% -10%, rgba(255,176,58,.10), transparent 60%),
+    radial-gradient(900px 420px at 110% 10%, rgba(255,140,64,.08), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter, system-ui, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:.2px;
+}
 
-    .card{
-      background:var(--panel);
-      border-radius:16px;
-      border:1px solid var(--border-soft);
-      box-shadow:var(--shadow);
-      padding:14px 14px 16px;
-    }
-    .card-header{
-      display:flex;justify-content:space-between;align-items:center;
-      margin-bottom:10px;
-    }
-    .card-title{
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:#e5e7eb;
-    }
-    .card-sub{
-      font-size:11px;
-      color:var(--muted);
-    }
+.page-bg{
+  position:fixed;
+  inset:0;
+  background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat;
+  filter:blur(14px) saturate(1.05);
+  opacity:.18;
+  pointer-events:none;
+  z-index:-1;
+}
 
-    .controls-row{
-      display:flex;flex-wrap:wrap;gap:10px;
-      margin-bottom:10px;
-      font-size:13px;
-    }
-    .field{
-      display:flex;flex-direction:column;gap:3px;
-    }
-    .field label{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:var(--muted);
-    }
-    select{
-      background:var(--panel-soft);
-      border-radius:10px;
-      border:1px solid var(--border-strong);
-      color:var(--text);
-      padding:7px 9px;
-      font-size:13px;
-      min-width:140px;
-    }
-    .btn-ghost{
-      background:var(--panel-soft);
-      border-radius:10px;
-      border:1px solid var(--border-strong);
-      color:#e5e7eb;
-      padding:7px 10px;
-      font-size:12px;
-      cursor:pointer;
-      display:inline-flex;align-items:center;gap:6px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-    }
-    .btn-ghost span{font-size:14px;opacity:.8}
-    .btn-ghost:hover{border-color:var(--accent-soft);color:var(--accent-soft)}
+/* Topbar */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border-soft);
+}
+.top-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:.08em;
+  color:var(--text);
+}
+.brand span{
+  color:var(--accent-soft);
+}
 
-    .spinner-shell{
-      margin-top:6px;
-      background:radial-gradient(circle at 50% 0,rgba(255,255,255,.06),transparent 60%),var(--panel-soft);
-      border-radius:14px;
-      border:1px solid rgba(148,163,184,.4);
-      padding:10px;
-      position:relative;
-      overflow:hidden;
-    }
-    .spinner-strip{
-      display:flex;
-      gap:8px;
-      overflow-x:auto;
-      padding-bottom:4px;
-      scrollbar-width:thin;
-      scrollbar-color:rgba(148,163,184,.7) transparent;
-    }
-    .spinner-strip::-webkit-scrollbar{height:6px}
-    .spinner-strip::-webkit-scrollbar-track{background:transparent}
-    .spinner-strip::-webkit-scrollbar-thumb{
-      background:rgba(148,163,184,.8);
-      border-radius:999px;
-    }
+/* Nav */
+.nav{
+  display:flex;
+  gap:16px;
+}
+.nav a{
+  color:var(--text-soft);
+  text-decoration:none;
+  font-size:14px;
+  padding:6px 10px;
+  border-radius:999px;
+  transition:var(--transition);
+}
+.nav a:hover{
+  background:rgba(255,255,255,.06);
+  color:var(--accent-soft);
+}
 
-    .slot{
-      flex:0 0 90px;
-      height:90px;
-      border-radius:12px;
-      border:1px solid rgba(248,250,252,.7);
-      box-shadow:
-        inset 0 -26px 40px rgba(0,0,0,.35),
-        0 0 0 1px rgba(15,23,42,.7);
-      position:relative;
-      overflow:hidden;
-      background:radial-gradient(circle at 50% 0,rgba(255,255,255,.12),transparent 60%),#020617;
-      display:flex;align-items:center;justify-content:center;
-    }
-    .slot img{
-      width:100%;height:100%;
-      object-fit:contain;
-      pointer-events:none;
-      user-select:none;
-    }
-    .slot-label{
-      position:absolute;
-      left:6px;right:6px;bottom:4px;
-      font-size:11px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      text-shadow:0 2px 6px rgba(0,0,0,.7);
-    }
-    .slot[data-rarity="common"]{box-shadow:inset 0 -26px 40px rgba(24,24,27,.7),0 0 0 1px rgba(161,161,170,.7)}
-    .slot[data-rarity="uncommon"]{box-shadow:inset 0 -26px 40px rgba(22,101,52,.7),0 0 0 1px rgba(74,222,128,.7)}
-    .slot[data-rarity="rare"]{box-shadow:inset 0 -26px 40px rgba(30,64,175,.7),0 0 0 1px rgba(96,165,250,.7)}
-    .slot[data-rarity="epic"]{box-shadow:inset 0 -26px 40px rgba(91,33,182,.7),0 0 0 1px rgba(168,85,247,.7)}
-    .slot[data-rarity="legendary"]{box-shadow:inset 0 -26px 40px rgba(133,77,14,.8),0 0 0 1px rgba(250,204,21,.9)}
+/* Buttons */
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-soft));
+  color:#111;
+  border:none;
+  border-radius:var(--radius-sm);
+  padding:10px 18px;
+  font-weight:700;
+  letter-spacing:.03em;
+  transition:var(--transition);
+}
+.btn-primary:hover{
+  filter:brightness(1.1);
+  transform:translateY(-1px);
+}
 
-    .cut-line{
-      position:absolute;
-      top:-10px;bottom:-10px;left:50%;
-      width:5px;
-      transform:translateX(-50%);
-      background:
-        linear-gradient(180deg,rgba(255,237,213,0) 0%,rgba(255,237,213,.7) 50%,rgba(255,237,213,0) 100%);
-      box-shadow:0 0 16px rgba(250,204,21,.6);
-      pointer-events:none;
-      opacity:.9;
-    }
+.btn-ghost{
+  background:var(--panel-soft);
+  border:1px solid var(--border-mid);
+  border-radius:var(--radius-sm);
+  color:var(--text);
+  padding:8px 14px;
+  transition:var(--transition);
+}
+.btn-ghost:hover{
+  border-color:var(--accent-soft);
+  color:var(--accent-soft);
+}
 
-    .spinner-footer{
-      margin-top:8px;
-      display:flex;justify-content:space-between;align-items:center;
-      font-size:11px;
-      color:var(--muted);
-    }
+/* Hero */
+.hero{
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.65),rgba(0,0,0,.45)),
+    url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat;
+  padding:80px 20px;
+}
+.hero-inner{
+  max-width:1200px;
+  margin:0 auto;
+}
+.hero-title{
+  font-size:48px;
+  font-weight:900;
+  color:var(--accent-soft);
+  text-shadow:0 0 20px rgba(255,176,58,.35);
+  margin-bottom:10px;
+}
+.hero-sub{
+  font-size:16px;
+  color:var(--text-soft);
+  max-width:600px;
+}
+.hero-actions{
+  margin-top:20px;
+  display:flex;
+  gap:14px;
+}
 
-    .drops-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-      gap:10px;
-      margin-top:8px;
-    }
-    .drop-card{
-      position:relative;
-      border-radius:14px;
-      padding:9px 9px 10px;
-      background:var(--panel-soft);
-      border:1px solid rgba(148,163,184,.6);
-      box-shadow:0 10px 26px rgba(0,0,0,.6);
-      display:grid;gap:6px;
-      font-size:12px;
-    }
-    .drop-title{
-      font-weight:700;
-      font-size:13px;
-      color:#fef3c7;
-      text-shadow:0 0 10px rgba(250,204,21,.4);
-    }
-    .drop-meta{
-      font-size:11px;
-      color:var(--muted);
-    }
-    .drop-rarity{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-    }
-    .drop-rarity[data-rarity="common"]{color:var(--rar-common)}
-    .drop-rarity[data-rarity="uncommon"]{color:var(--rar-uncommon)}
-    .drop-rarity[data-rarity="rare"]{color:var(--rar-rare)}
-    .drop-rarity[data-rarity="epic"]{color:var(--rar-epic)}
-    .drop-rarity[data-rarity="legendary"]{color:var(--rar-legendary)}
-    .drop-img{
-      width:100%;height:110px;
-      object-fit:contain;
-      margin-top:4px;
-      filter:drop-shadow(0 6px 14px rgba(0,0,0,.7));
-    }
-    .drop-badge{
-      position:absolute;
-      right:8px;bottom:8px;
-      font-size:10px;
-      padding:3px 7px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.95);
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:#e5e7eb;
-    }
+/* Layout */
+.wrap{
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px;
+}
+.layout-main{
+  display:grid;
+  grid-template-columns:1.6fr 1fr;
+  gap:20px;
+}
+@media(max-width:900px){
+  .layout-main{grid-template-columns:1fr}
+}
 
-    .section-label{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
+/* Cards */
+.card{
+  background:var(--panel-glass);
+  backdrop-filter:blur(14px);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow-soft);
+  transition:var(--transition);
+}
+.card:hover{
+  border-color:var(--accent-soft);
+  transform:translateY(-2px);
+}
 
-    .tabs{
-      display:flex;flex-wrap:wrap;gap:6px;
-      margin-bottom:10px;
-    }
-    .tab{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      padding:5px 9px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.6);
-      background:rgba(15,23,42,.9);
-      color:#e5e7eb;
-      cursor:pointer;
-    }
-    .tab[data-active="true"]{
-      border-color:var(--accent-soft);
-      background:linear-gradient(135deg,rgba(255,176,58,.18),rgba(255,107,59,.08));
-      color:#fef3c7;
-    }
+/* Section headers */
+.card-title{
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  margin-bottom:6px;
+}
+.card-sub{
+  font-size:12px;
+  color:var(--muted);
+}
 
-    .tier-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-      gap:10px;
-      margin-top:6px;
-    }
-    .tier-card{
-      border-radius:14px;
-      padding:9px 9px 10px;
-      background:var(--panel-soft);
-      border:1px solid rgba(148,163,184,.6);
-      display:grid;gap:6px;
-      cursor:pointer;
-      transition:.16s;
-    }
-    .tier-card:hover{
-      border-color:var(--accent-soft);
-      box-shadow:0 10px 26px rgba(0,0,0,.7);
-      transform:translateY(-1px);
-    }
-    .tier-name{
-      font-size:13px;
-      font-weight:700;
-      color:#e5e7eb;
-    }
-    .tier-rarity{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:var(--muted);
-    }
-    .tier-img{
-      width:100%;height:110px;
-      object-fit:contain;
-      filter:drop-shadow(0 6px 14px rgba(0,0,0,.7));
-    }
+/* Controls */
+.controls-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:12px;
+}
+select{
+  background:var(--panel-soft);
+  border:1px solid var(--border-mid);
+  border-radius:var(--radius-sm);
+  color:var(--text);
+  padding:8px 12px;
+}
 
-    .watermark{
-      position:fixed;
-      left:50%;bottom:14px;
-      transform:translateX(-50%);
-      font-size:12px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color:var(--accent-soft);
-      text-shadow:0 0 10px rgba(255,176,58,.5);
-      pointer-events:none;
-      opacity:.85;
-    }
+/* Spinner */
+.spinner-shell{
+  margin-top:14px;
+  background:var(--panel-soft);
+  border-radius:var(--radius);
+  border:1px solid var(--border-mid);
+  padding:12px;
+  position:relative;
+}
+.spinner-strip{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:6px;
+}
+.slot{
+  flex:0 0 100px;
+  height:100px;
+  border-radius:var(--radius-sm);
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  transition:var(--transition);
+}
+.slot:hover{
+  transform:scale(1.05);
+}
+.slot img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.slot-label{
+  position:absolute;
+  bottom:6px;
+  left:6px;
+  right:6px;
+  font-size:11px;
+  text-shadow:0 2px 6px rgba(0,0,0,.7);
+}
 
-    .watermark a{
-      color:inherit;
-      text-decoration:none;
-      pointer-events:auto;
-    }
-    .watermark a:hover{text-decoration:underline}
+/* Drops */
+.drops-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:12px;
+  margin-top:12px;
+}
+.drop-card{
+  padding:12px;
+  border-radius:var(--radius);
+  border:1px solid var(--border-soft);
+  background:var(--panel-glass);
+  backdrop-filter:blur(14px);
+  transition:var(--transition);
+}
+.drop-card:hover{
+  border-color:var(--accent-soft);
+  transform:translateY(-2px);
+}
+.drop-title{
+  font-size:14px;
+  font-weight:700;
+  color:var(--accent-soft);
+}
+.drop-meta{
+  font-size:12px;
+  color:var(--muted);
+}
+.drop-img{
+  width:100%;
+  height:120px;
+  object-fit:contain;
+  margin-top:6px;
+}
 
-    .stats-overlay{
-      position:fixed;inset:0;
-      background:rgba(15,23,42,.88);
-      display:none;
-      place-items:center;
-      z-index:50;
-    }
-    .stats-overlay[data-open="true"]{display:grid}
-    .stats-card{
-      width:min(900px,94vw);
-      background:radial-gradient(circle at 0 0,rgba(255,176,58,.16),transparent 55%),#020617;
-      border-radius:18px;
-      border:1px solid var(--border-soft);
-      box-shadow:var(--shadow);
-      padding:16px;
-      display:grid;
-      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
-      gap:16px;
-    }
-    @media (max-width:800px){
-      .stats-card{grid-template-columns:1fr}
-    }
-    .stats-header{
-      grid-column:1/-1;
-      display:flex;justify-content:space-between;align-items:center;
-      margin-bottom:6px;
-    }
-    .stats-title{
-      font-size:18px;
-      font-weight:800;
-      color:#fef3c7;
-      text-shadow:0 0 10px rgba(250,204,21,.4);
-    }
-    .stats-rarity{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      padding:4px 9px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.95);
-      color:#e5e7eb;
-    }
-    .stats-img{
-      width:100%;height:220px;
-      object-fit:contain;
-      filter:drop-shadow(0 10px 24px rgba(0,0,0,.8));
-    }
-    .stats-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:8px;
-      font-size:12px;
-    }
-    .stat-box{
-      border-radius:10px;
-      background:rgba(15,23,42,.95);
-      border:1px solid rgba(148,163,184,.6);
-      padding:8px;
-    }
-    .stat-label{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:var(--muted);
-      margin-bottom:3px;
-    }
-    .stat-value{
-      font-size:15px;
-      font-weight:700;
-    }
-    .stat-value.green{color:#4ade80}
-    .stat-value.red{color:#f97373}
-    .stat-value.gold{color:#facc15}
-    .stats-close{
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.95);
-      color:#e5e7eb;
-      padding:5px 10px;
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      cursor:pointer;
-    }
-  </style>
+/* Tabs */
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+.tab{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border-soft);
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:12px;
+  letter-spacing:.08em;
+  transition:var(--transition);
+}
+.tab[data-active="true"]{
+  background:linear-gradient(135deg,var(--accent),var(--accent-soft));
+  color:#111;
+  border-color:transparent;
+}
+
+/* Tier grid */
+.tier-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:12px;
+  margin-top:12px;
+}
+.tier-card{
+  padding:12px;
+  border-radius:var(--radius);
+  border:1px solid var(--border-soft);
+  background:var(--panel-glass);
+  backdrop-filter:blur(14px);
+  transition:var(--transition);
+}
+.tier-card:hover{
+  border-color:var(--accent-soft);
+  transform:translateY(-2px);
+}
+.tier-name{
+  font-size:14px;
+  font-weight:700;
+}
+.tier-img{
+  width:100%;
+  height:120px;
+  object-fit:contain;
+  margin-top:6px;
+}
+
+/* Modal */
+.stats-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(10px);
+  display:none;
+  place-items:center;
+}
+.stats-overlay[data-open="true"]{
+  display:grid;
+}
+.stats-card{
+  width:min(900px,90vw);
+  padding:20px;
+  border-radius:var(--radius);
+  border:1px solid var(--border-mid);
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(18px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+.stats-title{
+  font-size:20px;
+  font-weight:800;
+  color:var(--accent-soft);
+}
+.stats-img{
+  width:100%;
+  height:240px;
+  object-fit:contain;
+}
+.stats-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.stat-box{
+  background:var(--panel-soft);
+  border:1px solid var(--border-mid);
+  border-radius:var(--radius-sm);
+  padding:10px;
+}
+.stat-label{
+  font-size:12px;
+  color:var(--muted);
+}
+.stat-value{
+  font-size:18px;
+  font-weight:700;
+}
+.stats-close{
+  margin-top:10px;
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid var(--border-mid);
+  background:var(--panel-soft);
+  color:var(--text);
+  cursor:pointer;
+}
+</style>
 </head>
+
 <body>
-  <div class="page-bg"></div>
+<div class="page-bg"></div>
 
-  <header class="topbar">
-    <div class="top-inner">
-      <div class="brand">KILL<span>ADELPHIA</span></div>
-      <nav class="nav">
-        <a href="#spinner">Spinner</a>
-        <a href="#drops">Drops</a>
-        <a href="#tiers">Tiers</a>
-        <button class="btn-primary">Connect Server</button>
-      </nav>
+<header class="topbar">
+  <div class="top-inner">
+    <div class="brand">KILL<span>ADELPHIA</span></div>
+    <nav class="nav">
+      <a href="#spinner">Spinner</a>
+      <a href="#drops">Drops</a>
+      <a href="#tiers">Tiers</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-title">Contraband System</h1>
+    <p class="hero-sub">Spin. Pull. Track. Manage the illegal flow of Killadelphia’s underground economy.</p>
+    <div class="hero-actions">
+      <button class="btn-primary">Start Session</button>
+      <button class="btn-ghost">View Armory</button>
     </div>
-  </header>
+  </div>
+</section>
 
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-main">
-        <h1>Contraband System</h1>
-        <p>Spin the wheel, feed the streets, and track every illegal piece that flows through Killadelphia.</p>
-        <div class="hero-tags">
-          <span class="pill pill-accent">Live economy</span>
-          <span class="pill">Tiered weapon pools</span>
-          <span class="pill">Server‑bound drops</span>
-        </div>
-        <div class="hero-actions">
-          <button class="btn-primary">Start Spin Session</button>
-          <a href="#tiers" class="hero-secondary-link">
-            <span>⟲</span> View full armory
-          </a>
-        </div>
-      </div>
-      <aside class="hero-side">
-        <div class="hero-card">
-          <div class="hero-card-header">
-            <div class="hero-card-title">Session Snapshot</div>
-            <div class="hero-card-badge">Killadelphia • v2.0</div>
-          </div>
-          <div class="hero-card-body">
-            Track contraband pulls, rarity distribution, and server‑locked items in real time. Designed for serious RP economies.
-          </div>
-          <div class="hero-card-footer">
-            <span>Last update: <strong>Live</strong></span>
-            <span>Seed: <strong>#KD‑CONTRA</strong></span>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </section>
+<main class="wrap">
+  <div class="layout-main">
 
-  <main class="wrap">
-    <div class="layout-main">
-      <!-- Spinner / Controls -->
-      <section class="card" id="spinner">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Spin engine</div>
-            <div class="card-sub">Configure pool, then roll your contraband.</div>
-          </div>
-        </div>
+    <!-- Spinner -->
+    <section class="card" id="spinner">
+      <div class="card-title">Spin Engine</div>
+      <div class="card-sub">Configure your pool and roll.</div>
 
-        <div class="controls-row">
-          <div class="field">
-            <label for="tierSelect">Tier pool</label>
-            <select id="tierSelect">
-              <option>Tier 1 • Street heat</option>
-              <option>Tier 2 • Heavy hitters</option>
-              <option>Attachments only</option>
-              <option>Drugs & misc</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="modeSelect">Mode</label>
-            <select id="modeSelect">
-              <option>Single spin</option>
-              <option>10x batch</option>
-              <option>Streamer mode</option>
-            </select>
-          </div>
-          <button class="btn-ghost" type="button">
-            <span>🎲</span> Randomize
-          </button>
-          <button class="btn-primary" type="button">
-            Spin
-          </button>
-        </div>
-
-        <div class="spinner-shell">
-          <div class="spinner-strip" data-role="spinner-strip">
-            <!-- Example tiles (replace with dynamic content) -->
-            <div class="slot" data-rarity="common">
-              <img src="https://i.imgur.com/8QfQq0P.png" alt="Pistol" />
-              <div class="slot-label">9mm Beater</div>
-            </div>
-            <div class="slot" data-rarity="uncommon">
-              <img src="https://i.imgur.com/8QfQq0P.png" alt="SMG" />
-              <div class="slot-label">Back‑alley SMG</div>
-            </div>
-            <div class="slot" data-rarity="rare">
-              <img src="https://i.imgur.com/8QfQq0P.png" alt="Rifle" />
-              <div class="slot-label">Cut‑down AR</div>
-            </div>
-            <div class="slot" data-rarity="epic">
-              <img src="https://i.imgur.com/8QfQq0P.png" alt="Shotgun" />
-              <div class="slot-label">Trench Sweeper</div>
-            </div>
-            <div class="slot" data-rarity="legendary">
-              <img src="https://i.imgur.com/8QfQq0P.png" alt="Legendary" />
-              <div class="slot-label">Golden Line</div>
-            </div>
-          </div>
-          <div class="cut-line"></div>
-        </div>
-
-        <div class="spinner-footer">
-          <span>Hint: hook this strip to your server‑side RNG and log every pull.</span>
-          <span>Rarity colors: C / U / R / E / L</span>
-        </div>
-      </section>
-
-      <!-- Drops -->
-      <section class="card" id="drops">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Acquired items</div>
-            <div class="card-sub">Recent contraband pulled this session.</div>
-          </div>
-        </div>
-
-        <div class="drops-grid" data-role="drops-grid">
-          <!-- Example drop -->
-          <article class="drop-card">
-            <div class="drop-title">Line of Green</div>
-            <div class="drop-meta">Tier 2 • Rifle • Server‑locked</div>
-            <div class="drop-rarity" data-rarity="epic">Epic</div>
-            <img class="drop-img" src="https://i.imgur.com/8QfQq0P.png" alt="Line of Green" />
-            <div class="drop-badge">NEW PULL</div>
-          </article>
-
-          <article class="drop-card">
-            <div class="drop-title">Dirty .38</div>
-            <div class="drop-meta">Tier 1 • Sidearm</div>
-            <div class="drop-rarity" data-rarity="common">Common</div>
-            <img class="drop-img" src="https://i.imgur.com/8QfQq0P.png" alt="Dirty .38" />
-            <div class="drop-badge">LOGGED</div>
-          </article>
-        </div>
-      </section>
-    </div>
-
-    <!-- Tiers / Armory -->
-    <section class="card" id="tiers" style="margin-top:18px;">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Armory index</div>
-          <div class="card-sub">Browse every weapon, attachment, and illicit good by tier.</div>
-        </div>
+      <div class="controls-row">
+        <select>
+          <option>Tier 1</option>
+          <option>Tier 2</option>
+          <option>Attachments</option>
+          <option>Drugs</option>
+        </select>
+        <select>
+          <option>Single Spin</option>
+          <option>10x Batch</option>
+        </select>
+        <button class="btn-ghost">🎲 Randomize</button>
+        <button class="btn-primary">Spin</button>
       </div>
 
-      <div class="section-label">Category</div>
-      <div class="tabs">
-        <button class="tab" data-active="true" type="button">Tier 1 weaponry</button>
-        <button class="tab" type="button">Tier 2 weaponry</button>
-        <button class="tab" type="button">Attachments</button>
-        <button class="tab" type="button">Drugs & misc</button>
-      </div>
-
-      <div class="tier-grid" data-role="tier-grid">
-        <!-- Example tier cards -->
-        <article class="tier-card" data-rarity="common">
-          <div class="tier-name">Rusty 9mm</div>
-          <div class="tier-rarity">Tier 1 • Common</div>
-          <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png" alt="Rusty 9mm" />
-        </article>
-
-        <article class="tier-card" data-rarity="rare">
-          <div class="tier-name">Block King AR</div>
-          <div class="tier-rarity">Tier 1 • Rare</div>
-          <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png" alt="Block King AR" />
-        </article>
-
-        <article class="tier-card" data-rarity="legendary">
-          <div class="tier-name">Killadelphia Special</div>
-          <div class="tier-rarity">Tier 1 • Legendary</div>
-          <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png" alt="Killadelphia Special" />
-        </article>
+      <div class="spinner-shell">
+        <div class="spinner-strip">
+          <div class="slot">
+            <img src="https://i.imgur.com/8QfQq0P.png">
+            <div class="slot-label">9mm Beater</div>
+          </div>
+          <div class="slot">
+            <img src="https://i.imgur.com/8QfQq0P.png">
+            <div class="slot-label">Back‑alley SMG</div>
+          </div>
+          <div class="slot">
+            <img src="https://i.imgur.com/8QfQq0P.png">
+            <div class="slot-label">Cut‑down AR</div>
+          </div>
+        </div>
       </div>
     </section>
-  </main>
 
-  <!-- Stats modal (for clicking a tier card) -->
-  <div class="stats-overlay" data-role="stats-overlay" data-open="false">
-    <div class="stats-card">
-      <header class="stats-header">
-        <div class="stats-title" data-role="stats-name">Killadelphia Special</div>
-        <div class="stats-rarity" data-role="stats-rarity">Tier 1 • Legendary</div>
-      </header>
-      <div>
-        <img class="stats-img" src="https://i.imgur.com/8QfQq0P.png" alt="" data-role="stats-img" />
+    <!-- Drops -->
+    <section class="card" id="drops">
+      <div class="card-title">Acquired Items</div>
+      <div class="card-sub">Recent pulls.</div>
+
+      <div class="drops-grid">
+        <div class="drop-card">
+          <div class="drop-title">Line of Green</div>
+          <div class="drop-meta">Tier 2 • Epic</div>
+          <img class="drop-img" src="https://i.imgur.com/8QfQq0P.png">
+        </div>
+
+        <div class="drop-card">
+          <div class="drop-title">Dirty .38</div>
+          <div class="drop-meta">Tier 1 • Common</div>
+          <img class="drop-img" src="https://i.imgur.com/8QfQq0P.png">
+        </div>
       </div>
+    </section>
+
+  </div>
+
+  <!-- Tiers -->
+  <section class="card" id="tiers" style="margin-top:20px;">
+    <div class="card-title">Armory Index</div>
+    <div class="card-sub">Browse all contraband.</div>
+
+    <div class="tabs">
+      <button class="tab" data-active="true">Tier 1</button>
+      <button class="tab">Tier 2</button>
+      <button class="tab">Attachments</button>
+      <button class="tab">Drugs</button>
+    </div>
+
+    <div class="tier-grid">
+      <div class="tier-card">
+        <div class="tier-name">Rusty 9mm</div>
+        <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png">
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-name">Block King AR</div>
+        <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png">
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-name">Killadelphia Special</div>
+        <img class="tier-img" src="https://i.imgur.com/8QfQq0P.png">
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Modal -->
+<div class="stats-overlay" data-open="false">
+  <div class="stats-card">
+    <div>
+      <h2 class="stats-title">Killadelphia Special</h2>
+      <img class="stats-img" src="https://i.imgur.com/8QfQq0P.png">
+    </div>
+
+    <div>
       <div class="stats-grid">
         <div class="stat-box">
           <div class="stat-label">Damage</div>
-          <div class="stat-value gold" data-role="stats-dmg">92</div>
+          <div class="stat-value">92</div>
         </div>
         <div class="stat-box">
           <div class="stat-label">Recoil</div>
-          <div class="stat-value red" data-role="stats-recoil">High</div>
+          <div class="stat-value">High</div>
         </div>
         <div class="stat-box">
           <div class="stat-label">Control</div>
-          <div class="stat-value green" data-role="stats-control">Strong</div>
+          <div class="stat-value">Strong</div>
         </div>
         <div class="stat-box">
-          <div class="stat-label">Street value</div>
-          <div class="stat-value gold" data-role="stats-value">$85,000</div>
+          <div class="stat-label">Street Value</div>
+          <div class="stat-value">$85,000</div>
         </div>
       </div>
-      <div style="grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:10px;">
-        <button class="stats-close" type="button" data-role="stats-close">Close</button>
-      </div>
+
+      <button class="stats-close">Close</button>
     </div>
   </div>
+</div>
 
-  <div class="watermark">
-    KILLADELPHIA • CONTRABAND SYSTEM
-  </div>
+<script>
+document.querySelectorAll('.tier-card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    document.querySelector('.stats-overlay').dataset.open = "true";
+  });
+});
+document.querySelector('.stats-close').addEventListener('click',()=>{
+  document.querySelector('.stats-overlay').dataset.open = "false";
+});
+</script>
 
-  <!-- Optional: tiny JS hook example (no logic, just modal toggle) -->
-  <script>
-    const overlay = document.querySelector('[data-role="stats-overlay"]');
-    const closeBtn = document.querySelector('[data-role="stats-close"]');
-    document.querySelectorAll('.tier-card').forEach(card=>{
-      card.addEventListener('click',()=>{
-        overlay.dataset.open = 'true';
-      });
-    });
-    closeBtn.addEventListener('click',()=>overlay.dataset.open='false');
-    overlay.addEventListener('click',e=>{
-      if(e.target === overlay) overlay.dataset.open='false';
-    });
-  </script>
 </body>
 </html>
