@@ -5,541 +5,465 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Killadelphia's Contraband System</title>
 
-<!-- Fonts: Oswald for headings, Rajdhani for body, Great Vibes for accents -->
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Rajdhani:wght@500;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    /* Palette sampled from the logo */
-    --bg: #020409;       /* very dark / near black */
-    --accent: #0b4b63;   /* deep navy ring */
-    --accent-2: #2aa6dd; /* bright cyan rim / highlight */
-    --text: #cfe7ee;     /* frosted / icy text */
-    --muted: #6e8a94;    /* muted blue-gray */
-
-    /* Fonts */
+    --bg:#020409;
+    --accent:#0b4b63;
+    --accent-2:#2aa6dd;
+    --text:#cfe7ee;
+    --muted:#6e8a94;
     --font-body: "Rajdhani", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-heading: "Oswald", "Rajdhani", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-heading: "Oswald", var(--font-body);
     --font-accent: "Great Vibes", cursive;
   }
-
-  *{box-sizing:border-box; margin:0; padding:0}
-  html,body{ height:100%; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
   body{
-    background: var(--bg);
+    background:var(--bg);
     color:var(--text);
-    font-family: var(--font-body);
-    font-weight: 500;
-    line-height: 1.4;
-    min-height:100vh;
+    font-family:var(--font-body);
+    line-height:1.4;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
   }
 
-  .page-bg{
-    position:fixed; inset:0; z-index:-1;
-    background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat;
-    background-blend-mode: multiply;
-    filter: blur(14px) saturate(1.05); opacity:.22;
-  }
+  /* Topbar */
+  .topbar{position:sticky;top:0;background:linear-gradient(180deg,rgba(2,4,9,.92),rgba(2,4,9,.98));border-bottom:1px solid rgba(42,166,221,.12);backdrop-filter:blur(10px);z-index:1000}
+  .top-inner{max-width:1280px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:18px;justify-content:space-between}
+  .brand{font-family:var(--font-heading);font-weight:800;color:var(--text);display:flex;align-items:center;gap:10px}
+  .brand .accent{font-family:var(--font-accent);color:var(--accent-2);font-weight:400}
 
-  /* Top Navigation */
-  .topbar {
-    position: sticky; top: 0; z-index: 100;
-    background: linear-gradient(180deg, rgba(2,4,9,0.92), rgba(2,4,9,0.98));
-    border-bottom: 1px solid rgba(42,166,221,0.12); /* subtle cyan line */
-    backdrop-filter: blur(12px);
-  }
-  .top-inner {
-    max-width: 1280px; margin: 0 auto; padding: 12px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 18px;
-  }
-  .brand {
-    font-size: 28px;
-    font-weight: 800;
-    color:var(--text);
-    font-family: var(--font-heading);
-    display:flex; align-items:center; gap:12px;
-  }
-  .brand .accent {
-    color: var(--accent-2);
-    font-family: var(--font-accent);
-    font-weight: 400;
-  }
+  .nav{display:flex;gap:24px;align-items:center;flex:1}
+  .nav-link{color:#bcdbe6;text-decoration:none;position:relative;padding:6px 2px;font-family:var(--font-heading);font-weight:600}
+  .nav-link:hover{color:var(--accent-2)}
+  .nav-link.active{color:var(--text)}
+  .nav-link.active::after{content:'';position:absolute;left:0;bottom:-6px;width:100%;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:2px}
 
-  .nav { display: flex; gap: 28px; font-size: 16px; font-weight: 600; flex: 1 1 auto; align-items:center; }
-  .nav-link {
-    color: #bcdbe6; text-decoration: none; position: relative; padding:6px 2px;
-    transition: color .15s ease;
-    font-family: var(--font-heading);
-  }
-  .nav-link:hover { color: var(--accent-2); }
-  .nav-link.active {
-    color: var(--text);
-  }
-  .nav-link.active::after {
-    content: ''; position: absolute; bottom: -6px; left: 0;
-    width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    border-radius: 2px;
-  }
+  /* logo at right */
+  .brand-logo{width:56px;height:56px;object-fit:contain;opacity:.78;transition:opacity .18s,transform .18s;filter:drop-shadow(0 10px 20px rgba(42,166,221,.06));border-radius:8px}
+  .brand-logo:hover{opacity:1;transform:translateY(-2px) scale(1.02)}
 
-  /* CHI logo placed where the Buy Credits button used to be */
-  .brand-logo {
-    width: 56px;
-    height: 56px;
-    object-fit: contain;
-    opacity: 0.78;                 /* faded a bit by default */
-    transition: opacity .18s ease, transform .18s ease;
-    filter: drop-shadow(0 8px 22px rgba(42,166,221,0.06));
-    border-radius: 10px;
-    background: transparent;
-  }
-  .brand-logo:hover {
-    opacity: 1;
-    transform: translateY(-2px) scale(1.02);
-  }
+  .wrap{max-width:1280px;margin:36px auto;padding:0 20px}
+  .main-view{display:none;padding:30px 0}
+  .main-view.active{display:block}
+  h2{font-family:var(--font-heading);font-weight:700;color:var(--text);text-shadow:0 2px 12px rgba(10,20,28,.6)}
+  p{color:var(--muted)}
 
-  /* layout */
-  .wrap { max-width:1280px; margin: 36px auto; padding: 0 20px; }
+  /* sneak cards layout */
+  .sneak-wrapper{padding:16px;border-radius:10px;border:1px solid rgba(42,166,221,.06);box-shadow:0 8px 40px rgba(0,0,0,.7),inset 0 0 40px rgba(42,166,221,.03);background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.02))}
+  .sneak-container{display:grid;gap:20px}
+  .sneak-top{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .sneak-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:10px}
 
-  .main-view { display: none; padding: 30px 20px; color:var(--text); }
-  .main-view.active { display: block; }
+  .card{background:linear-gradient(180deg,rgba(3,6,10,.75),rgba(5,10,15,.6));border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.03);box-shadow:0 6px 30px rgba(0,0,0,.7);transition:transform .18s,box-shadow .18s;position:relative}
+  .card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(0,0,0,.75),0 0 30px rgba(42,166,221,.12),0 0 60px rgba(42,166,221,.06)}
+  .card-media{height:220px;background-size:cover;background-position:center;position:relative}
+  .card-media::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.55));mix-blend-mode:multiply}
+  .card-media::before{content:'';position:absolute;inset:4px;border-radius:6px;box-shadow:inset 0 0 18px rgba(42,166,221,.08)}
+  .card-body{padding:14px 16px}
+  .card-title{font-family:var(--font-heading);font-weight:700;margin-bottom:8px;font-size:18px;color:var(--text)}
+  .card-excerpt{color:var(--muted);font-size:13px;line-height:1.45;max-height:3.6em;overflow:hidden;text-overflow:ellipsis}
+  .card-meta{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:rgba(207,231,238,.75);justify-content:space-between}
+  .meta-left{display:flex;align-items:center;gap:8px}
+  .author-avatar{width:20px;height:20px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.05)}
+  .view-link{color:var(--accent-2);font-weight:700;text-decoration:none;font-size:13px;cursor:pointer}
 
-  h2 { color: var(--text); text-shadow: 0 2px 12px rgba(10,20,28,0.6); font-family:var(--font-heading); }
-  p { color: var(--muted); }
+  .small-card .card-media{height:140px}
+  .small-card .card-body{padding:12px}
+  .small-card .card-title{font-size:15px}
 
-  /* --- SNEAK PEEKS styles (cards + glow) --- */
-  .sneak-wrapper{
-    padding: 16px;
-    border-radius: 10px;
-    border: 1px solid rgba(42,166,221,0.06);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 0 40px rgba(42,166,221,0.03) inset;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-  }
+  @media (max-width:980px){.sneak-top{grid-template-columns:1fr}.sneak-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:540px){.sneak-grid{grid-template-columns:1fr}.brand-logo{display:none}}
 
-  .sneak-container { display:grid; gap:20px; }
+  /* modal (article popup) */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,4,9,.65);z-index:2200}
+  .modal.open{display:flex}
+  .modal-dialog{width:min(920px,94%);max-height:86vh;overflow:auto;background:linear-gradient(180deg,rgba(3,6,10,.95),rgba(5,10,15,.98));border-radius:10px;padding:20px;border:1px solid rgba(42,166,221,.06);box-shadow:0 18px 80px rgba(0,0,0,.8)}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .modal-title{font-family:var(--font-heading);font-size:20px;color:var(--text)}
+  .modal-body{margin-top:12px;color:var(--text);line-height:1.6}
+  .modal-image{width:100%;height:320px;background-size:cover;background-position:center;border-radius:8px;overflow:hidden}
 
-  .sneak-top { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .close-btn{background:transparent;border:0;color:var(--muted);font-weight:700;cursor:pointer;font-size:16px}
 
-  .card {
-    background: linear-gradient(180deg, rgba(3,6,10,0.75), rgba(5,10,15,0.6));
-    border-radius: 8px;
-    overflow: hidden;
-    color: var(--text);
-    border: 1px solid rgba(255,255,255,0.03);
-    box-shadow:
-      0 6px 30px rgba(0,0,0,0.7),
-      0 0 0 1px rgba(42,166,221,0.02) inset;
-    transition: transform .18s ease, box-shadow .18s ease;
-    position: relative;
-  }
-
-  .card:hover {
-    transform: translateY(-6px);
-    box-shadow:
-      0 12px 40px rgba(0,0,0,0.75),
-      0 0 30px rgba(42,166,221,0.12),
-      0 0 60px rgba(42,166,221,0.06);
-  }
-
-  .card-media {
-    height: 220px;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-  }
-
-  .card-media::after{
-    content:'';
-    position:absolute; inset:0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.55));
-    mix-blend-mode: multiply;
-    pointer-events:none;
-  }
-  .card-media::before {
-    /* inner neon rim */
-    content:'';
-    position:absolute; inset:4px;
-    border-radius:6px;
-    box-shadow: 0 0 18px rgba(42,166,221,0.08) inset;
-    pointer-events:none;
-  }
-
-  .card-body {
-    padding: 14px 16px;
-  }
-
-  .card-title {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    margin-bottom: 8px;
-    font-size: 18px;
-    color: var(--text);
-  }
-
-  .card-excerpt {
-    color: var(--muted);
-    font-size: 13px;
-    line-height:1.45;
-    max-height: 3.6em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .card-meta {
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-top:12px;
-    font-size:12px;
-    color: rgba(207,231,238,0.75);
-    justify-content: space-between;
-  }
-
-  .meta-left {
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-
-  .meta-left img.author-avatar {
-    width:20px;
-    height:20px;
-    border-radius:50%;
-    object-fit:cover;
-    border:1px solid rgba(255,255,255,0.05);
-  }
-
-  .view-link {
-    color: var(--accent-2);
-    font-weight:700;
-    text-decoration:none;
-    font-size:13px;
-  }
-
-  .sneak-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-top: 10px;
-  }
-
-  .small-card .card-media { height: 140px; }
-  .small-card .card-body { padding:12px; }
-  .small-card .card-title { font-size:15px; }
-
-  /* responsive */
-  @media (max-width: 980px) {
-    .sneak-top { grid-template-columns: 1fr; }
-    .sneak-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 540px) {
-    .sneak-grid { grid-template-columns: 1fr; }
-  }
-
-  .badge {
-    display:inline-block;
-    padding:6px 10px;
-    background: linear-gradient(90deg, rgba(11,75,99,0.9), rgba(42,166,221,0.12));
-    color:var(--text);
-    border-radius:6px;
-    font-size:13px;
-    font-weight:700;
-    box-shadow: 0 6px 18px rgba(42,166,221,0.04);
-  }
+  /* edit UI (hidden by default) */
+  .edit-toggle{position:fixed;left:20px;bottom:20px;z-index:3000;background:linear-gradient(180deg,rgba(42,166,221,.12),rgba(42,166,221,.06));border-radius:10px;padding:8px 12px;border:1px solid rgba(42,166,221,.12);color:var(--text);cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+  .edit-controls{position:fixed;left:20px;bottom:72px;z-index:3000;display:none;flex-direction:column;gap:8px}
+  .edit-controls button{padding:8px 10px;border-radius:8px;border:0;background:var(--accent-2);color:#001;padding:6px 10px;cursor:pointer;font-weight:700}
+  .editing .card{outline:2px dashed rgba(42,166,221,.12)}
+  .editing .editable{outline:2px dashed rgba(42,166,221,.18);background:linear-gradient(90deg, rgba(42,166,221,.01), transparent)}
 
   /* clock */
-  .clock {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 1200;
-    background: linear-gradient(180deg, rgba(2,6,10,0.9), rgba(2,6,10,0.75));
-    color: var(--text);
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-size: 13px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 18px rgba(42,166,221,0.06);
-    border: 1px solid rgba(42,166,221,0.06);
-    text-align: right;
-    min-width: 140px;
-  }
-  .clock .time { display:block; font-weight:700; font-size:14px; }
-  .clock .date { display:block; color:var(--muted); font-size:12px; margin-top:4px; }
-
-  /* hide the music-player UI because user wants hidden music */
-  .music-player { display:none; }
+  .clock{position:fixed;right:20px;bottom:20px;z-index:3000;background:linear-gradient(180deg,rgba(2,6,10,.95),rgba(2,6,10,.8));color:var(--text);padding:10px 14px;border-radius:10px;font-family:var(--font-body);font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.6);border:1px solid rgba(42,166,221,.06);text-align:right;min-width:150px}
+  .clock .time{display:block;font-weight:700;font-size:14px}
+  .clock .date{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 </style>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-<div class="page-bg"></div>
+  <div class="page-bg" aria-hidden="true"></div>
 
-<div class="topbar">
-  <div class="top-inner">
-    <div class="brand">
-      Killadelphia <span class="accent">Contraband</span>
+  <header class="topbar">
+    <div class="top-inner">
+      <div class="brand">Killadelphia <span class="accent">Contraband</span></div>
+
+      <nav class="nav" role="tablist" aria-label="Primary navigation">
+        <a href="#" class="nav-link active" id="navHome" role="tab" aria-controls="homeView">Home</a>
+        <a href="#" class="nav-link" id="navShop" role="tab" aria-controls="shopView">Shop</a>
+        <a href="#" class="nav-link" id="navStreamers" role="tab" aria-controls="streamersView">Streamers</a>
+        <a href="#" class="nav-link" id="navSneak" role="tab" aria-controls="sneakView">Sneak Peeks</a>
+        <a href="#" class="nav-link" id="navRules" role="tab" aria-controls="rulesView">Rules</a>
+      </nav>
+
+      <!-- CHI logo: using the Imgur direct image (replace if needed) -->
+      <img class="brand-logo" src="https://i.imgur.com/y94qdND.png" alt="CHI Cinematic Roleplay logo">
     </div>
+  </header>
 
-    <div class="nav" role="tablist" aria-label="Primary">
-      <a href="#" class="nav-link active" id="navHome" role="tab" aria-selected="true" aria-controls="homeView">Home</a>
-      <a href="#" class="nav-link" id="navShop" role="tab" aria-selected="false" aria-controls="shopView">Shop</a>
-      <a href="#" class="nav-link" id="navStreamers" role="tab" aria-selected="false" aria-controls="streamersView">Streamers</a>
-      <a href="#" class="nav-link" id="navSneak" role="tab" aria-selected="false" aria-controls="sneakView">Sneak Peeks</a>
-      <a href="#" class="nav-link" id="navRules" role="tab" aria-selected="false" aria-controls="rulesView">Rules</a>
-    </div>
+  <main class="wrap">
+    <!-- Home -->
+    <section id="homeView" class="main-view active" role="tabpanel" aria-labelledby="navHome">
+      <h2>Welcome to the Contraband System</h2>
+      <p><strong>Click Spin!</strong> to test. Your full spinner code goes here.</p>
+    </section>
 
-    <!-- CHI logo (user-provided Imgur) - placed to the right, faint/faded -->
-    <!-- Direct Imgur image URL (album id used as filename) -->
-    <img class="brand-logo" src="https://i.imgur.com/y94qdND.png" alt="CHI Cinematic Roleplay logo" />
-  </div>
-</div>
+    <!-- Shop -->
+    <section id="shopView" class="main-view" role="tabpanel" aria-labelledby="navShop">
+      <h2>Shop</h2><p>Credit store and packages coming soon.</p>
+    </section>
 
-<div class="wrap">
-  <!-- HOME VIEW -->
-  <div id="homeView" class="main-view active" role="tabpanel" tabindex="0" aria-labelledby="navHome">
-    <h2>Welcome to the Contraband System</h2>
-    <p><strong>Click Spin!</strong> to test. Your full spinner code goes here.</p>
-  </div>
+    <!-- Streamers -->
+    <section id="streamersView" class="main-view" role="tabpanel" aria-labelledby="navStreamers">
+      <h2>Streamers</h2><p>Featured streamers will be listed here.</p>
+    </section>
 
-  <!-- SHOP -->
-  <div id="shopView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navShop">
-    <h2>Shop</h2>
-    <p>Credit store and packages coming soon.</p>
-  </div>
-
-  <!-- STREAMERS -->
-  <div id="streamersView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navStreamers">
-    <h2>Streamers</h2>
-    <p>Featured streamers will be listed here.</p>
-  </div>
-
-  <!-- SNEAK PEEKS (boxed layout with glow) -->
-  <div id="sneakView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navSneak">
-    <div class="sneak-wrapper">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <h2 style="margin:0;font-family:var(--font-heading);">Sneak Peeks</h2>
-        <div class="badge">Latest</div>
-      </div>
-
-      <div class="sneak-container">
-        <!-- Top featured pair -->
-        <div class="sneak-top">
-          <article class="card">
-            <div class="card-media" style="background-image: url('https://i.imgur.com/9QfK6gX.jpg');"></div>
-            <div class="card-body">
-              <div class="card-title">Do Not Disturb</div>
-              <div class="card-excerpt">Hello everyone, 🌞 It's been almost a year since the server has been out. We're thankful for everyone that has shown love to our community...</div>
-              <div class="card-meta">
-                <div class="meta-left">
-                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=12" alt="avatar">
-                  <div style="font-size:13px;color:var(--muted)">By Los Scandalous • Jul 22, 2022</div>
-                </div>
-                <a href="#" class="view-link">View full article →</a>
-              </div>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-media" style="background-image: url('https://i.imgur.com/3nXr4sF.jpg');"></div>
-            <div class="card-body">
-              <div class="card-title">June Update</div>
-              <div class="card-excerpt">Hello everyone, ☀️ It's been six months since the last time we had addressed a bunch of updates and things to the community. We've been growing...</div>
-              <div class="card-meta">
-                <div class="meta-left">
-                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=5" alt="avatar">
-                  <div style="font-size:13px;color:var(--muted)">By Los Scandalous • Jun 10, 2022</div>
-                </div>
-                <a href="#" class="view-link">View full article →</a>
-              </div>
-            </div>
-          </article>
+    <!-- Sneak Peeks (boxed) -->
+    <section id="sneakView" class="main-view" role="tabpanel" aria-labelledby="navSneak">
+      <div class="sneak-wrapper">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h2 style="margin:0">Sneak Peeks</h2>
+          <div class="badge">Latest</div>
         </div>
 
-        <!-- smaller grid posts below -->
-        <div class="sneak-grid">
-          <article class="card small-card">
-            <div class="card-media" style="background-image: url('https://i.imgur.com/J8Yz2tC.jpg');"></div>
-            <div class="card-body">
-              <div class="card-title">December Update</div>
-              <div class="card-excerpt">It's crazy to believe that it's only been three months since the server launched. Since the launch we've grown as a community...</div>
-              <div class="card-meta">
-                <div class="meta-left">
-                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=18" alt="avatar">
-                  <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Dec 04, 2021</div>
+        <div class="sneak-container" id="sneakContainer">
+          <div class="sneak-top">
+            <!-- Featured 1 -->
+            <article class="card" data-id="1">
+              <div class="card-media" style="background-image:url('https://i.imgur.com/9QfK6gX.jpg');"></div>
+              <div class="card-body">
+                <div class="card-title editable" data-field="title">Do Not Disturb</div>
+                <div class="card-excerpt editable" data-field="excerpt">Hello everyone, 🌞 It's been almost a year... we're thankful for everyone that has shown love to our community.</div>
+                <div class="card-meta">
+                  <div class="meta-left">
+                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=12" alt="">
+                    <div style="font-size:13px;color:var(--muted)">By Los Scandalous • Jul 22, 2022</div>
+                  </div>
+                  <div>
+                    <a class="view-link" data-id="1">View full article →</a>
+                  </div>
                 </div>
-                <a href="#" class="view-link">View →</a>
+                <div class="full-article" style="display:none">
+                  <h3>Do Not Disturb</h3>
+                  <p>Full article content for "Do Not Disturb" goes here. You can edit this in edit mode.</p>
+                </div>
               </div>
-            </div>
-          </article>
+            </article>
 
-          <article class="card small-card">
-            <div class="card-media" style="background-image: url('https://i.imgur.com/0m6zq0H.jpg');"></div>
-            <div class="card-body">
-              <div class="card-title">Thank Us Later</div>
-              <div class="card-excerpt">With the official release of the server fast approaching, management wanted to close the beta by giving you an update on the future...</div>
-              <div class="card-meta">
-                <div class="meta-left">
-                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=34" alt="avatar">
-                  <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Oct 21, 2021</div>
+            <!-- Featured 2 -->
+            <article class="card" data-id="2">
+              <div class="card-media" style="background-image:url('https://i.imgur.com/3nXr4sF.jpg');"></div>
+              <div class="card-body">
+                <div class="card-title editable" data-field="title">June Update</div>
+                <div class="card-excerpt editable" data-field="excerpt">Hello everyone, ☀️ It's been six months since the last update... we've been growing.</div>
+                <div class="card-meta">
+                  <div class="meta-left">
+                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=5" alt="">
+                    <div style="font-size:13px;color:var(--muted)">By Los Scandalous • Jun 10, 2022</div>
+                  </div>
+                  <div><a class="view-link" data-id="2">View full article →</a></div>
                 </div>
-                <a href="#" class="view-link">View →</a>
+                <div class="full-article" style="display:none">
+                  <h3>June Update</h3>
+                  <p>Full article content for "June Update" goes here.</p>
+                </div>
               </div>
-            </div>
-          </article>
+            </article>
+          </div>
 
-          <article class="card small-card">
-            <div class="card-media" style="background-image: url('https://i.imgur.com/GTJjWbE.jpg');"></div>
-            <div class="card-body">
-              <div class="card-title">Two Birds One Stone</div>
-              <div class="card-excerpt">With version three almost complete we as management thought it would be time to let you all know the direction we're moving in...</div>
-              <div class="card-meta">
-                <div class="meta-left">
-                  <img class="author-avatar" src="https://i.pravatar.cc/40?img=9" alt="avatar">
-                  <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Sep 12, 2021</div>
+          <div class="sneak-grid">
+            <!-- small 1 -->
+            <article class="card small-card" data-id="3">
+              <div class="card-media" style="background-image:url('https://i.imgur.com/J8Yz2tC.jpg');"></div>
+              <div class="card-body">
+                <div class="card-title editable" data-field="title">December Update</div>
+                <div class="card-excerpt editable" data-field="excerpt">It's crazy to believe that it's only been three months since the server launched...</div>
+                <div class="card-meta">
+                  <div class="meta-left">
+                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=18" alt="">
+                    <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Dec 04, 2021</div>
+                  </div>
+                  <div><a class="view-link" data-id="3">View →</a></div>
                 </div>
-                <a href="#" class="view-link">View →</a>
+                <div class="full-article" style="display:none"><h3>December Update</h3><p>Full December update text.</p></div>
               </div>
-            </div>
-          </article>
+            </article>
+
+            <!-- small 2 -->
+            <article class="card small-card" data-id="4">
+              <div class="card-media" style="background-image:url('https://i.imgur.com/0m6zq0H.jpg');"></div>
+              <div class="card-body">
+                <div class="card-title editable" data-field="title">Thank Us Later</div>
+                <div class="card-excerpt editable" data-field="excerpt">With the official release of the server fast approaching, management wanted to close the beta...</div>
+                <div class="card-meta">
+                  <div class="meta-left">
+                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=34" alt="">
+                    <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Oct 21, 2021</div>
+                  </div>
+                  <div><a class="view-link" data-id="4">View →</a></div>
+                </div>
+                <div class="full-article" style="display:none"><h3>Thank Us Later</h3><p>Full text for Thank Us Later.</p></div>
+              </div>
+            </article>
+
+            <!-- small 3 -->
+            <article class="card small-card" data-id="5">
+              <div class="card-media" style="background-image:url('https://i.imgur.com/GTJjWbE.jpg');"></div>
+              <div class="card-body">
+                <div class="card-title editable" data-field="title">Two Birds One Stone</div>
+                <div class="card-excerpt editable" data-field="excerpt">With version three almost complete we as management thought it would be time to let you all know...</div>
+                <div class="card-meta">
+                  <div class="meta-left">
+                    <img class="author-avatar" src="https://i.pravatar.cc/40?img=9" alt="">
+                    <div style="font-size:12px;color:var(--muted)">By Los Scandalous • Sep 12, 2021</div>
+                  </div>
+                  <div><a class="view-link" data-id="5">View →</a></div>
+                </div>
+                <div class="full-article" style="display:none"><h3>Two Birds One Stone</h3><p>Full text for Two Birds One Stone.</p></div>
+              </div>
+            </article>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Rules -->
+    <section id="rulesView" class="main-view" role="tabpanel" aria-labelledby="navRules">
+      <h2>Rules</h2><p>Contraband rules will be posted here.</p>
+    </section>
+  </main>
+
+  <!-- Article Modal (popups full article) -->
+  <div id="articleModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Article</div>
+        <button class="close-btn" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="modalImage" class="modal-image" style="display:none"></div>
+        <div id="modalContent" style="margin-top:12px;color:var(--text)"></div>
       </div>
     </div>
   </div>
 
-  <!-- RULES -->
-  <div id="rulesView" class="main-view" role="tabpanel" tabindex="0" aria-labelledby="navRules">
-    <h2>Rules</h2>
-    <p>Contraband rules will be posted here.</p>
+  <!-- Edit toggle & controls (edits are local only, stored in localStorage) -->
+  <button id="editToggle" class="edit-toggle" title="Enter/Exit edit mode (Ctrl+Shift+E)">Edit (Ctrl+Shift+E)</button>
+  <div id="editControls" class="edit-controls" aria-hidden="true">
+    <button id="saveDraft">Save Draft (local)</button>
+    <button id="clearDraft">Clear Draft</button>
+    <button id="exportJSON">Export JSON</button>
+    <button id="importJSONBtn">Import JSON</button>
   </div>
-</div>
 
-<!-- Hidden music (autoplay after user gesture) retained but UI hidden per request -->
-<div id="yt-audio" style="width:0;height:0;overflow:hidden;position:fixed;left:-9999px" aria-hidden="true">
-  <div id="yt-player"></div>
-</div>
+  <!-- Clock (bottom-right) -->
+  <div id="clock" class="clock" aria-live="polite">
+    <span class="time" id="clock-time">--:--:--</span>
+    <span class="date" id="clock-date">Loading date...</span>
+  </div>
 
-<!-- clock -->
-<div id="clock" class="clock" aria-live="polite">
-  <span class="time" id="clock-time">--:--:--</span>
-  <span class="date" id="clock-date">Loading date...</span>
-</div>
-
-<!-- YouTube IFrame API -->
-<script src="https://www.youtube.com/iframe_api"></script>
+  <!-- Hidden YouTube audio placeholder (kept hidden) -->
+  <div id="yt-audio" aria-hidden="true" style="width:0;height:0;overflow:hidden;position:fixed;left:-9999px;top:-9999px"><div id="yt-player"></div></div>
 
 <script>
-// --- Music player (hidden) ---
-const playlist = [
-  "NyRbZVl4P6s", "yflFa6undWk", "uSHHqS8HZhs",
-  "z4PndMZNUX8", "8e80zDhTONc", "VvItaijf80Y"
-];
-
-let current = 0;
-let player = null;
-let playerReady = false;
-const desiredVolume = 20; // low volume 0-100
-
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('yt-player', {
-    height: '0',
-    width: '0',
-    videoId: playlist[current],
-    playerVars: {
-      rel: 0,
-      controls: 0,
-      modestbranding: 1,
-      disablekb: 1,
-      iv_load_policy: 3
-    },
-    events: {
-      onReady: (e) => {
-        playerReady = true;
-        try { player.setVolume(desiredVolume); } catch (err) {}
-      },
-      onStateChange: (e) => {
-        if (e.data === YT.PlayerState.ENDED) {
-          current = (current + 1) % playlist.length;
-          player.loadVideoById(playlist[current]);
-          setTimeout(() => { try { player.setVolume(desiredVolume); } catch (err){} }, 200);
-          updateNowPlaying();
-        }
-      }
-    }
-  });
-}
-
-function updateNowPlaying() {
-  // kept intentionally minimal since UI is hidden
-}
-
-// Start playback after first user gesture
-document.addEventListener('click', function handler() {
-  if (playerReady && player) {
-    try {
-      player.setVolume(desiredVolume);
-      player.playVideo();
-    } catch (err) { /* ignore */ }
-  } else {
-    const onReadyOnce = setInterval(() => {
-      if (playerReady && player) {
-        try {
-          player.setVolume(desiredVolume);
-          player.playVideo();
-        } catch (err) {}
-        clearInterval(onReadyOnce);
-      }
-    }, 200);
-  }
-  document.removeEventListener('click', handler);
-}, { once: true });
-
-
-// --- Tab System (maps nav IDs to view IDs) ---
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', function(e) {
+/* -----------------------
+  Tabs
+------------------------*/
+document.querySelectorAll('.nav-link').forEach(link=>{
+  link.addEventListener('click', e=>{
     e.preventDefault();
-
-    document.querySelectorAll('.nav-link').forEach(l => {
-      l.classList.remove('active');
-      l.setAttribute('aria-selected', 'false');
-    });
-    this.classList.add('active');
-    this.setAttribute('aria-selected', 'true');
-
-    document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
-    const raw = this.id.replace('nav', '');
-    const viewId = raw.charAt(0).toLowerCase() + raw.slice(1) + 'View';
+    document.querySelectorAll('.nav-link').forEach(l=>{ l.classList.remove('active'); l.setAttribute('aria-selected','false'); });
+    link.classList.add('active'); link.setAttribute('aria-selected','true');
+    document.querySelectorAll('.main-view').forEach(v=>v.classList.remove('active'));
+    const viewId = link.id.replace('nav','').replace(/^./,c=>c.toLowerCase()) + 'View';
     const view = document.getElementById(viewId);
-    if (view) view.classList.add('active');
+    if(view) view.classList.add('active');
   });
 });
 
+/* -----------------------
+  Article modal (popup)
+  - Full article contents are stored inside each article's .full-article element (hidden).
+  - Clicking "View full article" will open the modal and show the content.
+------------------------*/
+const modal = document.getElementById('articleModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalContent = document.getElementById('modalContent');
+const modalImage = document.getElementById('modalImage');
+const modalClose = document.getElementById('modalClose');
 
-// --- Clock (time + date) ---
-function updateClock() {
-  const d = new Date();
-  // time: HH:MM:SS
-  const timeEl = document.getElementById('clock-time');
-  const dateEl = document.getElementById('clock-date');
+document.querySelectorAll('.view-link').forEach(a=>{
+  a.addEventListener('click', e=>{
+    e.preventDefault();
+    const id = a.getAttribute('data-id');
+    const article = document.querySelector('.card[data-id="'+id+'"]');
+    if(!article) return;
+    const title = article.querySelector('.card-title')?.textContent || '';
+    const full = article.querySelector('.full-article');
+    const imgStyle = article.querySelector('.card-media')?.style.backgroundImage || '';
+    modalTitle.textContent = title;
+    modalContent.innerHTML = full ? full.innerHTML : '<p>No content</p>';
+    if(imgStyle){
+      modalImage.style.display = 'block';
+      modalImage.style.backgroundImage = imgStyle;
+    } else {
+      modalImage.style.display = 'none';
+    }
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    // trap focus (simple)
+    modalClose.focus();
+  });
+});
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', e=>{ if(e.target === modal) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeModal(); });
+function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
 
-  // Format time with leading zeros
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
-  const ss = String(d.getSeconds()).padStart(2, '0');
-  timeEl.textContent = `${hh}:${mm}:${ss}`;
+/* -----------------------
+  Edit mode (local-only)
+  - Toggle edit mode with Ctrl+Shift+E or the Edit button.
+  - Editable fields have class .editable and data-field attributes.
+  - Save Draft stores a JSON of editable content in localStorage (key 'sneakDraft').
+  - Import/Export to copy JSON for publishing manually.
+------------------------*/
+const editToggle = document.getElementById('editToggle');
+const editControls = document.getElementById('editControls');
+let editing = false;
 
-  // Format date: Weekday, MMM DD, YYYY
-  const opts = { weekday: 'short', year: 'numeric', month: 'short', day: '2-digit' };
-  dateEl.textContent = d.toLocaleDateString(undefined, opts);
+function setEditing(on){
+  editing = on;
+  document.documentElement.classList.toggle('editing', on);
+  editControls.style.display = on ? 'flex' : 'none';
+  // enable/disable contentEditable
+  document.querySelectorAll('.editable').forEach(el=>{
+    el.contentEditable = on ? 'true' : 'false';
+    if(on) el.classList.add('editable--active'); else el.classList.remove('editable--active');
+  });
+  // show outlines visually (handled by CSS .editing)
 }
+editToggle.addEventListener('click', ()=> setEditing(!editing));
+document.addEventListener('keydown', e=>{
+  if(e.ctrlKey && e.shiftKey && e.code === 'KeyE'){
+    e.preventDefault(); setEditing(!editing);
+  }
+});
 
-// initialize clock immediately and update every second
-updateClock();
-setInterval(updateClock, 1000);
+// Save draft (localStorage)
+document.getElementById('saveDraft').addEventListener('click', ()=>{
+  const cards = Array.from(document.querySelectorAll('.card')).map(card=>{
+    const id = card.getAttribute('data-id');
+    const title = card.querySelector('.card-title')?.textContent || '';
+    const excerpt = card.querySelector('.card-excerpt')?.textContent || '';
+    const img = (card.querySelector('.card-media')?.style.backgroundImage||'').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+    const full = card.querySelector('.full-article')?.innerHTML || '';
+    return {id,title,excerpt,img,full};
+  });
+  localStorage.setItem('sneakDraft', JSON.stringify(cards));
+  alert('Draft saved locally (browser only). No one else sees this.');
+});
+
+// Load draft if exists (apply on start)
+function loadDraftIfExists(){
+  const raw = localStorage.getItem('sneakDraft');
+  if(!raw) return;
+  try{
+    const cards = JSON.parse(raw);
+    cards.forEach(c=>{
+      const card = document.querySelector('.card[data-id="'+c.id+'"]');
+      if(!card) return;
+      if(c.title) card.querySelector('.card-title').textContent = c.title;
+      if(c.excerpt) card.querySelector('.card-excerpt').textContent = c.excerpt;
+      if(c.img) card.querySelector('.card-media').style.backgroundImage = `url('${c.img}')`;
+      if(c.full) card.querySelector('.full-article').innerHTML = c.full;
+    });
+  }catch(e){ console.warn('Failed to load draft', e); }
+}
+loadDraftIfExists();
+
+document.getElementById('clearDraft').addEventListener('click', ()=>{
+  if(confirm('Clear local draft? This cannot be undone.')){ localStorage.removeItem('sneakDraft'); location.reload(); }
+});
+
+// Export JSON (copy to clipboard)
+document.getElementById('exportJSON').addEventListener('click', async ()=>{
+  const cards = Array.from(document.querySelectorAll('.card')).map(card=>{
+    const id = card.getAttribute('data-id');
+    const title = card.querySelector('.card-title')?.textContent || '';
+    const excerpt = card.querySelector('.card-excerpt')?.textContent || '';
+    const img = (card.querySelector('.card-media')?.style.backgroundImage||'').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+    const full = card.querySelector('.full-article')?.innerHTML || '';
+    return {id,title,excerpt,img,full};
+  });
+  const json = JSON.stringify(cards, null, 2);
+  try{
+    await navigator.clipboard.writeText(json);
+    alert('JSON copied to clipboard. Use this to publish or store on server.');
+  }catch(e){
+    // fallback: open prompt
+    prompt('Copy the JSON below (Ctrl/Cmd+C):', json);
+  }
+});
+
+// Import JSON (paste)
+document.getElementById('importJSONBtn').addEventListener('click', ()=>{
+  const raw = prompt('Paste JSON export here to load (overwrites current cards in page):');
+  if(!raw) return;
+  try{
+    const cards = JSON.parse(raw);
+    cards.forEach(c=>{
+      const card = document.querySelector('.card[data-id="'+c.id+'"]');
+      if(!card) return;
+      if(c.title) card.querySelector('.card-title').textContent = c.title;
+      if(c.excerpt) card.querySelector('.card-excerpt').textContent = c.excerpt;
+      if(c.img) card.querySelector('.card-media').style.backgroundImage = `url('${c.img}')`;
+      if(c.full) card.querySelector('.full-article').innerHTML = c.full;
+    });
+    alert('Imported JSON applied locally. Save draft to persist in this browser.');
+  }catch(e){ alert('Invalid JSON'); }
+});
+
+/* -----------------------
+  Clock
+------------------------*/
+function updateClock(){
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  const ss = String(d.getSeconds()).padStart(2,'0');
+  document.getElementById('clock-time').textContent = `${hh}:${mm}:${ss}`;
+  const opts = { weekday:'short', year:'numeric', month:'short', day:'2-digit' };
+  document.getElementById('clock-date').textContent = d.toLocaleDateString(undefined, opts);
+}
+updateClock(); setInterval(updateClock,1000);
+
+/* -----------------------
+  UX note:
+   - All edits performed in Edit mode are stored only in the browser (localStorage) when you press "Save Draft".
+   - To publish edits to the live site you must copy the exported JSON and update your server or CMS.
+   - The modal displays the full article content (from the hidden .full-article element) when a "View" link is clicked.
+------------------------*/
 </script>
 </body>
 </html>
