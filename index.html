@@ -7,11 +7,9 @@
 <style>
   :root{
     --bg:#0b0b12;
-    --panel:#121421;
     --accent:#ff6b3b;
     --accent-2:#ffb03a;
     --text:#e8e8f2;
-    --muted:#94a3b8;
   }
   *{box-sizing:border-box}
   html,body{height:100%; margin:0; overflow-x:hidden}
@@ -26,17 +24,28 @@
     filter: blur(14px) saturate(1.05); opacity:.22;
   }
 
-  /* Top Navigation */
-  .topbar { position: sticky; top: 0; z-index: 100; background: linear-gradient(180deg, rgba(11,11,18,0.98), rgba(11,11,18,0.92));
-    border-bottom: 1px solid rgba(255,107,59,0.25); backdrop-filter: blur(12px); }
-  .top-inner { max-width: 1280px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  /* Top Bar */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(180deg, rgba(11,11,18,0.98), rgba(11,11,18,0.92));
+    border-bottom: 1px solid rgba(255,107,59,0.3);
+    backdrop-filter: blur(12px);
+  }
+  .top-inner {
+    max-width: 1280px; margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
   .brand { font-size: 26px; font-weight: 800; }
   .brand .accent { color: var(--accent-2); }
+
   .nav { display: flex; gap: 28px; font-size: 15.5px; font-weight: 600; }
-  .nav-link { color: #e0e0e8; text-decoration: none; position: relative; }
-  .nav-link:hover { color: var(--accent-2); }
-  .nav-link.active { color: #fff; }
-  .nav-link.active::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 100%; height: 2px; background: var(--accent-2); }
+  .nav-link {
+    color: #e0e0e8; text-decoration: none; position: relative; padding-bottom: 4px;
+  }
+  .nav-link:hover, .nav-link.active { color: var(--accent-2); }
+  .nav-link.active::after {
+    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--accent-2);
+  }
 
   .purchase-btn {
     background: linear-gradient(180deg, rgba(255,107,59,0.28), rgba(255,176,58,0.08));
@@ -44,14 +53,13 @@
     padding: 8px 18px; border-radius: 10px; font-weight: 700; cursor: pointer;
   }
 
-  .main-view { display: none; }
+  .main-view { display: none; padding: 20px 0; }
   .main-view.active { display: block; }
 
-  /* Music Player */
   .music-player {
     position: fixed; bottom: 15px; right: 15px; z-index: 200;
     background: rgba(18,20,32,0.95); border: 1px solid rgba(255,176,58,0.4);
-    border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; gap: 10px;
+    border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; gap: 12px;
     font-size: 13px; backdrop-filter: blur(8px);
   }
 </style>
@@ -65,4 +73,87 @@
   <div class="top-inner">
     <h1 class="brand">Killadelphia <span class="accent">Contraband</span></h1>
     <div class="nav">
-      <
+      <a href="#" class="nav-link active" id="navHome">Home</a>
+      <a href="#" class="nav-link" id="navShop">Shop</a>
+      <a href="#" class="nav-link" id="navStreamers">Streamers</a>
+      <a href="#" class="nav-link" id="navSneak">Sneak Peeks</a>
+      <a href="#" class="nav-link" id="navRules">Rules</a>
+    </div>
+    <button class="purchase-btn"><i class="fa-solid fa-cart-shopping"></i> Buy Credits</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- HOME - Your Original Spinner Page -->
+  <div id="homeView" class="main-view active">
+    <!-- PASTE ALL YOUR ORIGINAL CONTENT HERE (Hero, Reel, Stage, Drawers, Stats, etc.) -->
+    <!-- Everything from <section class="hero"> to the end of your original body -->
+  </div>
+
+  <!-- Other Tabs -->
+  <div id="shopView" class="main-view"><h2 class="section-title">Shop</h2><p>Coming Soon...</p></div>
+  <div id="streamersView" class="main-view"><h2 class="section-title">Streamers</h2><p>Coming Soon...</p></div>
+  <div id="sneakView" class="main-view"><h2 class="section-title">Sneak Peeks</h2><p>Coming Soon...</p></div>
+  <div id="rulesView" class="main-view"><h2 class="section-title">Rules</h2><p>Coming Soon...</p></div>
+</div>
+
+<!-- Music -->
+<audio id="bgmAudio" preload="auto" loop></audio>
+
+<div class="music-player">
+  <button id="musicToggle"><i class="fa-solid fa-volume-high"></i></button>
+  <span id="nowPlaying">Now Playing: Track 1</span>
+  <button id="nextTrack"><i class="fa-solid fa-forward"></i></button>
+</div>
+
+<script>
+// ====================== MUSIC ======================
+const playlist = [
+  "NyRbZVl4P6s", "yflFa6undWk", "uSHHqS8HZhs",
+  "z4PndMZNUX8", "8e80zDhTONc", "VvItaijf80Y"
+];
+
+let currentTrack = 0;
+const bgm = document.getElementById('bgmAudio');
+const musicToggle = document.getElementById('musicToggle');
+const nowPlaying = document.getElementById('nowPlaying');
+
+function playTrack(index) {
+  currentTrack = index % playlist.length;
+  const videoId = playlist[currentTrack];
+  nowPlaying.textContent = `Now Playing: Track ${currentTrack + 1}`;
+
+  // YouTube autoplay workaround (opens embed)
+  bgm.innerHTML = `<iframe width="0" height="0" src="https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}" allow="autoplay" frameborder="0"></iframe>`;
+}
+
+musicToggle.addEventListener('click', () => {
+  if (bgm.innerHTML.includes('iframe')) {
+    bgm.innerHTML = '';
+    musicToggle.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+  } else {
+    playTrack(currentTrack);
+    musicToggle.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+  }
+});
+
+document.getElementById('nextTrack').addEventListener('click', () => {
+  playTrack(currentTrack + 1);
+});
+
+// Try to autoplay after user interacts with the page
+document.addEventListener('click', () => {
+  if (!bgm.innerHTML) playTrack(0);
+}, { once: true });
+
+// ====================== TABS ======================
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // Update active link
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+
+    // Switch views
+    document
