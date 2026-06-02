@@ -10,12 +10,14 @@
 
 <style>
   :root{
-    --bg:#0b0b12;
-    --accent:#ff6b3b;
-    --accent-2:#ffb03a;
-    --text:#e8e8f2;
-    --muted:#94a3b8;
+    /* Palette sampled from the logo */
+    --bg: #020409;       /* very dark / near black */
+    --accent: #0b4b63;   /* deep navy ring */
+    --accent-2: #2aa6dd; /* bright cyan rim / highlight */
+    --text: #cfe7ee;     /* frosted / icy text */
+    --muted: #6e8a94;    /* muted blue-gray */
   }
+
   *{box-sizing:border-box; margin:0; padding:0}
   body{
     background: var(--bg);
@@ -26,51 +28,60 @@
   .page-bg{
     position:fixed; inset:0; z-index:-1;
     background:url('https://i.imgur.com/z17MUhQ.png') center/cover no-repeat;
+    /* subtle overlay tint to tie into the logo */
+    background-blend-mode: multiply;
     filter: blur(14px) saturate(1.05); opacity:.22;
   }
 
   /* Top Navigation */
   .topbar {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(11,11,18,0.97);
-    border-bottom: 1px solid rgba(255,107,59,0.3);
+    background: linear-gradient(180deg, rgba(2,4,9,0.92), rgba(2,4,9,0.98));
+    border-bottom: 1px solid rgba(42,166,221,0.12); /* subtle cyan line */
     backdrop-filter: blur(12px);
   }
   .top-inner {
     max-width: 1280px; margin: 0 auto; padding: 16px 24px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .brand { font-size: 28px; font-weight: 800; }
+  .brand { font-size: 28px; font-weight: 800; color:var(--text); }
   .brand .accent { color: var(--accent-2); }
 
   .nav { display: flex; gap: 32px; font-size: 16px; font-weight: 600; }
   .nav-link {
-    color: #ddd; text-decoration: none; position: relative;
+    color: #bcdbe6; text-decoration: none; position: relative;
+    transition: color .15s ease;
   }
   .nav-link:hover { color: var(--accent-2); }
   .nav-link.active {
-    color: white;
+    color: var(--text);
   }
   .nav-link.active::after {
-    content: ''; position: absolute; bottom: -4px; left: 0;
-    width: 100%; height: 2px; background: var(--accent-2);
+    content: ''; position: absolute; bottom: -6px; left: 0;
+    width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 2px;
   }
 
   .purchase-btn {
-    background: linear-gradient(180deg, rgba(255,107,59,0.3), rgba(255,176,58,0.1));
-    color: #fff; border: 1px solid rgba(255,176,58,0.5);
+    background: linear-gradient(180deg, rgba(42,166,221,0.12), rgba(42,166,221,0.06));
+    color: var(--text); border: 1px solid rgba(42,166,221,0.18);
     padding: 9px 20px; border-radius: 10px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(10,30,40,0.25);
   }
 
-  .main-view { display: none; padding: 30px 20px; }
+  .main-view { display: none; padding: 30px 20px; color:var(--text); }
   .main-view.active { display: block; }
+
+  h2 { color: var(--text); text-shadow: 0 2px 12px rgba(10,20,28,0.6); }
+  p { color: var(--muted); }
 
   .music-player {
     position: fixed; bottom: 20px; right: 20px; z-index: 999;
-    background: rgba(20,22,35,0.95); border: 1px solid #ffb03a;
+    background: rgba(3,6,10,0.7); border: 1px solid rgba(42,166,221,0.08);
     border-radius: 12px; padding: 10px 15px;
     display: flex; align-items: center; gap: 12px;
     font-size: 14px; backdrop-filter: blur(10px);
+    color: var(--muted);
   }
 
   /* Hidden but present container for the YouTube iframe (so we can control it) */
@@ -128,12 +139,9 @@
   </div>
 </div>
 
-<!-- Music: no visible controls; autoplay after first user gesture and low volume -->
+<!-- Music: hidden controls, autoplay after first gesture and low volume -->
 <div class="music-player" aria-live="polite" style="display:none;">
-  <!-- Hidden visual UI — music plays in background. The container remains for ARIA/live updates if needed. -->
   <span id="nowPlaying" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">Track 1/6</span>
-
-  <!-- persistent container for the iframe; invisible but present so we can remove/update the iframe -->
   <div id="yt-audio" aria-hidden="true">
     <div id="yt-player"></div>
   </div>
@@ -152,9 +160,8 @@ const playlist = [
 let current = 0;
 let player = null;
 let playerReady = false;
-const desiredVolume = 20; // percent (0-100), low volume
+const desiredVolume = 20; // low volume 0-100
 
-// Create the YT player when API is ready
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('yt-player', {
     height: '0',
@@ -170,15 +177,12 @@ function onYouTubeIframeAPIReady() {
     events: {
       onReady: (e) => {
         playerReady = true;
-        // ensure volume is set early (won't unmute automatically without gesture on some browsers)
-        try { player.setVolume(desiredVolume); } catch (err) { /* ignore until ready */ }
+        try { player.setVolume(desiredVolume); } catch (err) {}
       },
       onStateChange: (e) => {
-        // When a video ends, advance to next track
         if (e.data === YT.PlayerState.ENDED) {
           current = (current + 1) % playlist.length;
           player.loadVideoById(playlist[current]);
-          // ensure volume after load
           setTimeout(() => { try { player.setVolume(desiredVolume); } catch (err){} }, 200);
           updateNowPlaying();
         }
@@ -192,19 +196,15 @@ function updateNowPlaying() {
   if (el) el.textContent = `Track ${current+1}/${playlist.length}`;
 }
 
-// Start playback after first user gesture (autoplay policy)
+// Start playback after first user gesture
 document.addEventListener('click', function handler() {
-  // only attempt to play once on first user interaction
   if (playerReady && player) {
     try {
       player.setVolume(desiredVolume);
       player.playVideo();
       updateNowPlaying();
-    } catch (err) {
-      /* ignore playback errors; user gesture should allow it */
-    }
+    } catch (err) { /* ignore */ }
   } else {
-    // If player not ready yet, try to play once it becomes ready
     const onReadyOnce = setInterval(() => {
       if (playerReady && player) {
         try {
@@ -219,12 +219,10 @@ document.addEventListener('click', function handler() {
   document.removeEventListener('click', handler);
 }, { once: true });
 
-// Tab System (fixed mapping to view IDs)
+// Tab System (maps nav IDs to view IDs)
 document.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', function(e) {
     e.preventDefault();
-
-    // update active class and aria-selected
     document.querySelectorAll('.nav-link').forEach(l => {
       l.classList.remove('active');
       l.setAttribute('aria-selected', 'false');
@@ -232,11 +230,9 @@ document.querySelectorAll('.nav-link').forEach(link => {
     this.classList.add('active');
     this.setAttribute('aria-selected', 'true');
 
-    // switch views
     document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
-    // convert "navHome" -> "homeView" (lowercase first letter)
-    const raw = this.id.replace('nav', '');        // "Home", "Shop", ...
-    const viewId = raw.charAt(0).toLowerCase() + raw.slice(1) + 'View'; // "homeView"
+    const raw = this.id.replace('nav', '');
+    const viewId = raw.charAt(0).toLowerCase() + raw.slice(1) + 'View';
     const view = document.getElementById(viewId);
     if (view) view.classList.add('active');
   });
